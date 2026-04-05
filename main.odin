@@ -1,13 +1,22 @@
 package main
 
-import "core:fmt"
+import "core:log"
+import "core:mem"
 import rl "vendor:raylib"
 
 main :: proc() {
-	fmt.println("Hello world")
+	context.logger = log.create_console_logger()
 
-	rl.InitWindow(500, 500, "skate")
+	when ODIN_DEBUG {
+		track: mem.Tracking_Allocator
+		mem.tracking_allocator_init(&track, context.allocator)
+		context.allocator = mem.tracking_allocator(&track)
+		defer for _, v in track.allocation_map do log.warnf("%v Leaked %v bytes.\n", v.location, v.size)
+	}
+
+	rl.SetTraceLogLevel(.WARNING)
 	rl.SetTargetFPS(60)
+	rl.InitWindow(500, 500, "skate")
 
 	for !rl.WindowShouldClose() {
 		rl.ClearBackground(rl.GRAY)
