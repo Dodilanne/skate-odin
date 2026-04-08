@@ -20,23 +20,6 @@ main :: proc() {
 	rl.InitWindow(500, 500, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
-	Axis :: struct {
-		dir:   rl.Vector3,
-		color: rl.Color,
-	}
-
-	AXES :: [3]Axis {
-		{dir = {1, 0, 0}, color = rl.RED},
-		{dir = {0, 1, 0}, color = rl.GREEN},
-		{dir = {0, 0, 1}, color = rl.BLUE},
-	}
-
-	PRO_MATRIX :: matrix[2, 3]f32{
-		1, -1, 0,
-		0.5, 0.5, -1,
-	}
-
-
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 		grid_size := f32(math.min(screen.x, screen.y) / 12)
@@ -47,39 +30,37 @@ main :: proc() {
 		rl.ClearBackground(rl.WHITE)
 
 		// Grid
-		num_cols := math.floor(screen.x / grid_size)
-		for i: f32 = 0; i <= num_cols; i += 1 {
-			rl.DrawLineEx(
-				rl.Vector2{i * grid_size - grid_size / 2, 0},
-				rl.Vector2{i * grid_size - grid_size / 2, screen.y},
-				1,
-				rl.Fade(rl.LIGHTGRAY, 0.5),
-			)
-			if i > 0 && i < num_cols {
+		for i: f32 = 0; i <= math.floor(screen.x / grid_size); i += 1 {
+			if i > 0 {
 				rl.DrawLineEx(
-					rl.Vector2{i * grid_size, 0},
-					rl.Vector2{i * grid_size, screen.y},
-					1.1,
-					rl.Fade(rl.DARKGRAY, 0.5),
+					PRO_MATRIX * rl.Vector3{i * grid_size - grid_size / 2, 0, 0} + origin,
+					PRO_MATRIX * rl.Vector3{i * grid_size - grid_size / 2, screen.y, 0} + origin,
+					1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
 				)
 			}
+			rl.DrawLineEx(
+				PRO_MATRIX * rl.Vector3{i * grid_size, 0, 0} + origin,
+				PRO_MATRIX * rl.Vector3{i * grid_size, screen.y, 0} + origin,
+				1.1,
+				rl.Fade(rl.DARKGRAY, 0.5),
+			)
 		}
-		num_rows := math.floor(screen.y / grid_size)
-		for i: f32 = 0; i <= num_rows; i += 1 {
-			rl.DrawLineEx(
-				rl.Vector2{0, i * grid_size - grid_size / 2},
-				rl.Vector2{screen.x, i * grid_size - grid_size / 2},
-				1,
-				rl.Fade(rl.LIGHTGRAY, 0.5),
-			)
-			if i > 0 && i < num_rows {
+		for i: f32 = 0; i <= math.floor(screen.y / grid_size); i += 1 {
+			if i > 0 {
 				rl.DrawLineEx(
-					rl.Vector2{0, i * grid_size},
-					rl.Vector2{screen.x, i * grid_size},
-					1.1,
-					rl.Fade(rl.DARKGRAY, 0.5),
+					PRO_MATRIX * rl.Vector3{0, i * grid_size - grid_size / 2, 0} + origin,
+					PRO_MATRIX * rl.Vector3{screen.x, i * grid_size - grid_size / 2, 0} + origin,
+					1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
 				)
 			}
+			rl.DrawLineEx(
+				PRO_MATRIX * rl.Vector3{0, i * grid_size, 0} + origin,
+				PRO_MATRIX * rl.Vector3{screen.x, i * grid_size, 0} + origin,
+				1.1,
+				rl.Fade(rl.DARKGRAY, 0.5),
+			)
 		}
 
 
@@ -90,13 +71,68 @@ main :: proc() {
 		// Axes
 		for axis in AXES {
 			rl.DrawLineEx(
-				rl.Vector2(0) + origin,
-				PRO_MATRIX * axis.dir * grid_size + origin,
+				project(rl.Vector3(0), grid_size, origin),
+				project(axis.dir, grid_size, origin),
 				2,
 				rl.Fade(axis.color, 0.5),
 			)
 		}
 
+
+		cube := Shape {
+			vertices = {
+				{-0.5, 0.5, 0.5},
+				{0.5, 0.5, 0.5},
+				{0.5, -0.5, 0.5},
+				{-0.5, -0.5, 0.5},
+				{-0.5, 0.5, -0.5},
+				{0.5, 0.5, -0.5},
+				{0.5, -0.5, -0.5},
+				{-0.5, -0.5, -0.5},
+			},
+			faces    = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 5, 6, 2}},
+		}
+
+
+		for face in cube.faces {
+			for i := 0; i < len(face); i += 1 {
+				start_idx := face[i]
+				end_idx := face[(i + 1) % len(face)]
+				color := rl.ORANGE
+				rl.DrawLineEx(
+					project(cube.vertices[start_idx], grid_size, origin),
+					project(cube.vertices[end_idx], grid_size, origin),
+					4,
+					color,
+				)
+			}
+		}
+
 		rl.EndDrawing()
 	}
+}
+
+project :: proc(point: rl.Vector3, grid_size: f32, origin: rl.Vector2) -> rl.Vector2 {
+	return PRO_MATRIX * point * grid_size + origin
+}
+
+Axis :: struct {
+	dir:   rl.Vector3,
+	color: rl.Color,
+}
+
+AXES :: [3]Axis {
+	{dir = {1, 0, 0}, color = rl.RED},
+	{dir = {0, 1, 0}, color = rl.GREEN},
+	{dir = {0, 0, 1}, color = rl.BLUE},
+}
+
+PRO_MATRIX :: matrix[2, 3]f32{
+	1, -1, 0,
+	0.5, 0.5, -1,
+}
+
+Shape :: struct {
+	vertices: [8]rl.Vector3,
+	faces:    [4][4]int,
 }
