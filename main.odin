@@ -20,10 +20,19 @@ main :: proc() {
 	rl.InitWindow(500, 500, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
+	state: State
+
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 		grid_size := f32(math.min(screen.x, screen.y) / 12)
 		origin := screen / 2
+
+		state.dir = rl.Vector3(0)
+		if rl.IsKeyDown(.T) do state.dir += rl.Vector3{1, 0, 0}
+		if rl.IsKeyDown(.R) do state.dir += rl.Vector3{-1, 0, 0}
+		if rl.IsKeyDown(.S) do state.dir += rl.Vector3{0, 1, 0}
+		if rl.IsKeyDown(.F) do state.dir += rl.Vector3{0, -1, 0}
+		state.dir = rl.Vector3Normalize(state.dir)
 
 		rl.BeginDrawing()
 
@@ -63,22 +72,6 @@ main :: proc() {
 			)
 		}
 
-
-		// Origin
-		rl.DrawCircleV(origin, 4, rl.Fade(rl.DARKGRAY, 0.5))
-
-
-		// Axes
-		for axis in AXES {
-			rl.DrawLineEx(
-				project(rl.Vector3(0), grid_size, origin),
-				project(axis.dir, grid_size, origin),
-				2,
-				rl.Fade(axis.color, 0.5),
-			)
-		}
-
-
 		cube := Shape {
 			vertices = {
 				{-0.5, 0.5, 0.5},
@@ -102,11 +95,20 @@ main :: proc() {
 				rl.DrawLineEx(
 					project(cube.vertices[start_idx], grid_size, origin),
 					project(cube.vertices[end_idx], grid_size, origin),
-					4,
+					2,
 					color,
 				)
 			}
 		}
+
+
+		rl.DrawLineEx(
+			project(rl.Vector3(0), grid_size, origin),
+			project(state.dir, grid_size, origin),
+			4,
+			rl.PINK,
+		)
+
 
 		rl.EndDrawing()
 	}
@@ -135,4 +137,8 @@ PRO_MATRIX :: matrix[2, 3]f32{
 Shape :: struct {
 	vertices: [8]rl.Vector3,
 	faces:    [4][4]int,
+}
+
+State :: struct {
+	dir: rl.Vector3,
 }
