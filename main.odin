@@ -25,10 +25,15 @@ main :: proc() {
 		color: rl.Color,
 	}
 
-	axes: [3]Axis = {
+	AXES :: [3]Axis {
 		{dir = {1, 0, 0}, color = rl.RED},
 		{dir = {0, 1, 0}, color = rl.GREEN},
 		{dir = {0, 0, 1}, color = rl.BLUE},
+	}
+
+	PRO_MATRIX :: matrix[2, 3]f32{
+		1, -1, 0,
+		0.5, 0.5, -1,
 	}
 
 
@@ -48,14 +53,14 @@ main :: proc() {
 				rl.Vector2{i * grid_size - grid_size / 2, 0},
 				rl.Vector2{i * grid_size - grid_size / 2, screen.y},
 				1,
-				rl.LIGHTGRAY,
+				rl.Fade(rl.LIGHTGRAY, 0.5),
 			)
 			if i > 0 && i < num_cols {
 				rl.DrawLineEx(
 					rl.Vector2{i * grid_size, 0},
 					rl.Vector2{i * grid_size, screen.y},
 					1.1,
-					rl.DARKGRAY,
+					rl.Fade(rl.DARKGRAY, 0.5),
 				)
 			}
 		}
@@ -65,39 +70,31 @@ main :: proc() {
 				rl.Vector2{0, i * grid_size - grid_size / 2},
 				rl.Vector2{screen.x, i * grid_size - grid_size / 2},
 				1,
-				rl.LIGHTGRAY,
+				rl.Fade(rl.LIGHTGRAY, 0.5),
 			)
 			if i > 0 && i < num_rows {
 				rl.DrawLineEx(
 					rl.Vector2{0, i * grid_size},
 					rl.Vector2{screen.x, i * grid_size},
 					1.1,
-					rl.DARKGRAY,
+					rl.Fade(rl.DARKGRAY, 0.5),
 				)
 			}
 		}
 
 
 		// Origin
-		rl.DrawCircleV(origin, 4, rl.ORANGE)
+		rl.DrawCircleV(origin, 4, rl.Fade(rl.DARKGRAY, 0.5))
 
 
 		// Axes
-		for axis in axes {
-			start := rl.Vector2(0)
-			end := axis.dir.xy
-
-			faded_color := axis.color
-			faded_color.a = 80
-			rl.DrawLineEx(start + origin, end * grid_size + origin, 4, faded_color)
-
-			m := matrix[2, 3]f32{
-				1, -1, 0,
-				0.5, 0.5, -1,
-			}
-			end = m * axis.dir
-
-			rl.DrawLineEx(start + origin, end * grid_size + origin, 4, axis.color)
+		for axis in AXES {
+			rl.DrawLineEx(
+				rl.Vector2(0) + origin,
+				PRO_MATRIX * axis.dir * grid_size + origin,
+				2,
+				rl.Fade(axis.color, 0.5),
+			)
 		}
 
 		rl.EndDrawing()
