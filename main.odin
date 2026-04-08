@@ -92,8 +92,8 @@ main :: proc() {
 			rl.DrawLineEx(start + origin, end * grid_size + origin, 4, faded_color)
 
 			m := matrix[2, 3]f32{
-				1, 0, -1,
-				0.5, -1, 0.5,
+				1, -1, 0,
+				0.5, 0.5, -1,
 			}
 			end = m * axis.dir
 
