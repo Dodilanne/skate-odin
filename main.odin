@@ -20,7 +20,9 @@ main :: proc() {
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
-	state: State
+	state := State {
+		speed = 0.1,
+	}
 
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
@@ -38,7 +40,10 @@ main :: proc() {
 		if rl.IsKeyDown(.F) do new_dir = rl.Vector3{0, -1, 0}
 		new_dir = rl.Vector3Normalize(new_dir)
 
-		if new_dir != state.dir {
+		if new_dir == rl.Vector3(0) && state.dir != rl.Vector3(0) {
+			state.time_until_move = 0
+		} else if new_dir != rl.Vector3(0) && state.time_until_move <= 0 {
+			state.time_until_move = state.speed
 			state.dir = new_dir
 			state.pos += state.dir
 			state.pos = rl.Vector3Clamp(
@@ -46,6 +51,8 @@ main :: proc() {
 				rl.Vector3(0),
 				rl.Vector3{num_cols - 1, num_rows - 1, 0},
 			)
+		} else if new_dir != rl.Vector3(0) {
+			state.time_until_move = state.time_until_move - rl.GetFrameTime()
 		}
 
 		if rl.IsKeyPressed(.SPACE) {
@@ -135,9 +142,11 @@ Drawing_Mode :: enum {
 }
 
 State :: struct {
-	pos:          rl.Vector3,
-	dir:          rl.Vector3,
-	drawing_mode: Drawing_Mode,
-	cell_size:    f32,
-	offset:       rl.Vector2,
+	pos:             rl.Vector3,
+	dir:             rl.Vector3,
+	speed:           f32,
+	time_until_move: f32,
+	drawing_mode:    Drawing_Mode,
+	cell_size:       f32,
+	offset:          rl.Vector2,
 }
