@@ -38,23 +38,21 @@ main :: proc() {
 
 		rl.ClearBackground(rl.WHITE)
 
-		z: f32 = 0
-
 		// Grid
 		num_cols := math.floor(screen.x / grid_size)
 		num_rows := math.floor(screen.y / grid_size)
 		for i: f32 = 0; i <= num_cols; i += 1 {
 			rl.DrawLineEx(
-				project(rl.Vector3{i, 0, z}, grid_size, origin),
-				project(rl.Vector3{i, num_rows, z}, grid_size, origin),
+				project(rl.Vector3{i, 0, 0}, grid_size, origin),
+				project(rl.Vector3{i, num_rows, 0}, grid_size, origin),
 				1.1,
 				rl.Fade(rl.DARKGRAY, 0.5),
 			)
 		}
 		for i: f32 = 0; i <= num_rows; i += 1 {
 			rl.DrawLineEx(
-				project(rl.Vector3{0, i, z}, grid_size, origin),
-				project(rl.Vector3{num_cols, i, z}, grid_size, origin),
+				project(rl.Vector3{0, i, 0}, grid_size, origin),
+				project(rl.Vector3{num_cols, i, 0}, grid_size, origin),
 				1.1,
 				rl.Fade(rl.DARKGRAY, 0.5),
 			)
