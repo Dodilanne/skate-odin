@@ -28,12 +28,25 @@ main :: proc() {
 		state.cell_size = f32(32)
 		state.origin = screen / 2
 
-		state.dir = rl.Vector3(0)
-		if rl.IsKeyDown(.T) do state.dir += rl.Vector3{1, 0, 0}
-		if rl.IsKeyDown(.R) do state.dir += rl.Vector3{-1, 0, 0}
-		if rl.IsKeyDown(.S) do state.dir += rl.Vector3{0, 1, 0}
-		if rl.IsKeyDown(.F) do state.dir += rl.Vector3{0, -1, 0}
-		state.dir = rl.Vector3Normalize(state.dir)
+		num_cols := math.floor(screen.x / state.cell_size)
+		num_rows := math.floor(screen.y / state.cell_size)
+
+		new_dir: rl.Vector3
+		if rl.IsKeyDown(.T) do new_dir = rl.Vector3{1, 0, 0}
+		if rl.IsKeyDown(.R) do new_dir = rl.Vector3{-1, 0, 0}
+		if rl.IsKeyDown(.S) do new_dir = rl.Vector3{0, 1, 0}
+		if rl.IsKeyDown(.F) do new_dir = rl.Vector3{0, -1, 0}
+		new_dir = rl.Vector3Normalize(new_dir)
+
+		if new_dir != state.dir {
+			state.dir = new_dir
+			state.pos += state.dir
+			state.pos = rl.Vector3Clamp(
+				state.pos,
+				rl.Vector3(0),
+				rl.Vector3{num_cols, num_rows, 0},
+			)
+		}
 
 		if rl.IsKeyPressed(.SPACE) {
 			state.drawing_mode = state.drawing_mode == .dimetric ? .top_down : .dimetric
@@ -43,8 +56,6 @@ main :: proc() {
 
 		rl.ClearBackground(rl.WHITE)
 
-		num_cols := math.floor(screen.x / state.cell_size)
-		num_rows := math.floor(screen.y / state.cell_size)
 		for i: f32 = 0; i <= num_cols; i += 1 {
 			rl.DrawLineEx(
 				project(rl.Vector3{i, 0, 0}, &state),
@@ -83,15 +94,20 @@ main :: proc() {
 				end_idx := face[(i + 1) % len(face)]
 				color := rl.ORANGE
 				rl.DrawLineEx(
-					project(cube.vertices[start_idx], &state),
-					project(cube.vertices[end_idx], &state),
+					project(cube.vertices[start_idx] + state.pos, &state),
+					project(cube.vertices[end_idx] + state.pos, &state),
 					2,
 					color,
 				)
 			}
 		}
 
-		rl.DrawLineEx(project(rl.Vector3(0), &state), project(state.dir, &state), 4, rl.PINK)
+		rl.DrawLineEx(
+			project(state.pos + rl.Vector3(0.5), &state),
+			project(state.pos + rl.Vector3(0.5) + state.dir, &state),
+			4,
+			rl.PINK,
+		)
 
 		rl.EndDrawing()
 	}
@@ -131,6 +147,7 @@ Drawing_Mode :: enum {
 }
 
 State :: struct {
+	pos:          rl.Vector3,
 	dir:          rl.Vector3,
 	drawing_mode: Drawing_Mode,
 	cell_size:    f32,
