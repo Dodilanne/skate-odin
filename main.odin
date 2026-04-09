@@ -53,7 +53,7 @@ main :: proc() {
 		if rl.IsKeyDown(.T) do steer = -rl.Vector3CrossProduct(state.dir, state.norm)
 
 		if rl.IsKeyPressed(.D) {
-			state.drawing_mode = state.drawing_mode == .dimetric ? .top_down : .dimetric
+			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
 		}
 
 		rl.BeginDrawing()
@@ -124,6 +124,9 @@ project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
 	if state.drawing_mode == .top_down {
 		return point.xy * state.cell_size + state.offset
 	}
+	if state.drawing_mode == .side {
+		return rl.Vector2{point.x, -point.z} * state.cell_size + state.offset
+	}
 	return PRO_MATRIX * point * state.cell_size + state.offset
 }
 
@@ -138,8 +141,9 @@ Shape :: struct {
 }
 
 Drawing_Mode :: enum {
-	dimetric,
+	dimetric = 0,
 	top_down,
+	side,
 }
 
 State :: struct {
