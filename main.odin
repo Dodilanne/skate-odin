@@ -40,9 +40,9 @@ main :: proc() {
 		if rl.IsKeyDown(.F) do new_dir = rl.Vector3{0, -1, 0}
 		new_dir = rl.Vector3Normalize(new_dir)
 
-		if new_dir == rl.Vector3(0) && state.dir != rl.Vector3(0) {
-			state.time_until_move = 0
-		} else if new_dir != rl.Vector3(0) && state.time_until_move <= 0 {
+		if new_dir == rl.Vector3(0) {
+			if state.dir != rl.Vector3(0) do state.time_until_move = 0
+		} else if state.time_until_move <= 0 {
 			state.time_until_move = state.speed
 			state.dir = new_dir
 			state.pos += state.dir
@@ -51,7 +51,7 @@ main :: proc() {
 				rl.Vector3(0),
 				rl.Vector3{num_cols - 1, num_rows - 1, 0},
 			)
-		} else if new_dir != rl.Vector3(0) {
+		} else {
 			state.time_until_move = state.time_until_move - rl.GetFrameTime()
 		}
 
