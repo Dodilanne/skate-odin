@@ -108,13 +108,6 @@ main :: proc() {
 			}
 		}
 
-		rl.DrawLineEx(
-			project(rl.Vector3(0.5), &state),
-			project(rl.Vector3(0.5) + state.dir, &state),
-			4,
-			rl.PINK,
-		)
-
 		rl.EndDrawing()
 	}
 }
