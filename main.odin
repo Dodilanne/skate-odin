@@ -38,35 +38,23 @@ main :: proc() {
 
 		rl.ClearBackground(rl.WHITE)
 
+		z: f32 = 0
+
 		// Grid
-		for i: f32 = 0; i <= math.floor(screen.x / grid_size); i += 1 {
-			if i > 0 {
-				rl.DrawLineEx(
-					PRO_MATRIX * rl.Vector3{i * grid_size - grid_size / 2, 0, 0} + origin,
-					PRO_MATRIX * rl.Vector3{i * grid_size - grid_size / 2, screen.y, 0} + origin,
-					1,
-					rl.Fade(rl.LIGHTGRAY, 0.5),
-				)
-			}
+		num_cols := math.floor(screen.x / grid_size)
+		num_rows := math.floor(screen.y / grid_size)
+		for i: f32 = 0; i <= num_cols; i += 1 {
 			rl.DrawLineEx(
-				PRO_MATRIX * rl.Vector3{i * grid_size, 0, 0} + origin,
-				PRO_MATRIX * rl.Vector3{i * grid_size, screen.y, 0} + origin,
+				project(rl.Vector3{i, 0, z}, grid_size, origin),
+				project(rl.Vector3{i, num_rows, z}, grid_size, origin),
 				1.1,
 				rl.Fade(rl.DARKGRAY, 0.5),
 			)
 		}
-		for i: f32 = 0; i <= math.floor(screen.y / grid_size); i += 1 {
-			if i > 0 {
-				rl.DrawLineEx(
-					PRO_MATRIX * rl.Vector3{0, i * grid_size - grid_size / 2, 0} + origin,
-					PRO_MATRIX * rl.Vector3{screen.x, i * grid_size - grid_size / 2, 0} + origin,
-					1,
-					rl.Fade(rl.LIGHTGRAY, 0.5),
-				)
-			}
+		for i: f32 = 0; i <= num_rows; i += 1 {
 			rl.DrawLineEx(
-				PRO_MATRIX * rl.Vector3{0, i * grid_size, 0} + origin,
-				PRO_MATRIX * rl.Vector3{screen.x, i * grid_size, 0} + origin,
+				project(rl.Vector3{0, i, z}, grid_size, origin),
+				project(rl.Vector3{num_cols, i, z}, grid_size, origin),
 				1.1,
 				rl.Fade(rl.DARKGRAY, 0.5),
 			)
@@ -74,14 +62,14 @@ main :: proc() {
 
 		cube := Shape {
 			vertices = {
-				{-0.5, 0.5, 0.5},
-				{0.5, 0.5, 0.5},
-				{0.5, -0.5, 0.5},
-				{-0.5, -0.5, 0.5},
-				{-0.5, 0.5, -0.5},
-				{0.5, 0.5, -0.5},
-				{0.5, -0.5, -0.5},
-				{-0.5, -0.5, -0.5},
+				{0, 0, 0},
+				{0, 1, 0},
+				{1, 1, 0},
+				{1, 0, 0},
+				{0, 0, 1},
+				{0, 1, 1},
+				{1, 1, 1},
+				{1, 0, 1},
 			},
 			faces    = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 5, 6, 2}},
 		}
