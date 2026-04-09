@@ -26,7 +26,6 @@ main :: proc() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
 		state.cell_size = f32(32)
-		state.origin = screen / 2
 
 		num_cols := math.floor(screen.x / state.cell_size)
 		num_rows := math.floor(screen.y / state.cell_size)
@@ -44,13 +43,17 @@ main :: proc() {
 			state.pos = rl.Vector3Clamp(
 				state.pos,
 				rl.Vector3(0),
-				rl.Vector3{num_cols, num_rows, 0},
+				rl.Vector3{num_cols - 1, num_rows - 1, 0},
 			)
 		}
 
 		if rl.IsKeyPressed(.SPACE) {
 			state.drawing_mode = state.drawing_mode == .dimetric ? .top_down : .dimetric
 		}
+
+		center := rl.Vector2{math.floor(num_cols / 2), math.floor(num_rows / 2)}
+		state.origin = center - state.pos.xy
+
 
 		rl.BeginDrawing()
 
@@ -115,9 +118,9 @@ main :: proc() {
 
 project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
 	if state.drawing_mode == .top_down {
-		return point.xy * state.cell_size + state.origin
+		return (point.xy + state.origin) * state.cell_size
 	}
-	return PRO_MATRIX * point * state.cell_size + state.origin
+	return PRO_MATRIX * (point + rl.Vector3{state.origin.x, state.origin.y, 0}) * state.cell_size
 }
 
 Axis :: struct {
