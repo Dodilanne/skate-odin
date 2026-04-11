@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:mem"
@@ -63,10 +62,16 @@ main :: proc() {
 			state.player.vel += state.player.dir
 		}
 
-
 		if rl.Vector2Length(state.player.vel.xy) != 0 {
-			new_vel := state.player.vel - state.player.dir * 0.5 * dt
-			if rl.Vector2Length(new_vel.xy) > 0.01 {
+			friction_coeff: f32 = 0.5
+			if rl.IsKeyDown(.ENTER) do friction_coeff *= 10
+			new_vel := state.player.vel - state.player.dir * friction_coeff * dt
+			diff := math.abs(
+				rl.Vector3Length(
+					rl.Vector3Normalize(new_vel) - rl.Vector3Normalize(state.player.vel),
+				),
+			)
+			if diff < 0.1 {
 				state.player.vel = new_vel
 			} else {
 				state.player.vel = rl.Vector3(0)
