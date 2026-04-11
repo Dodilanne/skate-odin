@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:mem"
@@ -21,7 +22,7 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 	state := State {
-		player = {dir = {1, 0, 0}, norm = {0, 0, 1}},
+		player = {dir = {1, 0, 0}, norm = {0, 0, 1}, steer_rate = 1, mass = 1},
 	}
 
 	for !rl.WindowShouldClose() {
@@ -33,9 +34,25 @@ main :: proc() {
 		num_cols := math.floor(screen.x / state.cell_size)
 		num_rows := math.floor(screen.y / state.cell_size)
 
-		steer: rl.Vector3
-		if rl.IsKeyDown(.R) do steer = +rl.Vector3CrossProduct(state.player.dir, state.player.norm)
-		if rl.IsKeyDown(.T) do steer = -rl.Vector3CrossProduct(state.player.dir, state.player.norm)
+		dt := rl.GetFrameTime()
+
+		steer_dir: f32 = 0
+		if rl.IsKeyDown(.R) do steer_dir = -1
+		if rl.IsKeyDown(.T) do steer_dir = +1
+		if steer_dir != 0 {
+			state.player.angle = state.player.angle + state.player.steer_rate * steer_dir * dt
+			state.player.dir = rl.Vector3RotateByAxisAngle(
+				rl.Vector3{1, 0, 0},
+				rl.Vector3{0, 0, 1},
+				state.player.angle,
+			)
+			state.player.dir = rl.Vector3Normalize(state.player.dir)
+			state.player.vel = rl.Vector3RotateByAxisAngle(
+				state.player.vel,
+				rl.Vector3{0, 0, 1},
+				state.player.angle,
+			)
+		}
 
 		if rl.IsKeyPressed(.D) {
 			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
@@ -76,6 +93,13 @@ main :: proc() {
 			faces    = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 5, 6, 2}},
 		}
 
+		angle := state.player.angle
+		rot_matrix := matrix[3, 3]f32{
+			math.cos(angle), -math.sin(angle), 0,
+			math.sin(angle), math.cos(angle), 0,
+			0, 0, 1,
+		}
+
 		for face, face_idx in cube.faces {
 			for i := 0; i < len(face); i += 1 {
 				start_idx := face[i]
@@ -83,15 +107,20 @@ main :: proc() {
 				color := rl.ORANGE
 
 				rl.DrawLineEx(
-					project(cube.vertices[start_idx], &state),
-					project(cube.vertices[end_idx], &state),
+					project(rot_matrix * cube.vertices[start_idx], &state),
+					project(rot_matrix * cube.vertices[end_idx], &state),
 					2,
 					color,
 				)
 			}
 		}
 
-		rl.DrawLineEx(project(rl.Vector3(0), &state), project(steer, &state), 4, rl.PINK)
+		rl.DrawLineEx(
+			project(rl.Vector3(0), &state),
+			project(state.player.vel, &state),
+			4,
+			rl.PINK,
+		)
 		rl.DrawLineEx(
 			project(rl.Vector3(0), &state),
 			project(state.player.norm, &state),
@@ -104,6 +133,8 @@ main :: proc() {
 			4,
 			rl.BLUE,
 		)
+
+		rl.DrawFPS(0, 0)
 
 		rl.EndDrawing()
 	}
