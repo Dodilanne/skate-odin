@@ -22,7 +22,7 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 	state := State {
-		player = {dir = {1, 0, 0}, norm = {0, 0, 1}, steer_rate = 1, mass = 1},
+		player = {pos = {10, 10, 0}, dir = {1, 0, 0}, norm = {0, 0, 1}, steer_rate = 1, mass = 1},
 	}
 
 	for !rl.WindowShouldClose() {
@@ -34,13 +34,18 @@ main :: proc() {
 		num_cols := math.floor(screen.x / state.cell_size)
 		num_rows := math.floor(screen.y / state.cell_size)
 
+		if rl.IsKeyPressed(.D) {
+			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
+		}
+
 		dt := rl.GetFrameTime()
 
 		steer_dir: f32 = 0
 		if rl.IsKeyDown(.R) do steer_dir = -1
 		if rl.IsKeyDown(.T) do steer_dir = +1
 		if steer_dir != 0 {
-			state.player.angle = state.player.angle + state.player.steer_rate * steer_dir * dt
+			angle_change := state.player.steer_rate * steer_dir * dt
+			state.player.angle = state.player.angle + angle_change
 			state.player.dir = rl.Vector3RotateByAxisAngle(
 				rl.Vector3{1, 0, 0},
 				rl.Vector3{0, 0, 1},
@@ -50,13 +55,15 @@ main :: proc() {
 			state.player.vel = rl.Vector3RotateByAxisAngle(
 				state.player.vel,
 				rl.Vector3{0, 0, 1},
-				state.player.angle,
+				angle_change,
 			)
 		}
 
-		if rl.IsKeyPressed(.D) {
-			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
+		if rl.IsKeyPressed(.SPACE) {
+			state.player.vel += state.player.dir
 		}
+
+		state.player.pos += state.player.vel * dt
 
 		rl.BeginDrawing()
 
@@ -120,18 +127,6 @@ main :: proc() {
 			project(state.player.vel, &state),
 			4,
 			rl.PINK,
-		)
-		rl.DrawLineEx(
-			project(rl.Vector3(0), &state),
-			project(state.player.norm, &state),
-			4,
-			rl.GREEN,
-		)
-		rl.DrawLineEx(
-			project(rl.Vector3(0), &state),
-			project(state.player.dir, &state),
-			4,
-			rl.BLUE,
 		)
 
 		rl.DrawFPS(0, 0)
