@@ -21,7 +21,7 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 	state := State {
-		player = {dir = rl.Vector3{1, 0, 0}},
+		player = {dir = {1, 0, 0}, norm = {0, 0, 1}},
 	}
 
 	full_rot: f32 = 0
@@ -46,11 +46,9 @@ main :: proc() {
 		state.player.dir = rot_matrix * state.player.dir
 		state.player.dir = rl.Vector3Normalize(state.player.dir)
 
-		norm := rl.Vector3{0, 0, 1}
-
 		steer: rl.Vector3
-		if rl.IsKeyDown(.R) do steer = +rl.Vector3CrossProduct(state.player.dir, norm)
-		if rl.IsKeyDown(.T) do steer = -rl.Vector3CrossProduct(state.player.dir, norm)
+		if rl.IsKeyDown(.R) do steer = +rl.Vector3CrossProduct(state.player.dir, state.player.norm)
+		if rl.IsKeyDown(.T) do steer = -rl.Vector3CrossProduct(state.player.dir, state.player.norm)
 
 		if rl.IsKeyPressed(.D) {
 			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
@@ -113,7 +111,12 @@ main :: proc() {
 		}
 
 		rl.DrawLineEx(project(rl.Vector3(0), &state), project(steer, &state), 4, rl.PINK)
-		rl.DrawLineEx(project(rl.Vector3(0), &state), project(norm, &state), 4, rl.GREEN)
+		rl.DrawLineEx(
+			project(rl.Vector3(0), &state),
+			project(state.player.norm, &state),
+			4,
+			rl.GREEN,
+		)
 		rl.DrawLineEx(
 			project(rl.Vector3(0), &state),
 			project(state.player.dir, &state),
@@ -153,9 +156,10 @@ Drawing_Mode :: enum {
 
 
 Player :: struct {
-	pos: rl.Vector3,
-	dir: rl.Vector3,
-	vel: rl.Vector3,
+	pos:  rl.Vector3,
+	dir:  rl.Vector3,
+	vel:  rl.Vector3,
+	norm: rl.Vector3,
 }
 
 State :: struct {
