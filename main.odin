@@ -21,8 +21,7 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 	state := State {
-		dir  = rl.Vector3{1, 0, 0},
-		norm = rl.Vector3{0, 0, 1},
+		player = {dir = rl.Vector3{1, 0, 0}},
 	}
 
 	full_rot: f32 = 0
@@ -44,12 +43,14 @@ main :: proc() {
 			0, 0, 1,
 		}
 
-		state.dir = rot_matrix * state.dir
-		state.dir = rl.Vector3Normalize(state.dir)
+		state.player.dir = rot_matrix * state.player.dir
+		state.player.dir = rl.Vector3Normalize(state.player.dir)
+
+		norm := rl.Vector3{0, 0, 1}
 
 		steer: rl.Vector3
-		if rl.IsKeyDown(.R) do steer = +rl.Vector3CrossProduct(state.dir, state.norm)
-		if rl.IsKeyDown(.T) do steer = -rl.Vector3CrossProduct(state.dir, state.norm)
+		if rl.IsKeyDown(.R) do steer = +rl.Vector3CrossProduct(state.player.dir, norm)
+		if rl.IsKeyDown(.T) do steer = -rl.Vector3CrossProduct(state.player.dir, norm)
 
 		if rl.IsKeyPressed(.D) {
 			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
@@ -61,16 +62,16 @@ main :: proc() {
 
 		for i: f32 = 0; i <= num_cols; i += 1 {
 			rl.DrawLineEx(
-				project(rl.Vector3{i, 0, 0} - state.pos - rl.Vector3(0.5), &state),
-				project(rl.Vector3{i, num_rows, 0} - state.pos - rl.Vector3(0.5), &state),
+				project(rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5), &state),
+				project(rl.Vector3{i, num_rows, 0} - state.player.pos - rl.Vector3(0.5), &state),
 				1.1,
 				rl.Fade(rl.DARKGRAY, 0.5),
 			)
 		}
 		for i: f32 = 0; i <= num_rows; i += 1 {
 			rl.DrawLineEx(
-				project(rl.Vector3{0, i, 0} - state.pos - rl.Vector3(0.5), &state),
-				project(rl.Vector3{num_cols, i, 0} - state.pos - rl.Vector3(0.5), &state),
+				project(rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5), &state),
+				project(rl.Vector3{num_cols, i, 0} - state.player.pos - rl.Vector3(0.5), &state),
 				1.1,
 				rl.Fade(rl.DARKGRAY, 0.5),
 			)
@@ -112,8 +113,13 @@ main :: proc() {
 		}
 
 		rl.DrawLineEx(project(rl.Vector3(0), &state), project(steer, &state), 4, rl.PINK)
-		rl.DrawLineEx(project(rl.Vector3(0), &state), project(state.norm, &state), 4, rl.GREEN)
-		rl.DrawLineEx(project(rl.Vector3(0), &state), project(state.dir, &state), 4, rl.BLUE)
+		rl.DrawLineEx(project(rl.Vector3(0), &state), project(norm, &state), 4, rl.GREEN)
+		rl.DrawLineEx(
+			project(rl.Vector3(0), &state),
+			project(state.player.dir, &state),
+			4,
+			rl.BLUE,
+		)
 
 		rl.EndDrawing()
 	}
@@ -145,11 +151,15 @@ Drawing_Mode :: enum {
 	side,
 }
 
+
+Player :: struct {
+	pos: rl.Vector3,
+	dir: rl.Vector3,
+	vel: rl.Vector3,
+}
+
 State :: struct {
-	pos:          rl.Vector3,
-	dir:          rl.Vector3,
-	vel:          rl.Vector3,
-	norm:         rl.Vector3,
+	player:       Player,
 	drawing_mode: Drawing_Mode,
 	cell_size:    f32,
 	offset:       rl.Vector2,
