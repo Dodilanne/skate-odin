@@ -63,7 +63,18 @@ main :: proc() {
 			state.player.vel += state.player.dir
 		}
 
+
+		if rl.Vector2Length(state.player.vel.xy) != 0 {
+			new_vel := state.player.vel - state.player.dir * 0.5 * dt
+			if rl.Vector2Length(new_vel.xy) > 0.01 {
+				state.player.vel = new_vel
+			} else {
+				state.player.vel = rl.Vector3(0)
+			}
+		}
+
 		state.player.pos += state.player.vel * dt
+
 
 		rl.BeginDrawing()
 
