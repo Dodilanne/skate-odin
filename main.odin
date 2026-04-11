@@ -24,8 +24,6 @@ main :: proc() {
 		player = {dir = {1, 0, 0}, norm = {0, 0, 1}},
 	}
 
-	full_rot: f32 = 0
-
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
@@ -34,17 +32,6 @@ main :: proc() {
 
 		num_cols := math.floor(screen.x / state.cell_size)
 		num_rows := math.floor(screen.y / state.cell_size)
-
-		theta := rl.GetFrameTime()
-		full_rot += theta
-		rot_matrix := matrix[3, 3]f32{
-			math.cos_f32(theta), -math.sin_f32(theta), 0,
-			math.sin_f32(theta), math.cos_f32(theta), 0,
-			0, 0, 1,
-		}
-
-		state.player.dir = rot_matrix * state.player.dir
-		state.player.dir = rl.Vector3Normalize(state.player.dir)
 
 		steer: rl.Vector3
 		if rl.IsKeyDown(.R) do steer = +rl.Vector3CrossProduct(state.player.dir, state.player.norm)
@@ -89,12 +76,6 @@ main :: proc() {
 			faces    = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 5, 6, 2}},
 		}
 
-		full_rot_matrix := matrix[3, 3]f32{
-			math.cos_f32(full_rot), -math.sin_f32(full_rot), 0,
-			math.sin_f32(full_rot), math.cos_f32(full_rot), 0,
-			0, 0, 1,
-		}
-
 		for face, face_idx in cube.faces {
 			for i := 0; i < len(face); i += 1 {
 				start_idx := face[i]
@@ -102,8 +83,8 @@ main :: proc() {
 				color := rl.ORANGE
 
 				rl.DrawLineEx(
-					project(full_rot_matrix * cube.vertices[start_idx], &state),
-					project(full_rot_matrix * cube.vertices[end_idx], &state),
+					project(cube.vertices[start_idx], &state),
+					project(cube.vertices[end_idx], &state),
 					2,
 					color,
 				)
@@ -156,10 +137,14 @@ Drawing_Mode :: enum {
 
 
 Player :: struct {
-	pos:  rl.Vector3,
-	dir:  rl.Vector3,
-	vel:  rl.Vector3,
-	norm: rl.Vector3,
+	angle:      f32,
+	dir:        rl.Vector3,
+	norm:       rl.Vector3,
+	pos:        rl.Vector3,
+	vel:        rl.Vector3,
+	forces:     rl.Vector3,
+	mass:       f32,
+	steer_rate: f32,
 }
 
 State :: struct {
