@@ -80,7 +80,6 @@ main :: proc() {
 
 		state.player.pos += state.player.vel * dt
 
-
 		rl.BeginDrawing()
 
 		rl.ClearBackground(rl.WHITE)
