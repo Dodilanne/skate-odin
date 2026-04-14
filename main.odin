@@ -21,7 +21,9 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 	state := State {
-		player = {pos = {10, 10, 0}, dir = {1, 0, 0}, norm = {0, 0, 1}, steer_rate = 1, mass = 1},
+		drawing_mode = .side,
+		player = {pos = {18, 0, 0}, dir = {1, 0, 0}, norm = {0, 0, 1}, steer_rate = 1, mass = 1},
+		floors = {{origin = {0, 0, 0}, size = {20, 20}}, {origin = {20, 0, -5}, size = {20, 20}}},
 	}
 
 	for !rl.WindowShouldClose() {
@@ -29,9 +31,6 @@ main :: proc() {
 
 		state.cell_size = f32(32)
 		state.offset = screen / 2
-
-		num_cols := math.floor(screen.x / state.cell_size)
-		num_rows := math.floor(screen.y / state.cell_size)
 
 		if rl.IsKeyPressed(.D) {
 			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
@@ -84,21 +83,42 @@ main :: proc() {
 
 		rl.ClearBackground(rl.DARKGRAY)
 
-		for i: f32 = 0; i <= num_cols; i += 1 {
-			rl.DrawLineEx(
-				project(rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5), &state),
-				project(rl.Vector3{i, num_rows, 0} - state.player.pos - rl.Vector3(0.5), &state),
-				1.1,
-				rl.Fade(rl.LIGHTGRAY, 0.5),
-			)
-		}
-		for i: f32 = 0; i <= num_rows; i += 1 {
-			rl.DrawLineEx(
-				project(rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5), &state),
-				project(rl.Vector3{num_cols, i, 0} - state.player.pos - rl.Vector3(0.5), &state),
-				1.1,
-				rl.Fade(rl.LIGHTGRAY, 0.5),
-			)
+		for floor in state.floors {
+			for i: f32 = 0; i <= floor.size.x; i += 1 {
+				rl.DrawLineEx(
+					project(
+						floor.origin + rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5),
+						&state,
+					),
+					project(
+						floor.origin +
+						rl.Vector3{i, floor.size.y, 0} -
+						state.player.pos -
+						rl.Vector3(0.5),
+						&state,
+					),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
+			for i: f32 = 0; i <= floor.size.y; i += 1 {
+				rl.DrawLineEx(
+					project(
+						floor.origin + rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5),
+						&state,
+					),
+					project(
+						floor.origin +
+						rl.Vector3{floor.size.x, i, 0} -
+						state.player.pos -
+						rl.Vector3(0.5),
+						&state,
+					),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
+
 		}
 
 		cube := Shape {
@@ -188,8 +208,14 @@ Player :: struct {
 	steer_rate: f32,
 }
 
+Floor :: struct {
+	origin: rl.Vector3,
+	size:   rl.Vector2,
+}
+
 State :: struct {
 	player:       Player,
+	floors:       [dynamic; 10]Floor,
 	drawing_mode: Drawing_Mode,
 	cell_size:    f32,
 	offset:       rl.Vector2,
