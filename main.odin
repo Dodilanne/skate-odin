@@ -82,14 +82,14 @@ main :: proc() {
 
 		rl.BeginDrawing()
 
-		rl.ClearBackground(rl.WHITE)
+		rl.ClearBackground(rl.DARKGRAY)
 
 		for i: f32 = 0; i <= num_cols; i += 1 {
 			rl.DrawLineEx(
 				project(rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5), &state),
 				project(rl.Vector3{i, num_rows, 0} - state.player.pos - rl.Vector3(0.5), &state),
 				1.1,
-				rl.Fade(rl.DARKGRAY, 0.5),
+				rl.Fade(rl.LIGHTGRAY, 0.5),
 			)
 		}
 		for i: f32 = 0; i <= num_rows; i += 1 {
@@ -97,7 +97,7 @@ main :: proc() {
 				project(rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5), &state),
 				project(rl.Vector3{num_cols, i, 0} - state.player.pos - rl.Vector3(0.5), &state),
 				1.1,
-				rl.Fade(rl.DARKGRAY, 0.5),
+				rl.Fade(rl.LIGHTGRAY, 0.5),
 			)
 		}
 
