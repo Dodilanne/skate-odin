@@ -28,6 +28,7 @@ main :: proc() {
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
+		max_speed  = 8,
 	}
 
 
@@ -97,6 +98,11 @@ main :: proc() {
 			)
 			if diff < 0.1 {
 				state.player.vel = new_vel
+				state.player.vel.xy = rl.Vector2ClampValue(
+					state.player.vel.xy,
+					0,
+					state.player.max_speed,
+				)
 			} else {
 				state.player.vel = rl.Vector3(0)
 			}
@@ -255,6 +261,7 @@ Player :: struct {
 	mass:       f32,
 	steer_rate: f32,
 	grounded:   bool,
+	max_speed:  f32,
 }
 
 Floor :: struct {
