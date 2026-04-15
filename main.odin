@@ -24,10 +24,10 @@ main :: proc() {
 
 	initial_player := Player {
 		grounded   = false,
-		pos        = {18, 0, 2},
+		pos        = {9, 9, 0},
 		dir        = {1, 0, 0},
 		norm       = {0, 0, 1},
-		steer_rate = 1,
+		steer_rate = 0.2,
 		mass       = 1,
 	}
 
@@ -60,7 +60,9 @@ main :: proc() {
 			if rl.IsKeyDown(.R) do steer_dir = -1
 			if rl.IsKeyDown(.T) do steer_dir = +1
 			if steer_dir != 0 {
-				angle_change := state.player.steer_rate * steer_dir * dt
+				angle_change :=
+					steer_dir * dt * rl.Vector3Length(state.player.vel) * state.player.steer_rate
+				fmt.println(state.player.steer_rate)
 				state.player.angle = state.player.angle + angle_change
 				state.player.dir = rl.Vector3RotateByAxisAngle(
 					rl.Vector3{1, 0, 0},
