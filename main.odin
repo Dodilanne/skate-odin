@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:mem"
@@ -62,7 +61,6 @@ main :: proc() {
 			if steer_dir != 0 {
 				angle_change :=
 					steer_dir * dt * rl.Vector3Length(state.player.vel) * state.player.steer_rate
-				fmt.println(state.player.steer_rate)
 				state.player.angle = state.player.angle + angle_change
 				state.player.dir = rl.Vector3RotateByAxisAngle(
 					rl.Vector3{1, 0, 0},
