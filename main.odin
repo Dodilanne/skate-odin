@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:mem"
@@ -20,10 +21,24 @@ main :: proc() {
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
+
+	initial_player := Player {
+		grounded   = false,
+		pos        = {18, 0, 2},
+		dir        = {1, 0, 0},
+		norm       = {0, 0, 1},
+		steer_rate = 1,
+		mass       = 1,
+	}
+
+
 	state := State {
-		drawing_mode = .side,
-		player = {pos = {18, 0, 0}, dir = {1, 0, 0}, norm = {0, 0, 1}, steer_rate = 1, mass = 1},
-		floors = {{origin = {0, 0, 0}, size = {20, 20}}, {origin = {20, 0, -5}, size = {20, 20}}},
+		drawing_mode = .dimetric,
+		player       = initial_player,
+		floors       = {
+			{origin = {0, 0, 0}, size = {20, 20}},
+			{origin = {20, 0, -5}, size = {20, 20}},
+		},
 	}
 
 	for !rl.WindowShouldClose() {
@@ -38,32 +53,42 @@ main :: proc() {
 
 		dt := rl.GetFrameTime()
 
-		steer_dir: f32 = 0
-		if rl.IsKeyDown(.R) do steer_dir = -1
-		if rl.IsKeyDown(.T) do steer_dir = +1
-		if steer_dir != 0 {
-			angle_change := state.player.steer_rate * steer_dir * dt
-			state.player.angle = state.player.angle + angle_change
-			state.player.dir = rl.Vector3RotateByAxisAngle(
-				rl.Vector3{1, 0, 0},
-				rl.Vector3{0, 0, 1},
-				state.player.angle,
-			)
-			state.player.dir = rl.Vector3Normalize(state.player.dir)
-			state.player.vel = rl.Vector3RotateByAxisAngle(
-				state.player.vel,
-				rl.Vector3{0, 0, 1},
-				angle_change,
-			)
-		}
+		friction_coeff: f32 = 0.5
 
-		if rl.IsKeyPressed(.SPACE) {
-			state.player.vel += state.player.dir
+		if state.player.grounded {
+			steer_dir: f32 = 0
+			if rl.IsKeyDown(.R) do steer_dir = -1
+			if rl.IsKeyDown(.T) do steer_dir = +1
+			if steer_dir != 0 {
+				angle_change := state.player.steer_rate * steer_dir * dt
+				state.player.angle = state.player.angle + angle_change
+				state.player.dir = rl.Vector3RotateByAxisAngle(
+					rl.Vector3{1, 0, 0},
+					rl.Vector3{0, 0, 1},
+					state.player.angle,
+				)
+				state.player.dir = rl.Vector3Normalize(state.player.dir)
+				state.player.vel = rl.Vector3RotateByAxisAngle(
+					state.player.vel,
+					rl.Vector3{0, 0, 1},
+					angle_change,
+				)
+			}
+
+			if rl.IsKeyPressed(.SPACE) {
+				state.player.vel += state.player.dir
+			}
+
+			if rl.IsKeyDown(.ENTER) {
+				friction_coeff *= 10
+			}
+
+			state.player.vel.z = 0
+		} else {
+			state.player.vel -= rl.Vector3{0, 0, state.player.mass * 10 * dt}
 		}
 
 		if rl.Vector2Length(state.player.vel.xy) != 0 {
-			friction_coeff: f32 = 0.5
-			if rl.IsKeyDown(.ENTER) do friction_coeff *= 10
 			new_vel := state.player.vel - state.player.dir * friction_coeff * dt
 			diff := math.abs(
 				rl.Vector3Length(
@@ -78,6 +103,29 @@ main :: proc() {
 		}
 
 		state.player.pos += state.player.vel * dt
+
+		if state.player.pos.z < -10 {
+			state.player = initial_player
+		}
+
+		state.player.grounded = false
+		for floor, i in state.floors {
+			diff := state.player.pos - floor.origin
+			if diff.z < -0.5 || diff.z > 0 {
+				continue
+			}
+			if state.player.pos.x < floor.origin.x - 1 ||
+			   state.player.pos.x > floor.origin.x + floor.size.x {
+				continue
+			}
+			if state.player.pos.y < floor.origin.y - 1 ||
+			   state.player.pos.y > floor.origin.y + floor.size.y {
+				continue
+			}
+			state.player.grounded = true
+			state.player.pos.z = floor.origin.z
+			break
+		}
 
 		rl.BeginDrawing()
 
@@ -206,6 +254,7 @@ Player :: struct {
 	forces:     rl.Vector3,
 	mass:       f32,
 	steer_rate: f32,
+	grounded:   bool,
 }
 
 Floor :: struct {
