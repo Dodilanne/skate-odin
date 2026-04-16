@@ -23,7 +23,7 @@ main :: proc() {
 
 	initial_player := Player {
 		grounded   = false,
-		pos        = {9, 9, 0},
+		pos        = {21, 9, -5},
 		dir        = {1, 0, 0},
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
@@ -38,6 +38,17 @@ main :: proc() {
 		floors       = {
 			{origin = {0, 0, 0}, size = {20, 20}},
 			{origin = {20, 0, -5}, size = {20, 20}},
+		},
+		walls        = {
+			{origin = {20, 0, -5}, size = {0, 20, 5}},
+			{origin = {0, 0, 0}, size = {20, 0, 1}},
+			{origin = {0, 0, 0}, size = {0, 20, 1}},
+			{origin = {0, 20, 0}, size = {20, 0, 1}},
+			{origin = {40, 0, -5}, size = {0, 20, 1}},
+			{origin = {20, 0, -5}, size = {20, 0, 1}},
+			{origin = {20, 20, -5}, size = {20, 0, 1}},
+			{origin = {20, 0, -5}, size = {1, 0, 6}},
+			{origin = {20, 20, -5}, size = {1, 0, 6}},
 		},
 	}
 
@@ -172,7 +183,61 @@ main :: proc() {
 					rl.Fade(rl.LIGHTGRAY, 0.5),
 				)
 			}
+		}
 
+		for wall in state.walls {
+			assert(wall.size.z > 0, "walls should have a non zero height")
+			for i: f32 = 0; i <= wall.size.x; i += 1 {
+				rl.DrawLineEx(
+					project(
+						wall.origin + rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5),
+						&state,
+					),
+					project(
+						wall.origin +
+						rl.Vector3{i, 0, wall.size.z} -
+						state.player.pos -
+						rl.Vector3(0.5),
+						&state,
+					),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
+			for i: f32 = 0; i <= wall.size.y; i += 1 {
+				rl.DrawLineEx(
+					project(
+						wall.origin + rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5),
+						&state,
+					),
+					project(
+						wall.origin +
+						rl.Vector3{0, i, wall.size.z} -
+						state.player.pos -
+						rl.Vector3(0.5),
+						&state,
+					),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
+			for i: f32 = 0; i <= wall.size.z; i += 1 {
+				rl.DrawLineEx(
+					project(
+						wall.origin + rl.Vector3{0, 0, i} - state.player.pos - rl.Vector3(0.5),
+						&state,
+					),
+					project(
+						wall.origin +
+						rl.Vector3{wall.size.x, wall.size.y, i} -
+						state.player.pos -
+						rl.Vector3(0.5),
+						&state,
+					),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
 		}
 
 		cube := Shape {
@@ -278,9 +343,15 @@ Floor :: struct {
 	size:   rl.Vector2,
 }
 
+Wall :: struct {
+	origin: rl.Vector3,
+	size:   rl.Vector3,
+}
+
 State :: struct {
 	player:       Player,
 	floors:       [dynamic; 10]Floor,
+	walls:        [dynamic; 10]Wall,
 	drawing_mode: Drawing_Mode,
 	cell_size:    f32,
 	offset:       rl.Vector2,
