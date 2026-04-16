@@ -211,12 +211,21 @@ main :: proc() {
 			}
 		}
 
-		rl.DrawLineEx(
-			project(rl.Vector3(0), &state),
-			project(state.player.vel, &state),
-			4,
-			rl.PINK,
-		)
+		if rl.Vector3Length(state.player.vel) > 0 {
+			rl.DrawLineEx(
+				project(rl.Vector3(0), &state),
+				project(state.player.vel, &state),
+				4,
+				rl.PINK,
+			)
+		} else {
+			rl.DrawLineEx(
+				project(rl.Vector3(0), &state),
+				project(state.player.dir, &state),
+				4,
+				rl.BLUE,
+			)
+		}
 
 		rl.DrawFPS(0, 0)
 
