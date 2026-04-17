@@ -118,25 +118,6 @@ main :: proc() {
 			state.player = initial_player
 		}
 
-		// state.player.grounded = false
-		// for surface, i in state.surfaces {
-		// 	diff := state.player.pos - surface.origin
-		// 	if diff.z < -0.5 || diff.z > 0 {
-		// 		continue
-		// 	}
-		// 	if state.player.pos.x < surface.origin.x - 1 ||
-		// 	   state.player.pos.x > surface.origin.x + surface.size.x {
-		// 		continue
-		// 	}
-		// 	if state.player.pos.y < surface.origin.y - 1 ||
-		// 	   state.player.pos.y > surface.origin.y + surface.size.y {
-		// 		continue
-		// 	}
-		// 	state.player.grounded = true
-		// 	state.player.pos.z = surface.origin.z
-		// 	break
-		// }
-
 		rl.BeginDrawing()
 
 		rl.ClearBackground(rl.DARKGRAY)
@@ -176,43 +157,6 @@ main :: proc() {
 				)
 			}
 		}
-
-		// for surface in state.surfaces {
-		// 	for i: f32 = 0; i <= surface.size.x; i += 1 {
-		// 		rl.DrawLineEx(
-		// 			project(
-		// 				surface.origin + rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5),
-		// 				&state,
-		// 			),
-		// 			project(
-		// 				surface.origin +
-		// 				rl.Vector3{i, surface.size.y, 0} -
-		// 				state.player.pos -
-		// 				rl.Vector3(0.5),
-		// 				&state,
-		// 			),
-		// 			1.1,
-		// 			rl.Fade(rl.LIGHTGRAY, 0.5),
-		// 		)
-		// 	}
-		// 	for i: f32 = 0; i <= surface.size.y; i += 1 {
-		// 		rl.DrawLineEx(
-		// 			project(
-		// 				surface.origin + rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5),
-		// 				&state,
-		// 			),
-		// 			project(
-		// 				surface.origin +
-		// 				rl.Vector3{surface.size.x, i, 0} -
-		// 				state.player.pos -
-		// 				rl.Vector3(0.5),
-		// 				&state,
-		// 			),
-		// 			1.1,
-		// 			rl.Fade(rl.LIGHTGRAY, 0.5),
-		// 		)
-		// 	}
-		// }
 
 		cube := Shape {
 			vertices = {
