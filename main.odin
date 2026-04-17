@@ -114,7 +114,7 @@ main :: proc() {
 
 		state.player.pos += state.player.vel * dt
 
-		if state.player.pos.z < -10 {
+		if state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
 			state.player = initial_player
 		}
 
