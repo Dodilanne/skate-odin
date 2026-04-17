@@ -2,6 +2,7 @@ package main
 
 import "core:log"
 import "core:math"
+import "core:math/linalg"
 import "core:mem"
 import rl "vendor:raylib"
 
@@ -22,8 +23,8 @@ main :: proc() {
 
 
 	initial_player := Player {
-		grounded   = false,
-		pos        = {9, 9, 0},
+		grounded   = true,
+		pos        = {0, 0, 0},
 		dir        = {1, 0, 0},
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
@@ -35,12 +36,12 @@ main :: proc() {
 	state := State {
 		drawing_mode = .dimetric,
 		player       = initial_player,
-		floors       = {
-			{origin = {0, 0, 0}, size = {20, 20}},
-			{origin = {20, 0, -5}, size = {20, 20}},
+		surfaces     = {
+			{origin = {0, 0, 0}, width = 20, height = 20, norm = {0, 0, 1}},
+			{origin = {0, 0, 0}, width = 20, height = 10, norm = {1, 0, 0}},
+			{origin = {20, 0, 0}, width = 20, height = 5, norm = {-0.2, 0, 0.8}},
 		},
 	}
-
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
@@ -114,66 +115,101 @@ main :: proc() {
 			state.player = initial_player
 		}
 
-		state.player.grounded = false
-		for floor, i in state.floors {
-			diff := state.player.pos - floor.origin
-			if diff.z < -0.5 || diff.z > 0 {
-				continue
-			}
-			if state.player.pos.x < floor.origin.x - 1 ||
-			   state.player.pos.x > floor.origin.x + floor.size.x {
-				continue
-			}
-			if state.player.pos.y < floor.origin.y - 1 ||
-			   state.player.pos.y > floor.origin.y + floor.size.y {
-				continue
-			}
-			state.player.grounded = true
-			state.player.pos.z = floor.origin.z
-			break
-		}
+		// state.player.grounded = false
+		// for surface, i in state.surfaces {
+		// 	diff := state.player.pos - surface.origin
+		// 	if diff.z < -0.5 || diff.z > 0 {
+		// 		continue
+		// 	}
+		// 	if state.player.pos.x < surface.origin.x - 1 ||
+		// 	   state.player.pos.x > surface.origin.x + surface.size.x {
+		// 		continue
+		// 	}
+		// 	if state.player.pos.y < surface.origin.y - 1 ||
+		// 	   state.player.pos.y > surface.origin.y + surface.size.y {
+		// 		continue
+		// 	}
+		// 	state.player.grounded = true
+		// 	state.player.pos.z = surface.origin.z
+		// 	break
+		// }
 
 		rl.BeginDrawing()
 
 		rl.ClearBackground(rl.DARKGRAY)
 
-		for floor in state.floors {
-			for i: f32 = 0; i <= floor.size.x; i += 1 {
-				rl.DrawLineEx(
-					project(
-						floor.origin + rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5),
-						&state,
-					),
-					project(
-						floor.origin +
-						rl.Vector3{i, floor.size.y, 0} -
-						state.player.pos -
-						rl.Vector3(0.5),
-						&state,
-					),
-					1.1,
-					rl.Fade(rl.LIGHTGRAY, 0.5),
-				)
-			}
-			for i: f32 = 0; i <= floor.size.y; i += 1 {
-				rl.DrawLineEx(
-					project(
-						floor.origin + rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5),
-						&state,
-					),
-					project(
-						floor.origin +
-						rl.Vector3{floor.size.x, i, 0} -
-						state.player.pos -
-						rl.Vector3(0.5),
-						&state,
-					),
-					1.1,
-					rl.Fade(rl.LIGHTGRAY, 0.5),
-				)
+		for &surface in state.surfaces {
+			surface.norm = linalg.normalize(surface.norm)
+
+			ref := rl.Vector3{0, 0, 1} // arbitrary
+			if surface.norm == ref { 	// cross product will give 0, need to use another ref vector
+				ref = rl.Vector3{0, 1, 0}
 			}
 
+			right := linalg.normalize(linalg.cross(surface.norm, ref))
+			up := linalg.normalize(linalg.cross(surface.norm, right))
+
+			if linalg.dot(right, largest_abs_component(right)) < 0 do right *= -1
+			if linalg.dot(up, largest_abs_component(up)) < 0 do up *= -1
+
+			for col in 0 ..= surface.width {
+				start := surface.origin + right * col - state.player.pos
+				end := start + up * surface.height
+				rl.DrawLineEx(
+					project(start, &state),
+					project(end, &state),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
+			for row in 0 ..= surface.height {
+				start := surface.origin + up * row - state.player.pos
+				end := start + right * surface.width
+				rl.DrawLineEx(
+					project(start, &state),
+					project(end, &state),
+					1.1,
+					rl.Fade(rl.LIGHTGRAY, 0.5),
+				)
+			}
 		}
+
+		// for surface in state.surfaces {
+		// 	for i: f32 = 0; i <= surface.size.x; i += 1 {
+		// 		rl.DrawLineEx(
+		// 			project(
+		// 				surface.origin + rl.Vector3{i, 0, 0} - state.player.pos - rl.Vector3(0.5),
+		// 				&state,
+		// 			),
+		// 			project(
+		// 				surface.origin +
+		// 				rl.Vector3{i, surface.size.y, 0} -
+		// 				state.player.pos -
+		// 				rl.Vector3(0.5),
+		// 				&state,
+		// 			),
+		// 			1.1,
+		// 			rl.Fade(rl.LIGHTGRAY, 0.5),
+		// 		)
+		// 	}
+		// 	for i: f32 = 0; i <= surface.size.y; i += 1 {
+		// 		rl.DrawLineEx(
+		// 			project(
+		// 				surface.origin + rl.Vector3{0, i, 0} - state.player.pos - rl.Vector3(0.5),
+		// 				&state,
+		// 			),
+		// 			project(
+		// 				surface.origin +
+		// 				rl.Vector3{surface.size.x, i, 0} -
+		// 				state.player.pos -
+		// 				rl.Vector3(0.5),
+		// 				&state,
+		// 			),
+		// 			1.1,
+		// 			rl.Fade(rl.LIGHTGRAY, 0.5),
+		// 		)
+		// 	}
+		// }
 
 		cube := Shape {
 			vertices = {
@@ -273,15 +309,24 @@ Player :: struct {
 	max_speed:  f32,
 }
 
-Floor :: struct {
+Surface :: struct {
 	origin: rl.Vector3,
-	size:   rl.Vector2,
+	width:  f32,
+	height: f32,
+	norm:   rl.Vector3,
 }
 
 State :: struct {
 	player:       Player,
-	floors:       [dynamic; 10]Floor,
+	surfaces:     [dynamic; 10]Surface,
 	drawing_mode: Drawing_Mode,
 	cell_size:    f32,
 	offset:       rl.Vector2,
+}
+
+largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
+	abs := linalg.abs(v)
+	if abs.x >= abs.y && abs.x >= abs.z do return {1, 0, 0}
+	if abs.y >= abs.z do return {0, 1, 0}
+	return {0, 0, 1}
 }
