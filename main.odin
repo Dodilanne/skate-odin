@@ -30,6 +30,7 @@ main :: proc() {
 		steer_rate = 0.2,
 		mass       = 1,
 		max_speed  = 8,
+		size       = {1, 1, 2},
 	}
 
 
@@ -64,8 +65,9 @@ main :: proc() {
 			if rl.IsKeyDown(.R) do steer_dir = -1
 			if rl.IsKeyDown(.T) do steer_dir = +1
 			if steer_dir != 0 {
-				angle_change :=
-					steer_dir * dt * rl.Vector3Length(state.player.vel) * state.player.steer_rate
+				speed := rl.Vector3Length(state.player.vel) * state.player.steer_rate
+				if speed == 0 do speed = 2
+				angle_change := steer_dir * dt * speed
 				state.player.angle = state.player.angle + angle_change
 				state.player.dir = rl.Vector3RotateByAxisAngle(
 					rl.Vector3{1, 0, 0},
@@ -179,13 +181,20 @@ main :: proc() {
 			0, 0, 1,
 		}
 
+		for &vertex in cube.vertices {
+			vertex *= state.player.size
+			vertex -= state.player.size / 2
+			vertex = rot_matrix * vertex
+			vertex += state.player.size / 2
+		}
+
 		for face, face_idx in cube.faces {
 			for i := 0; i < len(face); i += 1 {
 				start_idx := face[i]
 				end_idx := face[(i + 1) % len(face)]
 				rl.DrawLineEx(
-					project(rot_matrix * cube.vertices[start_idx], &state),
-					project(rot_matrix * cube.vertices[end_idx], &state),
+					project(cube.vertices[start_idx], &state),
+					project(cube.vertices[end_idx], &state),
 					2,
 					rl.ORANGE,
 				)
@@ -196,15 +205,15 @@ main :: proc() {
 
 		if rl.Vector3Length(state.player.vel) > 0 {
 			rl.DrawLineEx(
-				project(rl.Vector3(0), &state),
-				project(state.player.vel, &state),
+				project(state.player.size / 2, &state),
+				project(state.player.size / 2 + state.player.vel, &state),
 				4,
 				rl.PINK,
 			)
 		} else {
 			rl.DrawLineEx(
-				project(rl.Vector3(0), &state),
-				project(state.player.dir, &state),
+				project(state.player.size / 2, &state),
+				project(state.player.size / 2 + state.player.dir, &state),
 				4,
 				rl.BLUE,
 			)
