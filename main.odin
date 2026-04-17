@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:mem"
@@ -23,10 +24,10 @@ main :: proc() {
 
 	initial_player := Player {
 		grounded   = false,
-		pos        = {21, 9, -5},
+		pos        = {22, 9, -5},
 		dir        = {1, 0, 0},
 		norm       = {0, 0, 1},
-		steer_rate = 0.2,
+		steer_rate = 0.3,
 		mass       = 1,
 		max_speed  = 8,
 	}
@@ -40,15 +41,15 @@ main :: proc() {
 			{origin = {20, 0, -5}, size = {20, 20}},
 		},
 		walls        = {
-			{origin = {20, 0, -5}, size = {0, 20, 5}},
-			{origin = {0, 0, 0}, size = {20, 0, 1}},
-			{origin = {0, 0, 0}, size = {0, 20, 1}},
-			{origin = {0, 20, 0}, size = {20, 0, 1}},
-			{origin = {40, 0, -5}, size = {0, 20, 1}},
-			{origin = {20, 0, -5}, size = {20, 0, 1}},
-			{origin = {20, 20, -5}, size = {20, 0, 1}},
-			{origin = {20, 0, -5}, size = {1, 0, 6}},
-			{origin = {20, 20, -5}, size = {1, 0, 6}},
+			{origin = {20, 0, -5}, size = {0, 20, 5}, dir = {1, 0, 0}},
+			{origin = {0, 0, 0}, size = {20, 0, 1}, dir = {0, 1, 0}},
+			{origin = {0, 0, 0}, size = {0, 20, 1}, dir = {1, 0, 0}},
+			{origin = {0, 20, 0}, size = {20, 0, 1}, dir = {0, -1, 0}},
+			{origin = {40, 0, -5}, size = {0, 20, 1}, dir = {-1, 0, 0}},
+			{origin = {20, 0, -5}, size = {20, 0, 1}, dir = {0, 1, 0}},
+			{origin = {20, 20, -5}, size = {20, 0, 1}, dir = {0, -1, 0}},
+			{origin = {20, 0, -5}, size = {1, 0, 6}, dir = {0, 1, 0}},
+			{origin = {20, 20, -5}, size = {1, 0, 6}, dir = {0, -1, 0}},
 		},
 	}
 
@@ -71,8 +72,9 @@ main :: proc() {
 			if rl.IsKeyDown(.R) do steer_dir = -1
 			if rl.IsKeyDown(.T) do steer_dir = +1
 			if steer_dir != 0 {
-				angle_change :=
-					steer_dir * dt * rl.Vector3Length(state.player.vel) * state.player.steer_rate
+				rot_speed := rl.Vector3Length(state.player.vel) * state.player.steer_rate
+				if rot_speed == 0 do rot_speed = 2
+				angle_change := steer_dir * dt * rot_speed
 				state.player.angle = state.player.angle + angle_change
 				state.player.dir = rl.Vector3RotateByAxisAngle(
 					rl.Vector3{1, 0, 0},
@@ -142,6 +144,59 @@ main :: proc() {
 			state.player.grounded = true
 			state.player.pos.z = floor.origin.z
 			break
+		}
+
+		if rl.Vector3Length(state.player.vel) > 0 {
+			for wall, i in state.walls {
+				diff := state.player.pos - wall.origin
+
+				if state.player.pos.z < wall.origin.z - 1 ||
+				   state.player.pos.z > wall.origin.z + wall.size.z {
+					continue
+				}
+
+				if wall.size.x > 0 {
+					if diff.y < -0.5 || diff.y > 0 do continue
+					if state.player.pos.x < wall.origin.x - 1 ||
+					   state.player.pos.x > wall.origin.x + wall.size.x {
+						continue
+					}
+					if state.player.dir.y == 0 || state.player.vel.y == 0 do continue
+					if math.sign(state.player.vel.y) == math.sign(wall.dir.y) do continue
+					state.player.vel.y = 0
+					if wall.dir.y > 0 {
+						state.player.pos.y = wall.origin.y
+					} else {
+						state.player.pos.y = wall.origin.y - 1
+					}
+				} else {
+					if diff.x < -0.5 || diff.x > 0 do continue
+					if state.player.pos.y < wall.origin.y - 1 ||
+					   state.player.pos.y > wall.origin.y + wall.size.y {
+						continue
+					}
+					if state.player.dir.x == 0 || state.player.vel.x == 0 do continue
+					if math.sign(state.player.vel.x) == math.sign(wall.dir.x) do continue
+					state.player.vel.x = 0
+					if wall.dir.x > 0 {
+						state.player.pos.x = wall.origin.x
+					} else {
+						state.player.pos.x = wall.origin.x - 1
+					}
+				}
+
+				d := rl.Vector2Normalize(state.player.dir.xy) + wall.dir.xy
+				if (wall.dir.x != 0 && d.x < 0.3) || (wall.dir.y != 0 && d.y < 0.3) {
+					state.player.vel = rl.Vector3(0)
+					state.player.dir = -wall.dir
+				} else {
+					state.player.dir = rl.Vector3Normalize(state.player.vel)
+				}
+
+				state.player.angle = math.atan2_f32(state.player.dir.y, state.player.dir.x)
+
+				break
+			}
 		}
 
 		rl.BeginDrawing()
@@ -346,6 +401,7 @@ Floor :: struct {
 Wall :: struct {
 	origin: rl.Vector3,
 	size:   rl.Vector3,
+	dir:    rl.Vector3,
 }
 
 State :: struct {
