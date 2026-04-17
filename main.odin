@@ -22,15 +22,18 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 
+	player_radius: f32 = 0.5
+	player_height: f32 = 2
 	initial_player := Player {
 		grounded   = true,
-		pos        = {0, 0, 0},
+		pos        = {player_radius, player_radius, player_height / 2},
 		dir        = {1, 0, 0},
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
 		max_speed  = 8,
-		size       = {1, 1, 2},
+		radius     = player_radius,
+		height     = player_height,
 	}
 
 
@@ -160,60 +163,53 @@ main :: proc() {
 			}
 		}
 
-		cube := Shape {
-			vertices = {
-				{0, 0, 0},
-				{0, 1, 0},
-				{1, 1, 0},
-				{1, 0, 0},
-				{0, 0, 1},
-				{0, 1, 1},
-				{1, 1, 1},
-				{1, 0, 1},
-			},
-			faces    = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 5, 6, 2}},
+		base_points: [100]rl.Vector3
+		for i in 0 ..< len(base_points) {
+			rad := math.PI * 2 / len(base_points) * f32(i)
+			rad += state.player.angle
+			rot := matrix[3, 3]f32{
+				math.cos(rad), -math.sin(rad), 0,
+				math.sin(rad), math.cos(rad), 0,
+				0, 0, 1,
+			}
+			base_points[i] =
+				rot * rl.Vector3{1, 0, 0} * state.player.radius -
+				rl.Vector3{0, 0, state.player.height} / 2
 		}
-
-		angle := state.player.angle
-		rot_matrix := matrix[3, 3]f32{
-			math.cos(angle), -math.sin(angle), 0,
-			math.sin(angle), math.cos(angle), 0,
-			0, 0, 1,
-		}
-
-		for &vertex in cube.vertices {
-			vertex *= state.player.size
-			vertex -= state.player.size / 2
-			vertex = rot_matrix * vertex
-			vertex += state.player.size / 2
-		}
-
-		for face, face_idx in cube.faces {
-			for i := 0; i < len(face); i += 1 {
-				start_idx := face[i]
-				end_idx := face[(i + 1) % len(face)]
+		for i := 0; i < len(base_points); i += 1 {
+			start := base_points[i]
+			end := base_points[(i + 1) % len(base_points)]
+			rl.DrawLineEx(project(start, &state), project(end, &state), 2, rl.ORANGE)
+			rl.DrawLineEx(
+				project(start + rl.Vector3{0, 0, state.player.height}, &state),
+				project(end + rl.Vector3{0, 0, state.player.height}, &state),
+				2,
+				rl.ORANGE,
+			)
+			if i % (len(base_points) / 12) == 0 {
 				rl.DrawLineEx(
-					project(cube.vertices[start_idx], &state),
-					project(cube.vertices[end_idx], &state),
+					project(start, &state),
+					project(start + rl.Vector3{0, 0, state.player.height}, &state),
 					2,
 					rl.ORANGE,
 				)
 			}
 		}
 
+		rl.DrawCircleV(project(-state.player.pos, &state), 2, rl.WHITE)
 		rl.DrawCircleV(project(rl.Vector3(0), &state), 4, rl.WHITE)
 
 		if rl.Vector3Length(state.player.vel) > 0 {
 			rl.DrawLineEx(
-				project(state.player.size / 2, &state),
-				project(state.player.size / 2 + state.player.vel, &state),
+				project(rl.Vector3(0), &state),
+				project(state.player.vel, &state),
 				4,
 				rl.PINK,
 			)
 		} else {
 			rl.DrawLineEx(
-				project(state.player.size / 2, &state),
-				project(state.player.size / 2 + state.player.dir, &state),
+				project(rl.Vector3(0), &state),
+				project(state.player.dir, &state),
 				4,
 				rl.BLUE,
 			)
@@ -263,7 +259,8 @@ Player :: struct {
 	steer_rate: f32,
 	grounded:   bool,
 	max_speed:  f32,
-	size:       rl.Vector3,
+	radius:     f32,
+	height:     f32,
 }
 
 Surface :: struct {
