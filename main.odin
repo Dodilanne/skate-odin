@@ -160,14 +160,14 @@ main :: proc() {
 
 		cube := Shape {
 			vertices = {
-				{-0.5, -0.5, -0.5},
-				{-0.5, 0.5, -0.5},
-				{0.5, 0.5, -0.5},
-				{0.5, -0.5, -0.5},
-				{-0.5, -0.5, 0.5},
-				{-0.5, 0.5, 0.5},
-				{0.5, 0.5, 0.5},
-				{0.5, -0.5, 0.5},
+				{0, 0, 0},
+				{0, 1, 0},
+				{1, 1, 0},
+				{1, 0, 0},
+				{0, 0, 1},
+				{0, 1, 1},
+				{1, 1, 1},
+				{1, 0, 1},
 			},
 			faces    = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 5, 6, 2}},
 		}
@@ -183,28 +183,28 @@ main :: proc() {
 			for i := 0; i < len(face); i += 1 {
 				start_idx := face[i]
 				end_idx := face[(i + 1) % len(face)]
-				color := rl.ORANGE
-
 				rl.DrawLineEx(
-					project(rot_matrix * cube.vertices[start_idx] + 0.5, &state),
-					project(rot_matrix * cube.vertices[end_idx] + 0.5, &state),
+					project(rot_matrix * cube.vertices[start_idx], &state),
+					project(rot_matrix * cube.vertices[end_idx], &state),
 					2,
-					color,
+					rl.ORANGE,
 				)
 			}
 		}
 
+		rl.DrawCircleV(project(rl.Vector3(0), &state), 4, rl.WHITE)
+
 		if rl.Vector3Length(state.player.vel) > 0 {
 			rl.DrawLineEx(
-				project(rl.Vector3(0) + 0.5, &state),
-				project(state.player.vel + 0.5, &state),
+				project(rl.Vector3(0), &state),
+				project(state.player.vel, &state),
 				4,
 				rl.PINK,
 			)
 		} else {
 			rl.DrawLineEx(
-				project(rl.Vector3(0) + 0.5, &state),
-				project(state.player.dir + 0.5, &state),
+				project(rl.Vector3(0), &state),
+				project(state.player.dir, &state),
 				4,
 				rl.BLUE,
 			)
@@ -254,6 +254,7 @@ Player :: struct {
 	steer_rate: f32,
 	grounded:   bool,
 	max_speed:  f32,
+	size:       rl.Vector3,
 }
 
 Surface :: struct {
