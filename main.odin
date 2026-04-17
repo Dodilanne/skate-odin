@@ -37,9 +37,12 @@ main :: proc() {
 		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
-			{origin = {0, 0, 0}, width = 20, height = 20, norm = {0, 0, 1}},
+			{origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
 			{origin = {0, 0, 0}, width = 20, height = 10, norm = {1, 0, 0}},
-			{origin = {20, 0, 0}, width = 20, height = 5, norm = {-0.2, 0, 0.8}},
+			{origin = {0, 0, 0}, width = 15, height = 10, norm = {0, 1, 0}},
+			{origin = {0, 20, 0}, width = 15, height = 10, norm = {0, 1, 0}},
+			{origin = {0, 0, 10}, width = 15, height = 20, norm = {0, 0, 1}},
+			{origin = {15, 0, 0}, width = 20, height = 10, norm = {-0.2, 0, 0.8}},
 		},
 	}
 	for !rl.WindowShouldClose() {
@@ -239,8 +242,8 @@ main :: proc() {
 				color := rl.ORANGE
 
 				rl.DrawLineEx(
-					project(rot_matrix * cube.vertices[start_idx], &state),
-					project(rot_matrix * cube.vertices[end_idx], &state),
+					project(rot_matrix * cube.vertices[start_idx] + 0.5, &state),
+					project(rot_matrix * cube.vertices[end_idx] + 0.5, &state),
 					2,
 					color,
 				)
@@ -249,15 +252,15 @@ main :: proc() {
 
 		if rl.Vector3Length(state.player.vel) > 0 {
 			rl.DrawLineEx(
-				project(rl.Vector3(0), &state),
-				project(state.player.vel, &state),
+				project(rl.Vector3(0) + 0.5, &state),
+				project(state.player.vel + 0.5, &state),
 				4,
 				rl.PINK,
 			)
 		} else {
 			rl.DrawLineEx(
-				project(rl.Vector3(0), &state),
-				project(state.player.dir, &state),
+				project(rl.Vector3(0) + 0.5, &state),
+				project(state.player.dir + 0.5, &state),
 				4,
 				rl.BLUE,
 			)
