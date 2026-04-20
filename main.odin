@@ -38,6 +38,7 @@ main :: proc() {
 
 
 	state := State {
+		color_mode   = .light,
 		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
@@ -57,6 +58,10 @@ main :: proc() {
 
 		if rl.IsKeyPressed(.D) {
 			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
+		}
+
+		if rl.IsKeyPressed(.C) {
+			state.color_mode = Color_Mode((int(state.color_mode) + 1) % len(Color_Mode))
 		}
 
 		dt := rl.GetFrameTime()
@@ -125,7 +130,13 @@ main :: proc() {
 
 		rl.BeginDrawing()
 
-		rl.ClearBackground(rl.DARKGRAY)
+		bg: rl.Color
+		if state.color_mode == .light {
+			bg = rl.WHITE
+		} else {
+			bg = rl.DARKGRAY
+		}
+		rl.ClearBackground(bg)
 
 		for &surface in state.surfaces {
 			surface.norm = linalg.normalize(surface.norm)
@@ -196,8 +207,8 @@ main :: proc() {
 			}
 		}
 
-		rl.DrawCircleV(project(-state.player.pos, &state), 2, rl.WHITE)
-		rl.DrawCircleV(project(rl.Vector3(0), &state), 4, rl.WHITE)
+		rl.DrawCircleV(project(-state.player.pos, &state), 2, rl.Fade(rl.LIGHTGRAY, 0.5))
+		rl.DrawCircleV(project(rl.Vector3(0), &state), 4, rl.Fade(rl.LIGHTGRAY, 0.5))
 
 		if rl.Vector3Length(state.player.vel) > 0 {
 			rl.DrawLineEx(
@@ -270,10 +281,16 @@ Surface :: struct {
 	norm:   rl.Vector3,
 }
 
+Color_Mode :: enum {
+	dark,
+	light,
+}
+
 State :: struct {
 	player:       Player,
 	surfaces:     [dynamic; 10]Surface,
 	drawing_mode: Drawing_Mode,
+	color_mode:   Color_Mode,
 	cell_size:    f32,
 	offset:       rl.Vector2,
 }
