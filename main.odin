@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:math/linalg"
@@ -24,8 +25,8 @@ main :: proc() {
 	player_radius: f32 = 0.5
 	player_height: f32 = 2
 	initial_player := Player {
-		pos        = 1 + {player_radius, player_radius, player_height / 2},
-		dir        = {1, 0, 0},
+		pos        = 1 + {player_radius, 16 + player_radius, player_height / 2},
+		dir        = linalg.normalize(rl.Vector3({1, 1, 0})),
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
@@ -34,18 +35,29 @@ main :: proc() {
 		height     = player_height,
 	}
 
-
 	state := State {
-		color_mode   = .dark,
-		drawing_mode = .side,
+		color_mode   = .light,
+		drawing_mode = .top_down,
 		player       = initial_player,
 		surfaces     = {
-			{origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
-			{origin = {0, 0, 0}, width = 20, height = 10, norm = {1, 0, 0}},
-			{origin = {0, 0, 0}, width = 15, height = 10, norm = {0, 1, 0}},
-			{origin = {0, 20, 0}, width = 15, height = 10, norm = {0, 1, 0}},
-			{origin = {0, 0, 10}, width = 15, height = 20, norm = {0, 0, 1}},
-			{origin = {15, 0, 0}, width = 20, height = 10, norm = {-0.2, 0, 0.8}},
+			{name = "floor", origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
+			{name = "back wall", origin = {0, 0, 0}, width = 20, height = 10, norm = {1, 0, 0}},
+			{name = "right wall", origin = {0, 0, 0}, width = 15, height = 10, norm = {0, 1, 0}},
+			{
+				name = "left wall",
+				origin = {0, 20, 0},
+				width = 15,
+				height = 10,
+				norm = linalg.normalize(rl.Vector3{0.5, -1, 0}),
+			},
+			{name = "ceiling", origin = {0, 0, 10}, width = 15, height = 20, norm = {0, 0, -1}},
+			{
+				name = "slope",
+				origin = {15, 0, 0},
+				width = 20,
+				height = 10,
+				norm = linalg.normalize(rl.Vector3{-0.2, 0, 0.8}),
+			},
 		},
 	}
 
@@ -65,18 +77,21 @@ main :: proc() {
 
 		dt := rl.GetFrameTime()
 
+		player_angle := linalg.atan2(state.player.dir.y, state.player.dir.x)
+
 		steer_dir: f32 = 0
 		if rl.IsKeyDown(.R) do steer_dir = -1
 		if rl.IsKeyDown(.T) do steer_dir = +1
+
 		if steer_dir != 0 {
 			speed := linalg.length(state.player.vel) * state.player.steer_rate
 			if speed == 0 do speed = 2
 			angle_change := steer_dir * dt * speed
-			state.player.angle = state.player.angle + angle_change
+			player_angle += angle_change
 			state.player.dir = rl.Vector3RotateByAxisAngle(
 				rl.Vector3{1, 0, 0},
 				rl.Vector3{0, 0, 1},
-				state.player.angle,
+				player_angle,
 			)
 			state.player.dir = linalg.normalize(state.player.dir)
 			state.player.vel = rl.Vector3RotateByAxisAngle(
@@ -103,6 +118,35 @@ main :: proc() {
 		state.player.vel.xy = rl.Vector2ClampValue(state.player.vel.xy, 0, state.player.max_speed)
 
 		state.player.pos += state.player.vel * dt
+
+		half_height := state.player.height / 2
+		for surface in state.surfaces {
+			dist := state.player.pos - surface.origin
+
+			// floor
+			if surface.norm.x == 0 && surface.norm.y == 0 {
+				if dist.z < half_height && dist.z > -half_height {
+					state.player.pos.z = surface.origin.z + surface.norm.z * half_height
+					state.player.vel.z = 0
+				}
+				continue
+			}
+
+			// wall
+			if surface.norm.z == 0 {
+				if dist.z > 0 && dist.z < surface.height {
+					surface_dist := linalg.dot(surface.norm, dist)
+					if surface_dist > 0 && surface_dist < state.player.radius {
+						vel_proj := linalg.dot(state.player.vel, -surface.norm)
+						state.player.vel -= vel_proj * -surface.norm
+						state.player.dir = linalg.normalize(state.player.vel)
+						state.player.pos += (state.player.radius - surface_dist) * surface.norm
+					}
+				}
+				continue
+			}
+		}
+
 
 		if state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
 			state.player = initial_player
@@ -157,7 +201,7 @@ main :: proc() {
 		base_points: [100]rl.Vector3
 		for i in 0 ..< len(base_points) {
 			rad := math.PI * 2 / len(base_points) * f32(i)
-			rad += state.player.angle
+			rad += player_angle
 			rot := matrix[3, 3]f32{
 				math.cos(rad), -math.sin(rad), 0,
 				math.sin(rad), math.cos(rad), 0,
@@ -197,14 +241,14 @@ main :: proc() {
 				4,
 				rl.PINK,
 			)
-		} else {
-			rl.DrawLineEx(
-				project(rl.Vector3(0), &state),
-				project(state.player.dir, &state),
-				4,
-				rl.BLUE,
-			)
 		}
+
+		rl.DrawLineEx(
+			project(rl.Vector3(0), &state),
+			project(state.player.dir, &state),
+			4,
+			rl.BLUE,
+		)
 
 		rl.DrawFPS(0, 0)
 
@@ -240,7 +284,6 @@ Drawing_Mode :: enum {
 
 
 Player :: struct {
-	angle:      f32,
 	dir:        rl.Vector3,
 	norm:       rl.Vector3,
 	pos:        rl.Vector3,
@@ -255,6 +298,7 @@ Player :: struct {
 }
 
 Surface :: struct {
+	name:   string,
 	origin: rl.Vector3,
 	width:  f32,
 	height: f32,
