@@ -21,12 +21,10 @@ main :: proc() {
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
-
 	player_radius: f32 = 0.5
 	player_height: f32 = 2
 	initial_player := Player {
-		grounded   = true,
-		pos        = {player_radius, player_radius, player_height / 2},
+		pos        = 1 + {player_radius, player_radius, player_height / 2},
 		dir        = {1, 0, 0},
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
@@ -38,8 +36,8 @@ main :: proc() {
 
 
 	state := State {
-		color_mode   = .light,
-		drawing_mode = .dimetric,
+		color_mode   = .dark,
+		drawing_mode = .side,
 		player       = initial_player,
 		surfaces     = {
 			{origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
@@ -50,6 +48,7 @@ main :: proc() {
 			{origin = {15, 0, 0}, width = 20, height = 10, norm = {-0.2, 0, 0.8}},
 		},
 	}
+
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
@@ -66,61 +65,42 @@ main :: proc() {
 
 		dt := rl.GetFrameTime()
 
-		friction_coeff: f32 = 0.5
-
-		if state.player.grounded {
-			steer_dir: f32 = 0
-			if rl.IsKeyDown(.R) do steer_dir = -1
-			if rl.IsKeyDown(.T) do steer_dir = +1
-			if steer_dir != 0 {
-				speed := rl.Vector3Length(state.player.vel) * state.player.steer_rate
-				if speed == 0 do speed = 2
-				angle_change := steer_dir * dt * speed
-				state.player.angle = state.player.angle + angle_change
-				state.player.dir = rl.Vector3RotateByAxisAngle(
-					rl.Vector3{1, 0, 0},
-					rl.Vector3{0, 0, 1},
-					state.player.angle,
-				)
-				state.player.dir = rl.Vector3Normalize(state.player.dir)
-				state.player.vel = rl.Vector3RotateByAxisAngle(
-					state.player.vel,
-					rl.Vector3{0, 0, 1},
-					angle_change,
-				)
-			}
-
-			if rl.IsKeyPressed(.SPACE) {
-				state.player.vel += state.player.dir
-			}
-
-			if rl.IsKeyDown(.ENTER) {
-				friction_coeff *= 10
-			}
-
-			state.player.vel.z = 0
-		} else {
-			state.player.vel -= rl.Vector3{0, 0, state.player.mass * 10 * dt}
-		}
-
-		if rl.Vector2Length(state.player.vel.xy) != 0 {
-			new_vel := state.player.vel - state.player.dir * friction_coeff * dt
-			diff := math.abs(
-				rl.Vector3Length(
-					rl.Vector3Normalize(new_vel) - rl.Vector3Normalize(state.player.vel),
-				),
+		steer_dir: f32 = 0
+		if rl.IsKeyDown(.R) do steer_dir = -1
+		if rl.IsKeyDown(.T) do steer_dir = +1
+		if steer_dir != 0 {
+			speed := linalg.length(state.player.vel) * state.player.steer_rate
+			if speed == 0 do speed = 2
+			angle_change := steer_dir * dt * speed
+			state.player.angle = state.player.angle + angle_change
+			state.player.dir = rl.Vector3RotateByAxisAngle(
+				rl.Vector3{1, 0, 0},
+				rl.Vector3{0, 0, 1},
+				state.player.angle,
 			)
-			if diff < 0.1 {
-				state.player.vel = new_vel
-				state.player.vel.xy = rl.Vector2ClampValue(
-					state.player.vel.xy,
-					0,
-					state.player.max_speed,
-				)
-			} else {
-				state.player.vel = rl.Vector3(0)
-			}
+			state.player.dir = linalg.normalize(state.player.dir)
+			state.player.vel = rl.Vector3RotateByAxisAngle(
+				state.player.vel,
+				rl.Vector3{0, 0, 1},
+				angle_change,
+			)
 		}
+
+		if rl.IsKeyPressed(.SPACE) {
+			state.player.vel += state.player.dir
+		}
+
+		state.player.vel -= rl.Vector3{0, 0, state.player.mass * 10 * dt}
+
+		if math.abs(linalg.length(state.player.vel.xy)) > 0.1 {
+			friction_coeff: f32 = 0.5
+			if rl.IsKeyDown(.ENTER) do friction_coeff *= 10
+			state.player.vel = state.player.vel - state.player.dir * friction_coeff * dt
+		} else {
+			state.player.vel.xy = {0, 0}
+		}
+
+		state.player.vel.xy = rl.Vector2ClampValue(state.player.vel.xy, 0, state.player.max_speed)
 
 		state.player.pos += state.player.vel * dt
 
@@ -210,7 +190,7 @@ main :: proc() {
 		rl.DrawCircleV(project(-state.player.pos, &state), 2, rl.Fade(rl.LIGHTGRAY, 0.5))
 		rl.DrawCircleV(project(rl.Vector3(0), &state), 4, rl.Fade(rl.LIGHTGRAY, 0.5))
 
-		if rl.Vector3Length(state.player.vel) > 0 {
+		if linalg.length(state.player.vel) > 0 {
 			rl.DrawLineEx(
 				project(rl.Vector3(0), &state),
 				project(state.player.vel, &state),
@@ -268,10 +248,10 @@ Player :: struct {
 	forces:     rl.Vector3,
 	mass:       f32,
 	steer_rate: f32,
-	grounded:   bool,
 	max_speed:  f32,
 	radius:     f32,
 	height:     f32,
+	on_surface: Maybe(Surface),
 }
 
 Surface :: struct {
