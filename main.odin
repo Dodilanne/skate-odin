@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:math/linalg"
@@ -23,16 +22,14 @@ main :: proc() {
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
 	player_radius: f32 = 0.5
-	player_height: f32 = 2
 	initial_player := Player {
-		pos        = 1 + {player_radius, 16 + player_radius, player_height / 2},
+		pos        = rl.Vector3(player_radius * 2),
 		dir        = linalg.normalize(rl.Vector3({1, 1, 0})),
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
 		max_speed  = 8,
 		radius     = player_radius,
-		height     = player_height,
 	}
 
 	state := State {
@@ -119,24 +116,14 @@ main :: proc() {
 
 		state.player.pos += state.player.vel * dt
 
-		half_height := state.player.height / 2
 		for surface in state.surfaces {
-			dist := state.player.pos - surface.origin
-
-			if surface.norm.x == 0 && surface.norm.y == 0 {
-				if dist.z < half_height && dist.z > -half_height {
-					state.player.pos.z = surface.origin.z + surface.norm.z * half_height
-					state.player.vel.z = 0
-				}
-				continue
-			}
-
-			surface_dist := linalg.dot(surface.norm, dist)
-			if surface_dist > 0 && surface_dist < state.player.radius {
-				vel_proj := linalg.dot(state.player.vel, -surface.norm)
-				state.player.vel -= vel_proj * -surface.norm
+			dist := linalg.dot(surface.norm, state.player.pos - surface.origin)
+			if dist > state.player.radius do continue
+			vel_proj := linalg.dot(state.player.vel, -surface.norm)
+			state.player.pos += (state.player.radius - dist) * surface.norm
+			state.player.vel -= vel_proj * -surface.norm
+			if linalg.length(state.player.vel) != 0 {
 				state.player.dir = linalg.normalize(state.player.vel)
-				state.player.pos += (state.player.radius - surface_dist) * surface.norm
 			}
 		}
 
@@ -202,22 +189,22 @@ main :: proc() {
 			}
 			base_points[i] =
 				rot * rl.Vector3{1, 0, 0} * state.player.radius -
-				rl.Vector3{0, 0, state.player.height} / 2
+				rl.Vector3{0, 0, state.player.radius}
 		}
 		for i := 0; i < len(base_points); i += 1 {
 			start := base_points[i]
 			end := base_points[(i + 1) % len(base_points)]
 			rl.DrawLineEx(project(start, &state), project(end, &state), 2, rl.ORANGE)
 			rl.DrawLineEx(
-				project(start + rl.Vector3{0, 0, state.player.height}, &state),
-				project(end + rl.Vector3{0, 0, state.player.height}, &state),
+				project(start + rl.Vector3{0, 0, state.player.radius * 2}, &state),
+				project(end + rl.Vector3{0, 0, state.player.radius * 2}, &state),
 				2,
 				rl.ORANGE,
 			)
 			if i % (len(base_points) / 12) == 0 {
 				rl.DrawLineEx(
 					project(start, &state),
-					project(start + rl.Vector3{0, 0, state.player.height}, &state),
+					project(start + rl.Vector3{0, 0, state.player.radius * 2}, &state),
 					2,
 					rl.ORANGE,
 				)
@@ -286,7 +273,6 @@ Player :: struct {
 	steer_rate: f32,
 	max_speed:  f32,
 	radius:     f32,
-	height:     f32,
 	on_surface: Maybe(Surface),
 }
 
