@@ -17,7 +17,6 @@ main :: proc() {
 	}
 
 	rl.SetTraceLogLevel(.WARNING)
-	rl.SetTargetFPS(60)
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
@@ -34,7 +33,7 @@ main :: proc() {
 
 	state := State {
 		color_mode   = .dark,
-		drawing_mode = .side,
+		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
 			{name = "floor", origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
@@ -178,36 +177,36 @@ main :: proc() {
 			}
 		}
 
+		num_circles := 6
 		base_points: [100]rl.Vector3
-		for i in 0 ..< len(base_points) {
-			rad := math.PI * 2 / len(base_points) * f32(i)
-			rad += player_angle
-			rot := matrix[3, 3]f32{
-				math.cos(rad), -math.sin(rad), 0,
-				math.sin(rad), math.cos(rad), 0,
-				0, 0, 1,
+		points_per_circle := len(base_points) / num_circles
+		for c in 0 ..< num_circles {
+			for p in 0 ..< points_per_circle {
+				y_angle := math.PI * 2 / f32(points_per_circle) * f32(p)
+				y_rot := matrix[3, 3]f32{
+					math.cos(y_angle), 0, math.sin(y_angle),
+					0, 1, 0,
+					-math.sin(y_angle), 0, math.cos(y_angle),
+				}
+
+				z_angle := math.PI / f32(num_circles) * f32(c)
+				z_angle += player_angle
+				z_rot := matrix[3, 3]f32{
+					math.cos(z_angle), -math.sin(z_angle), 0,
+					math.sin(z_angle), math.cos(z_angle), 0,
+					0, 0, 1,
+				}
+
+				base_points[c * points_per_circle + p] =
+					z_rot * y_rot * rl.Vector3{1, 0, 0} * state.player.radius
 			}
-			base_points[i] =
-				rot * rl.Vector3{1, 0, 0} * state.player.radius -
-				rl.Vector3{0, 0, state.player.radius}
 		}
-		for i := 0; i < len(base_points); i += 1 {
-			start := base_points[i]
-			end := base_points[(i + 1) % len(base_points)]
-			rl.DrawLineEx(project(start, &state), project(end, &state), 2, rl.ORANGE)
-			rl.DrawLineEx(
-				project(start + rl.Vector3{0, 0, state.player.radius * 2}, &state),
-				project(end + rl.Vector3{0, 0, state.player.radius * 2}, &state),
-				2,
-				rl.ORANGE,
-			)
-			if i % (len(base_points) / 12) == 0 {
-				rl.DrawLineEx(
-					project(start, &state),
-					project(start + rl.Vector3{0, 0, state.player.radius * 2}, &state),
-					2,
-					rl.ORANGE,
-				)
+
+		for c in 0 ..< num_circles {
+			for p in 0 ..< points_per_circle {
+				start := base_points[c * points_per_circle + p]
+				end := base_points[c * points_per_circle + (p + 1) % points_per_circle]
+				rl.DrawLineEx(project(start, &state), project(end, &state), 2, rl.ORANGE)
 			}
 		}
 
