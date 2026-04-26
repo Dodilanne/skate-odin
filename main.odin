@@ -36,8 +36,8 @@ main :: proc() {
 	}
 
 	state := State {
-		color_mode   = .light,
-		drawing_mode = .top_down,
+		color_mode   = .dark,
+		drawing_mode = .side,
 		player       = initial_player,
 		surfaces     = {
 			{name = "floor", origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
@@ -123,7 +123,6 @@ main :: proc() {
 		for surface in state.surfaces {
 			dist := state.player.pos - surface.origin
 
-			// floor
 			if surface.norm.x == 0 && surface.norm.y == 0 {
 				if dist.z < half_height && dist.z > -half_height {
 					state.player.pos.z = surface.origin.z + surface.norm.z * half_height
@@ -132,18 +131,12 @@ main :: proc() {
 				continue
 			}
 
-			// wall
-			if surface.norm.z == 0 {
-				if dist.z > 0 && dist.z < surface.height {
-					surface_dist := linalg.dot(surface.norm, dist)
-					if surface_dist > 0 && surface_dist < state.player.radius {
-						vel_proj := linalg.dot(state.player.vel, -surface.norm)
-						state.player.vel -= vel_proj * -surface.norm
-						state.player.dir = linalg.normalize(state.player.vel)
-						state.player.pos += (state.player.radius - surface_dist) * surface.norm
-					}
-				}
-				continue
+			surface_dist := linalg.dot(surface.norm, dist)
+			if surface_dist > 0 && surface_dist < state.player.radius {
+				vel_proj := linalg.dot(state.player.vel, -surface.norm)
+				state.player.vel -= vel_proj * -surface.norm
+				state.player.dir = linalg.normalize(state.player.vel)
+				state.player.pos += (state.player.radius - surface_dist) * surface.norm
 			}
 		}
 
