@@ -121,9 +121,7 @@ main :: proc() {
 			vel_proj := linalg.dot(state.player.vel, -surface.norm)
 			state.player.pos += (state.player.radius - dist) * surface.norm
 			state.player.vel -= vel_proj * -surface.norm
-			if linalg.length(state.player.vel) != 0 {
-				state.player.dir = linalg.normalize(state.player.vel)
-			}
+			if linalg.length(state.player.vel) != 0 do state.player.dir = linalg.normalize(state.player.vel)
 		}
 
 
