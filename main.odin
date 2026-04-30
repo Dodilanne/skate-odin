@@ -36,8 +36,8 @@ main :: proc() {
 		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
-			{name = "floor", o = {0, 0, 0}, w = 15, h = 20, n = {0, 0, 1}},
-			// {name = "back wall", origin = {0, 0, 0}, width = 20, height = 10, n = {1, 0, 0}},
+			{name = "floor", o = {-10, 0, 0}, w = 60, h = 30, n = {0, 0, 1}},
+			{name = "back wall", o = {0, 0, 0}, w = 20, h = 10, n = {1, 0, 0}},
 			{name = "right wall", o = {0, 0, 0}, w = 15, h = 10, n = {0, 1, 0}},
 			{name = "left wall", o = {0, 20, 0}, w = 15, h = 10, n = {0.5, -1, 0}},
 			{name = "ceiling", o = {0, 0, 10}, w = 15, h = 20, n = {0, 0, -1}},
@@ -53,11 +53,11 @@ main :: proc() {
 		if surface.n == a do a = rl.Vector3{0, 1, 0} // cross product will give 0, need to use another ref vector
 
 		u := linalg.normalize(linalg.cross(surface.n, a))
-		if linalg.dot(u, largest_abs_component(u)) < 0 do u *= -1
+		if linalg.dot(u, largest_abs_component(u)) < 0.01 do u *= -1
 		surface.u = u
 
 		v := linalg.normalize(linalg.cross(surface.n, u))
-		if linalg.dot(v, largest_abs_component(v)) < 0 do v *= -1
+		if linalg.dot(v, largest_abs_component(v)) < 0.01 do v *= -1
 		surface.v = v
 	}
 
@@ -120,15 +120,17 @@ main :: proc() {
 
 		state.player.pos += state.player.vel * dt
 
-		clear(&state.player.collisions)
-
 		for &surface in state.surfaces {
-			dist := linalg.dot(surface.n, state.player.pos - surface.o)
-			if dist > state.player.radius do continue
-			append(&state.player.collisions, &surface)
-			vel_proj := linalg.dot(state.player.vel, -surface.n)
-			state.player.pos += (state.player.radius - dist) * surface.n
-			state.player.vel -= vel_proj * -surface.n
+			p := state.player.pos - surface.o
+			d := linalg.dot(surface.n, p)
+			if math.abs(d) > state.player.radius do continue
+			pp := p - d * surface.n
+			px := linalg.dot(pp, surface.u)
+			if px < 0 || px > surface.w do continue
+			py := linalg.dot(pp, surface.v)
+			if py < 0 || py > surface.h do continue
+			state.player.pos += (state.player.radius - d) * surface.n
+			state.player.vel -= linalg.dot(state.player.vel, surface.n) * surface.n
 			if linalg.length(state.player.vel) != 0 do state.player.dir = linalg.normalize(state.player.vel)
 		}
 
@@ -167,30 +169,6 @@ main :: proc() {
 					rl.Fade(rl.LIGHTGRAY, 0.5),
 				)
 			}
-		}
-
-		for &surface in state.player.collisions {
-			if surface.n.z == 1 do continue
-
-			rl.DrawLineEx(
-				project(surface.o - state.player.pos, &state),
-				project(surface.o - state.player.pos + surface.n, &state),
-				2,
-				rl.GREEN,
-			)
-			rl.DrawLineEx(
-				project(surface.o - state.player.pos, &state),
-				project(surface.o - state.player.pos + surface.u, &state),
-				2,
-				rl.MAGENTA,
-			)
-			rl.DrawLineEx(
-				project(surface.o - state.player.pos, &state),
-				project(surface.o - state.player.pos + surface.v, &state),
-				2,
-				rl.YELLOW,
-			)
-
 		}
 
 		num_circles := 6
@@ -288,7 +266,6 @@ Player :: struct {
 	steer_rate: f32,
 	max_speed:  f32,
 	radius:     f32,
-	collisions: [dynamic; 10]^Surface,
 }
 
 Surface :: struct {
