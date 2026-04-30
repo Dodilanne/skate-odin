@@ -36,26 +36,31 @@ main :: proc() {
 		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
-			{name = "floor", origin = {0, 0, 0}, width = 15, height = 20, norm = {0, 0, 1}},
-			{name = "back wall", origin = {0, 0, 0}, width = 20, height = 10, norm = {1, 0, 0}},
-			{name = "right wall", origin = {0, 0, 0}, width = 15, height = 10, norm = {0, 1, 0}},
-			{
-				name = "left wall",
-				origin = {0, 20, 0},
-				width = 15,
-				height = 10,
-				norm = linalg.normalize(rl.Vector3{0.5, -1, 0}),
-			},
-			{name = "ceiling", origin = {0, 0, 10}, width = 15, height = 20, norm = {0, 0, -1}},
-			{
-				name = "slope",
-				origin = {15, 0, 0},
-				width = 20,
-				height = 10,
-				norm = linalg.normalize(rl.Vector3{-0.2, 0, 0.8}),
-			},
+			{name = "floor", o = {0, 0, 0}, w = 15, h = 20, n = {0, 0, 1}},
+			// {name = "back wall", origin = {0, 0, 0}, width = 20, height = 10, n = {1, 0, 0}},
+			{name = "right wall", o = {0, 0, 0}, w = 15, h = 10, n = {0, 1, 0}},
+			{name = "left wall", o = {0, 20, 0}, w = 15, h = 10, n = {0.5, -1, 0}},
+			{name = "ceiling", o = {0, 0, 10}, w = 15, h = 20, n = {0, 0, -1}},
+			{name = "slope", o = {15, 0, 0}, w = 20, h = 10, n = {-0.2, 0, 0.8}},
 		},
 	}
+
+
+	for &surface in state.surfaces {
+		surface.n = linalg.normalize(surface.n)
+
+		a := rl.Vector3{0, 0, 1} // arbitrary
+		if surface.n == a do a = rl.Vector3{0, 1, 0} // cross product will give 0, need to use another ref vector
+
+		u := linalg.normalize(linalg.cross(surface.n, a))
+		if linalg.dot(u, largest_abs_component(u)) < 0 do u *= -1
+		surface.u = u
+
+		v := linalg.normalize(linalg.cross(surface.n, u))
+		if linalg.dot(v, largest_abs_component(v)) < 0 do v *= -1
+		surface.v = v
+	}
+
 
 	for !rl.WindowShouldClose() {
 		screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
@@ -115,15 +120,17 @@ main :: proc() {
 
 		state.player.pos += state.player.vel * dt
 
-		for surface in state.surfaces {
-			dist := linalg.dot(surface.norm, state.player.pos - surface.origin)
+		clear(&state.player.collisions)
+
+		for &surface in state.surfaces {
+			dist := linalg.dot(surface.n, state.player.pos - surface.o)
 			if dist > state.player.radius do continue
-			vel_proj := linalg.dot(state.player.vel, -surface.norm)
-			state.player.pos += (state.player.radius - dist) * surface.norm
-			state.player.vel -= vel_proj * -surface.norm
+			append(&state.player.collisions, &surface)
+			vel_proj := linalg.dot(state.player.vel, -surface.n)
+			state.player.pos += (state.player.radius - dist) * surface.n
+			state.player.vel -= vel_proj * -surface.n
 			if linalg.length(state.player.vel) != 0 do state.player.dir = linalg.normalize(state.player.vel)
 		}
-
 
 		if state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
 			state.player = initial_player
@@ -140,22 +147,9 @@ main :: proc() {
 		rl.ClearBackground(bg)
 
 		for &surface in state.surfaces {
-			surface.norm = linalg.normalize(surface.norm)
-
-			ref := rl.Vector3{0, 0, 1} // arbitrary
-			if surface.norm == ref { 	// cross product will give 0, need to use another ref vector
-				ref = rl.Vector3{0, 1, 0}
-			}
-
-			right := linalg.normalize(linalg.cross(surface.norm, ref))
-			up := linalg.normalize(linalg.cross(surface.norm, right))
-
-			if linalg.dot(right, largest_abs_component(right)) < 0 do right *= -1
-			if linalg.dot(up, largest_abs_component(up)) < 0 do up *= -1
-
-			for col in 0 ..= surface.width {
-				start := surface.origin + right * col - state.player.pos
-				end := start + up * surface.height
+			for col in 0 ..= surface.w {
+				start := surface.o + surface.u * col - state.player.pos
+				end := start + surface.v * surface.h
 				rl.DrawLineEx(
 					project(start, &state),
 					project(end, &state),
@@ -163,9 +157,9 @@ main :: proc() {
 					rl.Fade(rl.LIGHTGRAY, 0.5),
 				)
 			}
-			for row in 0 ..= surface.height {
-				start := surface.origin + up * row - state.player.pos
-				end := start + right * surface.width
+			for row in 0 ..= surface.h {
+				start := surface.o + surface.v * row - state.player.pos
+				end := start + surface.u * surface.w
 				rl.DrawLineEx(
 					project(start, &state),
 					project(end, &state),
@@ -173,6 +167,30 @@ main :: proc() {
 					rl.Fade(rl.LIGHTGRAY, 0.5),
 				)
 			}
+		}
+
+		for &surface in state.player.collisions {
+			if surface.n.z == 1 do continue
+
+			rl.DrawLineEx(
+				project(surface.o - state.player.pos, &state),
+				project(surface.o - state.player.pos + surface.n, &state),
+				2,
+				rl.GREEN,
+			)
+			rl.DrawLineEx(
+				project(surface.o - state.player.pos, &state),
+				project(surface.o - state.player.pos + surface.u, &state),
+				2,
+				rl.MAGENTA,
+			)
+			rl.DrawLineEx(
+				project(surface.o - state.player.pos, &state),
+				project(surface.o - state.player.pos + surface.v, &state),
+				2,
+				rl.YELLOW,
+			)
+
 		}
 
 		num_circles := 6
@@ -270,15 +288,17 @@ Player :: struct {
 	steer_rate: f32,
 	max_speed:  f32,
 	radius:     f32,
-	on_surface: Maybe(Surface),
+	collisions: [dynamic; 10]^Surface,
 }
 
 Surface :: struct {
-	name:   string,
-	origin: rl.Vector3,
-	width:  f32,
-	height: f32,
-	norm:   rl.Vector3,
+	name: string,
+	o:    rl.Vector3,
+	w:    f32,
+	h:    f32,
+	n:    rl.Vector3,
+	u:    rl.Vector3,
+	v:    rl.Vector3,
 }
 
 Color_Mode :: enum {
