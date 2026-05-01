@@ -1,0 +1,14 @@
+trans_left_bslow0
+trans_left_bslow1
+trans_left_bslow2
+trans_left_bslowcycle2
+trans_left_bslowend2
+trans_left_bslowend1
+trans_left_bslowend0
+trans_left_fslow0
+trans_left_fslow1
+trans_left_fslow2
+trans_left_fslowcycle2
+trans_left_fslowend2
+trans_left_fslowend1
+trans_left_fslowend0

@@ -1,0 +1,10 @@
+trans_left_tailmedleft0
+trans_left_tailhighleft0
+trans_left_tailride0
+trans_left_tailmedright0
+trans_left_tailhighright0
+trans_left_nosemedleft0
+trans_left_nosehighleft0
+trans_left_noseride0
+trans_left_nosemedright0
+trans_left_nosehighright0

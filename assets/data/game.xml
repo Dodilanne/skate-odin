@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<game accelFramerate="0" adsPosition="0" aheight="704" androidMinVersion="0" androidTargetVersion="7" antialias="true" appName="My Game" appType="0" atlasBindingDefault="false" author="" authorURL="" autoRotate="false" awidth="1024" backgroundColor="-15592942" barBackgroundColor="-12303292" barColor="-7829368" barHeight="8" barLocation="0" barOffsetX="0" barOffsetXPhone="0" barOffsetXTablet="0" barOffsetY="0" barOffsetYPhone="0" barOffsetYTablet="0" barScalePhone="1.0" barScaleTablet="2.0" barWidth="120" bindAllAtlasesDefault="false" borderColor="-12303292" borderThickness="2" bundleID="com.yourname.gamename" bundleVersion="1.0" checksum="none" cws-desc="Description" cws-icon128="" cws-icon16="" cws-name="Name" cws-version="1.0" default="17" defaultFramerate="60" defaultSceneID="17" desc="" desktopScale="1x" desktopScaleMode="1" disableBackButton="false" enableGPG="false" enablePurchases="false" format="3.4.0" gameid="-1" googleAppID="" haxeExtras="" height="704" internalVersion="1" internalVersionIOS="1" kit="false" lockURL="" macBundleID="" maxScaleAndroid="1x" maxScaleDesktop="1x" maxScaleIOS="1x" maxScaleWeb="1x" metroColor="-12566464" multitouch="true" name="SkateRide" openflExtras="" openflLegacy="true" orientation="0" physicsMode="1" pixelsnap="false" preloaderstyle="0" products="" scale="1" scaleModeAndroid="0" scaleModeDesktop="3" scaleModeIOS="0" scaleModeWeb="0" showAds="false" simulatorOS="0.0" simulatorTargetOS="0.0" splashStyle="0" startInFullScreenDesktop="true" startInFullScreenWeb="false" swfHeight="0" swfWidth="0" swfX="0" swfY="0" swfloc="" telemetry="false" testAds="false" useGlossyIcon="false" webScale="1x" width="1024" windowsAppName="" windowsAuthor="" windowsBundleID="">
+    <exts>
+        <e enabled="false" id="2DList"/>
+        <e enabled="false" id="test"/>
+        <e enabled="true" id="Extra Utils"/>
+        <e enabled="false" id="gamepadswf"/>
+        <e enabled="false" id="test-native"/>
+        <e enabled="true" id="External Data"/>
+        <e enabled="false" id="label"/>
+        <e enabled="true" id="attribute-saving"/>
+        <e enabled="false" id="tileapi"/>
+        <e enabled="false" id="smooth-motion"/>
+        <e enabled="false" id="test-flash"/>
+    </exts>
+    <scales>
+        <scale detailed="1x" id="0" name="1x" size="1.0"/>
+        <scale detailed="1.5x" id="1" name="1.5x" size="1.5"/>
+        <scale detailed="2x" id="2" name="2x" size="2.0"/>
+        <scale detailed="3x" id="3" name="3x" size="3.0"/>
+        <scale detailed="4x" id="4" name="4x" size="4.0"/>
+    </scales>
+    <projectScales>
+        <scale enabled="true" name="1x"/>
+        <scale enabled="false" name="1.5x"/>
+        <scale enabled="false" name="2x"/>
+        <scale enabled="false" name="3x"/>
+        <scale enabled="false" name="4x"/>
+    </projectScales>
+    <webScales>
+        <scale enabled="true" name="1x"/>
+        <scale enabled="false" name="1.5x"/>
+        <scale enabled="false" name="2x"/>
+        <scale enabled="false" name="3x"/>
+        <scale enabled="false" name="4x"/>
+    </webScales>
+    <desktopScales>
+        <scale enabled="true" name="1x"/>
+        <scale enabled="false" name="1.5x"/>
+        <scale enabled="false" name="2x"/>
+        <scale enabled="false" name="3x"/>
+        <scale enabled="false" name="4x"/>
+    </desktopScales>
+    <iOSScales>
+        <scale enabled="true" name="1x"/>
+        <scale enabled="false" name="1.5x"/>
+        <scale enabled="false" name="2x"/>
+        <scale enabled="false" name="3x"/>
+        <scale enabled="false" name="4x"/>
+    </iOSScales>
+    <androidScales>
+        <scale enabled="true" name="1x"/>
+        <scale enabled="false" name="1.5x"/>
+        <scale enabled="false" name="2x"/>
+        <scale enabled="false" name="3x"/>
+        <scale enabled="false" name="4x"/>
+    </androidScales>
+    <folders>
+        <group desc="" id="6" name="UI" type="actortype">
+            <r id="96"/>
+            <r id="101"/>
+            <r id="71"/>
+            <r id="103"/>
+            <r id="73"/>
+            <r id="105"/>
+            <r id="75"/>
+            <r id="107"/>
+            <r id="109"/>
+            <r id="111"/>
+            <r id="113"/>
+            <r id="183"/>
+            <r id="185"/>
+            <r id="187"/>
+            <r id="94"/>
+        </group>
+        <group desc="" id="7" name="Unused" type="snippet">
+            <r id="112"/>
+        </group>
+        <group desc="" id="8" name="roll" type="sound">
+            <r id="129"/>
+            <r id="130"/>
+            <r id="131"/>
+            <r id="132"/>
+            <r id="133"/>
+            <r id="198"/>
+            <r id="199"/>
+            <r id="200"/>
+            <r id="201"/>
+            <r id="202"/>
+        </group>
+        <group desc="" id="9" name="push" type="sound">
+            <r id="134"/>
+            <r id="135"/>
+            <r id="136"/>
+            <r id="137"/>
+            <r id="138"/>
+        </group>
+        <group desc="" id="10" name="slow" type="sound">
+            <r id="144"/>
+            <r id="145"/>
+            <r id="146"/>
+            <r id="147"/>
+            <r id="139"/>
+            <r id="140"/>
+            <r id="141"/>
+            <r id="142"/>
+            <r id="143"/>
+        </group>
+        <group desc="" id="11" name="turn" type="sound">
+            <r id="148"/>
+            <r id="149"/>
+            <r id="150"/>
+        </group>
+        <group desc="" id="12" name="grind" type="sound">
+            <r id="151"/>
+            <r id="152"/>
+            <r id="153"/>
+            <r id="154"/>
+            <r id="155"/>
+            <r id="156"/>
+            <r id="157"/>
+            <r id="158"/>
+            <r id="159"/>
+        </group>
+        <group desc="" id="13" name="slide" type="sound">
+            <r id="160"/>
+            <r id="161"/>
+            <r id="162"/>
+        </group>
+        <group desc="" id="14" name="land" type="sound">
+            <r id="163"/>
+            <r id="164"/>
+            <r id="165"/>
+        </group>
+        <group desc="" id="15" name="catch" type="sound">
+            <r id="166"/>
+            <r id="167"/>
+            <r id="168"/>
+        </group>
+        <group desc="" id="16" name="jump" type="sound">
+            <r id="169"/>
+            <r id="170"/>
+            <r id="171"/>
+        </group>
+        <group desc="" id="17" name="bail" type="sound">
+            <r id="176"/>
+            <r id="177"/>
+            <r id="178"/>
+            <r id="179"/>
+            <r id="180"/>
+            <r id="175"/>
+        </group>
+        <group desc="" id="18" name="rail" type="sound">
+            <r id="192"/>
+            <r id="193"/>
+            <r id="194"/>
+            <r id="195"/>
+            <r id="196"/>
+            <r id="197"/>
+            <r id="189"/>
+            <r id="190"/>
+            <r id="191"/>
+        </group>
+    </folders>
+    <packs/>
+    <groups>
+        <group desc="" id="4" name="Sk8er"/>
+    </groups>
+    <cgroups>
+        <cgroup g1="0" g2="1"/>
+        <cgroup g1="1" g2="3"/>
+        <cgroup g1="3" g2="3"/>
+    </cgroups>
+    <input>
+        <key id="0" keyname="UP" name="up" vk="38" vks="38"/>
+        <key id="1" keyname="DOWN" name="down" vk="40" vks="40"/>
+        <key id="2" keyname="LEFT" name="left" vk="37" vks="37"/>
+        <key id="3" keyname="RIGHT" name="right" vk="39" vks="39"/>
+        <key id="4" keyname="C" name="Key C" vk="67" vks="67"/>
+        <key id="6" keyname="ENTER" name="KeyEnter" vk="10" vks="10"/>
+        <key id="8" keyname="E" name="Key E" vk="69" vks="69"/>
+        <key id="14" keyname="CONTROL" name="KeyCTRL" vk="17" vks="17"/>
+        <key id="16" keyname="NUMBER_2" name="Key2" vk="50" vks="50"/>
+        <key id="17" keyname="NUMBER_1" name="Key1" vk="49" vks="49"/>
+        <key id="18" keyname="NUMBER_3" name="Key3" vk="51" vks="51"/>
+        <key id="19" keyname="NUMBER_4" name="Key4" vk="52" vks="52"/>
+        <key id="20" keyname="V" name="Key V" vk="86" vks="86"/>
+        <key id="25" keyname="A" name="Key A" vk="65" vks="65"/>
+        <key id="26" keyname="D" name="Key D" vk="68" vks="68"/>
+        <key id="27" keyname="M" name="Key M" vk="77" vks="77"/>
+        <key id="28" keyname="SPACE" name="Space" vk="32" vks="32"/>
+        <key id="29" keyname="BACKSPACE" name="Backspace" vk="8" vks="8"/>
+        <key id="30" keyname="W" name="Key W" vk="87" vks="87"/>
+        <key id="31" keyname="Q" name="Key Q" vk="81" vks="81"/>
+        <key id="32" keyname="T" name="Key T" vk="84" vks="84"/>
+        <key id="33" keyname="Z" name="Key Z" vk="90" vks="90"/>
+        <key id="34" keyname="R" name="Key R" vk="82" vks="82"/>
+        <key id="35" keyname="F" name="Key F" vk="70" vks="70"/>
+        <key id="36" keyname="G" name="Key G" vk="71" vks="71"/>
+        <key id="37" keyname="SHIFT" name="KeySHIFT" vk="16" vks="16"/>
+        <key id="38" keyname="P" name="Key P" vk="80" vks="80"/>
+        <key id="39" keyname="S" name="Key S" vk="83" vks="83"/>
+        <key id="40" keyname="K" name="Key K" vk="75" vks="75"/>
+    </input>
+    <attcats>
+        <cat id="-1" name="Default"/>
+    </attcats>
+    <props/>
+    <attributes>
+        <boolean cid="-1" id="5" name="1st_TIME" save="true" value="false"/>
+        <list cid="-1" id="28" name="LIST_PTS" save="true" val="list"/>
+        <list cid="-1" id="25" name="LIST_Gap_NUMBER" save="true" val="list"/>
+        <map cid="-1" id="9" name="MAP_ALLAnim_SWITCH" save="true" val="map"/>
+        <list cid="-1" id="26" name="LIST_BOOLGAP" save="true" val="list"/>
+        <list cid="-1" id="32" name="REPLAY_PressRT" save="true" val="list"/>
+        <list cid="-1" id="0" name="MAP_TileSET" save="true" val="list"/>
+        <boolean cid="-1" id="44" name="KEYBOARD" save="true" value="false"/>
+        <number cid="-1" id="14" name="PTS" save="true" value="0.0"/>
+        <list cid="-1" id="45" name="LIST_MapUnlockState" save="true" val="list"/>
+        <list cid="-1" id="22" name="LIST_Mask_ANCHOR" save="true" val="list"/>
+        <list cid="-1" id="31" name="REPLAY_PressLT" save="true" val="list"/>
+        <list cid="-1" id="24" name="LIST_HIGHSCORE" save="true" val="list"/>
+        <list cid="-1" id="1" name="MAP_TileID" save="true" val="list"/>
+        <map cid="-1" id="10" name="MAP_BoardAnim" save="true" val="map"/>
+        <list cid="-1" id="37" name="REPLAY_stINPUT" save="true" val="list"/>
+        <list cid="-1" id="41" name="LIST_TRICKGAP" save="true" val="list"/>
+        <list cid="-1" id="38" name="REPLAY_FASTROT" save="true" val="list"/>
+        <list cid="-1" id="42" name="CustomController" save="true" val="list"/>
+        <boolean cid="-1" id="12" name="FULL_SCREEN" save="true" value="false"/>
+        <list cid="-1" id="33" name="REPLAY_PressUP" save="true" val="list"/>
+        <map cid="-1" id="8" name="MAP_GrindAnim" save="true" val="map"/>
+        <text cid="-1" id="7" name="MAP_CHOOSER" save="true" value="0"/>
+        <boolean cid="-1" id="20" name="NOSAVE" save="true" value="false"/>
+        <number cid="-1" id="3" name="Scene_Width" save="true" value="50.0"/>
+        <list cid="-1" id="43" name="LIST_MAP_PTS" save="true" val="list"/>
+        <list cid="-1" id="4" name="GameSETTINGS" save="true" val="list"/>
+        <list cid="-1" id="36" name="REPLAY_stROTATION" save="true" val="list"/>
+        <list cid="-1" id="34" name="REPLAY_stTRICK" save="true" val="list"/>
+        <number cid="-1" id="2" name="Scene_Height" save="true" value="50.0"/>
+        <list cid="-1" id="35" name="REPLAY_stBUMPER" save="true" val="list"/>
+        <boolean cid="-1" id="40" name="REPLAY_REC" save="true" value="false"/>
+        <boolean cid="-1" id="11" name="GOOFY" save="true" value="false"/>
+        <list cid="-1" id="29" name="LIST_TARGET" save="true" val="list"/>
+        <boolean cid="-1" id="30" name="REPLAY" save="true" value="false"/>
+        <list cid="-1" id="39" name="REPLAY_STARTING" save="true" val="list"/>
+        <map cid="-1" id="6" name="MAP_ALLAnim" save="true" val="map"/>
+        <list cid="-1" id="16" name="MAP_TileID_RAIL" save="true" val="list"/>
+        <list cid="-1" id="21" name="LIST_Mask_NUMBER" save="true" val="list"/>
+        <boolean cid="-1" id="23" name="isPLAYING" save="true" value="false"/>
+    </attributes>
+    <collisions>
+        <poly id="0" name="Square" pts="0.0,0.0#0.0,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="1" name="Rect Up" pts="0.0,0.0#0.0,0.5#1.0,0.5#1.0,0.0"/>
+        <poly id="2" name="Rect Down" pts="0.0,0.5#0.0,1.0#1.0,1.0#1.0,0.5"/>
+        <poly id="3" name="Rect Left" pts="0.0,0.0#0.0,1.0#0.5,1.0#0.5,0.0"/>
+        <poly id="4" name="Rect Right" pts="0.5,0.0#0.5,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="5" name="Tri 45R" pts="0.0,0.0#0.0,1.0#1.0,1.0"/>
+        <poly id="6" name="Tri 45L" pts="1.0,0.0#0.0,1.0#1.0,1.0"/>
+        <poly id="7" name="Tri 45R Inv" pts="0.0,0.0#0.0,1.0#1.0,0.0"/>
+        <poly id="8" name="Tri 45L Inv" pts="0.0,0.0#1.0,1.0#1.0,0.0"/>
+        <poly id="9" name="Tri 30R" pts="0.0,1.0#1.0,1.0#1.0,0.5"/>
+        <poly id="10" name="Tri 30L" pts="0.0,0.5#0.0,1.0#1.0,1.0"/>
+        <poly id="11" name="Tri 30-2R" pts="0.0,0.5#0.0,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="12" name="Tri 30-2L" pts="0.0,0.0#0.0,1.0#1.0,1.0#1.0,0.5"/>
+        <poly id="13" name="Tri 30R Inv" pts="0.0,0.0#1.0,0.5#1.0,0.0"/>
+        <poly id="14" name="Tri 30L Inv" pts="0.0,0.0#0.0,0.5#1.0,0.0"/>
+        <poly id="15" name="Tri 30-2R Inv" pts="0.0,0.0#0.0,0.5#1.0,1.0#1.0,0.0"/>
+        <poly id="16" name="Tri 30-2L Inv" pts="0.0,0.0#0.0,1.0#1.0,0.5#1.0,0.0"/>
+        <poly id="17" name="Tri 60R" pts="0.5,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="18" name="Tri 60L" pts="0.0,0.0#0.0,1.0#0.5,1.0"/>
+        <poly id="19" name="Tri 60-2R" pts="0.5,0.0#0.0,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="20" name="Tri 60-2L" pts="0.0,0.0#0.0,1.0#1.0,1.0#0.5,0.0"/>
+        <poly id="21" name="Tri 60R Inv" pts="0.5,0.0#1.0,1.0#1.0,0.0"/>
+        <poly id="22" name="Tri 60L Inv" pts="0.0,0.0#0.0,1.0#0.5,0.0"/>
+        <poly id="23" name="Tri 60-2R Inv" pts="0.0,0.0#0.5,1.0#1.0,1.0#1.0,0.0"/>
+        <poly id="24" name="Tri 60-2L Inv" pts="0.0,0.0#0.0,1.0#0.5,1.0#1.0,0.0"/>
+    </collisions>
+    <autotileFormats/>
+    <atlases>
+        <atlas allScenes="true" desc="" dirty="true" id="0" members="0,36,63,71,73,75,94,96,98,101,103,105,107,109,111,113,116,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,174,175,176,177,178,179,180,183,185,187,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203," name="Main Atlas" pvr="false" resize="0" target="0"/>
+        <atlas allScenes="true" desc="" dirty="true" id="1" members="" name="Atlas 2" pvr="false" resize="0" target="0"/>
+        <atlas allScenes="true" desc="" dirty="true" id="2" members="" name="Atlas 3" pvr="false" resize="0" target="0"/>
+        <atlas allScenes="true" desc="" dirty="true" id="3" members="" name="Atlas 4" pvr="false" resize="0" target="0"/>
+    </atlases>
+    <libraries/>
+</game>

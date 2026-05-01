@@ -1,0 +1,6 @@
+trans_right_duck0
+trans_right_duck1
+trans_right_duck2
+trans_right_nolduck0
+trans_right_nolduck1
+trans_right_nolduck2

@@ -1,0 +1,6 @@
+trans_up_duck0
+trans_up_duck1
+trans_up_duck2
+trans_up_nolduck0
+trans_up_nolduck1
+trans_up_nolduck2

@@ -1,0 +1,1337 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pack>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="51" fixedrot="false" fric="0.2" gid="3" id="63" ignoreg="false" inertia="1.0" ldamp="0.0" mass="1.0" name="Actor_CreateAnim" oid="-1" pausable="true" physicsMode="0" rest="0.0" shared="false" sprite="64" static="false">
+        <snippets>
+            <s enabled="true" id="52">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="6" list="0" val="[air_none_fall0, air_none_fall1, air_none_fall2, air_none_hang0, air_none_hang1, air_none_jump0, air_none_jump1, air_none_jump2, air_none_noljump0, air_none_noljump1, air_none_noljump2]"/>
+                <prop id="7" list="0" val="[flat_none_bslow0, flat_none_bslow1, flat_none_bslow2, flat_none_bslow3, flat_none_bslowcycle3, flat_none_bslowend0, flat_none_bslowend1, flat_none_bslowend2, flat_none_bslowend3, flat_none_fslow0, flat_none_fslow1, flat_none_fslow2, flat_none_fslow3, flat_none_fslowcycle3, flat_none_fslowend0, flat_none_fslowend1, flat_none_fslowend2, flat_none_fslowend3, flat_none_push0, flat_none_push1, flat_none_push2, flat_none_push3, flat_none_push4, flat_none_push5, flat_none_pushback0, flat_none_pushback1, flat_none_pushend0, flat_none_pushend1, flat_none_pushend2, flat_none_pushend3, flat_none_pushend4, flat_none_pushhold0, flat_none_pushhold1, flat_none_pushhold2, flat_none_pushhold3, flat_none_ridelowleft0, flat_none_ridemedleft0, flat_none_ridehighleft0, flat_none_ridenoriding0, flat_none_ridelowright0, flat_none_ridemedright0, flat_none_ridehighright0, flat_none_ducklowleft0, flat_none_ducklowleft1, flat_none_ducklowleft2, flat_none_duckmedleft0, flat_none_duckmedleft1, flat_none_duckmedleft2, flat_none_duckhighleft0, flat_none_duckhighleft1, flat_none_duckhighleft2, flat_none_ducknoriding0, flat_none_ducknoriding1, flat_none_ducknoriding2, flat_none_ducklowright0, flat_none_ducklowright1, flat_none_ducklowright2, flat_none_duckmedright0, flat_none_duckmedright1, flat_none_duckmedright2, flat_none_duckhighright0, flat_none_duckhighright1, flat_none_duckhighright2, flat_none_landlowleft0, flat_none_landlowleft1, flat_none_landlowleft2, flat_none_landmedleft0, flat_none_landmedleft1, flat_none_landmedleft2, flat_none_landhighleft0, flat_none_landhighleft1, flat_none_landhighleft2, flat_none_landnoriding0, flat_none_landnoriding1, flat_none_landnoriding2, flat_none_landlowright0, flat_none_landlowright1, flat_none_landlowright2, flat_none_landmedright0, flat_none_landmedright1, flat_none_landmedright2, flat_none_landhighright0, flat_none_landhighright1, flat_none_landhighright2, flat_none_landendlowleft0, flat_none_landendlowleft1, flat_none_landendlowleft2, flat_none_landendmedleft0, flat_none_landendmedleft1, flat_none_landendmedleft2, flat_none_landendhighleft0, flat_none_landendhighleft1, flat_none_landendhighleft2, flat_none_landendnoriding0, flat_none_landendnoriding1, flat_none_landendnoriding2, flat_none_landendlowright0, flat_none_landendlowright1, flat_none_landendlowright2, flat_none_landendmedright0, flat_none_landendmedright1, flat_none_landendmedright2, flat_none_landendhighright0, flat_none_landendhighright1, flat_none_landendhighright2, flat_none_nolducklowleft0, flat_none_nolducklowleft1, flat_none_nolducklowleft2, flat_none_nolduckmedleft0, flat_none_nolduckmedleft1, flat_none_nolduckmedleft2, flat_none_nolduckhighleft0, flat_none_nolduckhighleft1, flat_none_nolduckhighleft2, flat_none_nolducknoriding0, flat_none_nolducknoriding1, flat_none_nolducknoriding2, flat_none_nolducklowright0, flat_none_nolducklowright1, flat_none_nolducklowright2, flat_none_nolduckmedright0, flat_none_nolduckmedright1, flat_none_nolduckmedright2, flat_none_nolduckhighright0, flat_none_nolduckhighright1, flat_none_nolduckhighright2, flat_none_nolridelowleft0, flat_none_nolridemedleft0, flat_none_nolridehighleft0, flat_none_nolridenoriding0, flat_none_nolridelowright0, flat_none_nolridemedright0, flat_none_nolridehighright0, flat_none_stance0, flat_none_stance1, flat_none_stance2]"/>
+                <prop id="8" list="0" val="[trans_down_bslow0, trans_down_bslow1, trans_down_bslow2, trans_down_bslow3, trans_down_bslowcycle3, trans_down_bslowend0, trans_down_bslowend1, trans_down_bslowend2, trans_down_bslowend3, trans_down_fslow0, trans_down_fslow1, trans_down_fslow2, trans_down_fslow3, trans_down_fslowcycle3, trans_down_fslowend0, trans_down_fslowend1, trans_down_fslowend2, trans_down_fslowend3, trans_down_push0, trans_down_push1, trans_down_push2, trans_down_push3, trans_down_push4, trans_down_push5, trans_down_pushback0, trans_down_pushback1, trans_down_pushend0, trans_down_pushend1, trans_down_pushend2, trans_down_pushend3, trans_down_pushend4, trans_down_pushhold0, trans_down_pushhold1, trans_down_pushhold2, trans_down_pushhold3, trans_down_ridelowleft0, trans_down_ridemedleft0, trans_down_ridehighleft0, trans_down_ridenoriding0, trans_down_ridelowright0, trans_down_ridemedright0, trans_down_ridehighright0, trans_down_ducklowleft0, trans_down_ducklowleft1, trans_down_ducklowleft2, trans_down_duckmedleft0, trans_down_duckmedleft1, trans_down_duckmedleft2, trans_down_duckhighleft0, trans_down_duckhighleft1, trans_down_duckhighleft2, trans_down_ducknoriding0, trans_down_ducknoriding1, trans_down_ducknoriding2, trans_down_ducklowright0, trans_down_ducklowright1, trans_down_ducklowright2, trans_down_duckmedright0, trans_down_duckmedright1, trans_down_duckmedright2, trans_down_duckhighright0, trans_down_duckhighright1, trans_down_duckhighright2, trans_down_landlowleft0, trans_down_landlowleft1, trans_down_landlowleft2, trans_down_landmedleft0, trans_down_landmedleft1, trans_down_landmedleft2, trans_down_landhighleft0, trans_down_landhighleft1, trans_down_landhighleft2, trans_down_landnoriding0, trans_down_landnoriding1, trans_down_landnoriding2, trans_down_landlowright0, trans_down_landlowright1, trans_down_landlowright2, trans_down_landmedright0, trans_down_landmedright1, trans_down_landmedright2, trans_down_landhighright0, trans_down_landhighright1, trans_down_landhighright2, trans_down_landendlowleft0, trans_down_landendlowleft1, trans_down_landendlowleft2, trans_down_landendmedleft0, trans_down_landendmedleft1, trans_down_landendmedleft2, trans_down_landendhighleft0, trans_down_landendhighleft1, trans_down_landendhighleft2, trans_down_landendnoriding0, trans_down_landendnoriding1, trans_down_landendnoriding2, trans_down_landendlowright0, trans_down_landendlowright1, trans_down_landendlowright2, trans_down_landendmedright0, trans_down_landendmedright1, trans_down_landendmedright2, trans_down_landendhighright0, trans_down_landendhighright1, trans_down_landendhighright2, trans_down_nolducklowleft0, trans_down_nolducklowleft1, trans_down_nolducklowleft2, trans_down_nolduckmedleft0, trans_down_nolduckmedleft1, trans_down_nolduckmedleft2, trans_down_nolduckhighleft0, trans_down_nolduckhighleft1, trans_down_nolduckhighleft2, trans_down_nolducknoriding0, trans_down_nolducknoriding1, trans_down_nolducknoriding2, trans_down_nolducklowright0, trans_down_nolducklowright1, trans_down_nolducklowright2, trans_down_nolduckmedright0, trans_down_nolduckmedright1, trans_down_nolduckmedright2, trans_down_nolduckhighright0, trans_down_nolduckhighright1, trans_down_nolduckhighright2, trans_down_nolridelowleft0, trans_down_nolridemedleft0, trans_down_nolridehighleft0, trans_down_nolridenoriding0, trans_down_nolridelowright0, trans_down_nolridemedright0, trans_down_nolridehighright0, trans_down_stance0, trans_down_stance1, trans_down_stance2]"/>
+                <prop id="9" list="0" val="[trans_left_bslow0, trans_left_bslow1, trans_left_bslow2, trans_left_bslow3, trans_left_bslowcycle3, trans_left_bslowend0, trans_left_bslowend1, trans_left_bslowend2, trans_left_bslowend3, trans_left_fslow0, trans_left_fslow1, trans_left_fslow2, trans_left_fslow3, trans_left_fslowcycle3, trans_left_fslowend0, trans_left_fslowend1, trans_left_fslowend2, trans_left_fslowend3, trans_left_push0, trans_left_push1, trans_left_push2, trans_left_push3, trans_left_push4, trans_left_push5, trans_left_pushback0, trans_left_pushback1, trans_left_pushend0, trans_left_pushend1, trans_left_pushend2, trans_left_pushend3, trans_left_pushend4, trans_left_pushhold0, trans_left_pushhold1, trans_left_pushhold2, trans_left_pushhold3, trans_left_ridelowleft0, trans_left_ridemedleft0, trans_left_ridehighleft0, trans_left_ridenoriding0, trans_left_ridelowright0, trans_left_ridemedright0, trans_left_ridehighright0, trans_left_ducklowleft0, trans_left_ducklowleft1, trans_left_ducklowleft2, trans_left_duckmedleft0, trans_left_duckmedleft1, trans_left_duckmedleft2, trans_left_duckhighleft0, trans_left_duckhighleft1, trans_left_duckhighleft2, trans_left_ducknoriding0, trans_left_ducknoriding1, trans_left_ducknoriding2, trans_left_ducklowright0, trans_left_ducklowright1, trans_left_ducklowright2, trans_left_duckmedright0, trans_left_duckmedright1, trans_left_duckmedright2, trans_left_duckhighright0, trans_left_duckhighright1, trans_left_duckhighright2, trans_left_landlowleft0, trans_left_landlowleft1, trans_left_landlowleft2, trans_left_landmedleft0, trans_left_landmedleft1, trans_left_landmedleft2, trans_left_landhighleft0, trans_left_landhighleft1, trans_left_landhighleft2, trans_left_landnoriding0, trans_left_landnoriding1, trans_left_landnoriding2, trans_left_landlowright0, trans_left_landlowright1, trans_left_landlowright2, trans_left_landmedright0, trans_left_landmedright1, trans_left_landmedright2, trans_left_landhighright0, trans_left_landhighright1, trans_left_landhighright2, trans_left_landendlowleft0, trans_left_landendlowleft1, trans_left_landendlowleft2, trans_left_landendmedleft0, trans_left_landendmedleft1, trans_left_landendmedleft2, trans_left_landendhighleft0, trans_left_landendhighleft1, trans_left_landendhighleft2, trans_left_landendnoriding0, trans_left_landendnoriding1, trans_left_landendnoriding2, trans_left_landendlowright0, trans_left_landendlowright1, trans_left_landendlowright2, trans_left_landendmedright0, trans_left_landendmedright1, trans_left_landendmedright2, trans_left_landendhighright0, trans_left_landendhighright1, trans_left_landendhighright2, trans_left_nolducklowleft0, trans_left_nolducklowleft1, trans_left_nolducklowleft2, trans_left_nolduckmedleft0, trans_left_nolduckmedleft1, trans_left_nolduckmedleft2, trans_left_nolduckhighleft0, trans_left_nolduckhighleft1, trans_left_nolduckhighleft2, trans_left_nolducknoriding0, trans_left_nolducknoriding1, trans_left_nolducknoriding2, trans_left_nolducklowright0, trans_left_nolducklowright1, trans_left_nolducklowright2, trans_left_nolduckmedright0, trans_left_nolduckmedright1, trans_left_nolduckmedright2, trans_left_nolduckhighright0, trans_left_nolduckhighright1, trans_left_nolduckhighright2, trans_left_nolridelowleft0, trans_left_nolridemedleft0, trans_left_nolridehighleft0, trans_left_nolridenoriding0, trans_left_nolridelowright0, trans_left_nolridemedright0, trans_left_nolridehighright0, trans_left_stance0, trans_left_stance1, trans_left_stance2]"/>
+                <prop id="10" list="0" val="[trans_right_bslow0, trans_right_bslow1, trans_right_bslow2, trans_right_bslow3, trans_right_bslowcycle3, trans_right_bslowend0, trans_right_bslowend1, trans_right_bslowend2, trans_right_bslowend3, trans_right_fslow0, trans_right_fslow1, trans_right_fslow2, trans_right_fslow3, trans_right_fslowcycle3, trans_right_fslowend0, trans_right_fslowend1, trans_right_fslowend2, trans_right_fslowend3, trans_right_push0, trans_right_push1, trans_right_push2, trans_right_push3, trans_right_push4, trans_right_push5, trans_right_pushback0, trans_right_pushback1, trans_right_pushend0, trans_right_pushend1, trans_right_pushend2, trans_right_pushend3, trans_right_pushend4, trans_right_pushhold0, trans_right_pushhold1, trans_right_pushhold2, trans_right_pushhold3, trans_right_ridelowleft0, trans_right_ridemedleft0, trans_right_ridehighleft0, trans_right_ridenoriding0, trans_right_ridelowright0, trans_right_ridemedright0, trans_right_ridehighright0, trans_right_ducklowleft0, trans_right_ducklowleft1, trans_right_ducklowleft2, trans_right_duckmedleft0, trans_right_duckmedleft1, trans_right_duckmedleft2, trans_right_duckhighleft0, trans_right_duckhighleft1, trans_right_duckhighleft2, trans_right_ducknoriding0, trans_right_ducknoriding1, trans_right_ducknoriding2, trans_right_ducklowright0, trans_right_ducklowright1, trans_right_ducklowright2, trans_right_duckmedright0, trans_right_duckmedright1, trans_right_duckmedright2, trans_right_duckhighright0, trans_right_duckhighright1, trans_right_duckhighright2, trans_right_landlowleft0, trans_right_landlowleft1, trans_right_landlowleft2, trans_right_landmedleft0, trans_right_landmedleft1, trans_right_landmedleft2, trans_right_landhighleft0, trans_right_landhighleft1, trans_right_landhighleft2, trans_right_landnoriding0, trans_right_landnoriding1, trans_right_landnoriding2, trans_right_landlowright0, trans_right_landlowright1, trans_right_landlowright2, trans_right_landmedright0, trans_right_landmedright1, trans_right_landmedright2, trans_right_landhighright0, trans_right_landhighright1, trans_right_landhighright2, trans_right_landendlowleft0, trans_right_landendlowleft1, trans_right_landendlowleft2, trans_right_landendmedleft0, trans_right_landendmedleft1, trans_right_landendmedleft2, trans_right_landendhighleft0, trans_right_landendhighleft1, trans_right_landendhighleft2, trans_right_landendnoriding0, trans_right_landendnoriding1, trans_right_landendnoriding2, trans_right_landendlowright0, trans_right_landendlowright1, trans_right_landendlowright2, trans_right_landendmedright0, trans_right_landendmedright1, trans_right_landendmedright2, trans_right_landendhighright0, trans_right_landendhighright1, trans_right_landendhighright2, trans_right_nolducklowleft0, trans_right_nolducklowleft1, trans_right_nolducklowleft2, trans_right_nolduckmedleft0, trans_right_nolduckmedleft1, trans_right_nolduckmedleft2, trans_right_nolduckhighleft0, trans_right_nolduckhighleft1, trans_right_nolduckhighleft2, trans_right_nolducknoriding0, trans_right_nolducknoriding1, trans_right_nolducknoriding2, trans_right_nolducklowright0, trans_right_nolducklowright1, trans_right_nolducklowright2, trans_right_nolduckmedright0, trans_right_nolduckmedright1, trans_right_nolduckmedright2, trans_right_nolduckhighright0, trans_right_nolduckhighright1, trans_right_nolduckhighright2, trans_right_nolridelowleft0, trans_right_nolridemedleft0, trans_right_nolridehighleft0, trans_right_nolridenoriding0, trans_right_nolridelowright0, trans_right_nolridemedright0, trans_right_nolridehighright0, trans_right_stance0, trans_right_stance1, trans_right_stance2]"/>
+                <prop id="11" list="0" val="[trans_up_bslow0, trans_up_bslow1, trans_up_bslow2, trans_up_bslow3, trans_up_bslowcycle3, trans_up_bslowend0, trans_up_bslowend1, trans_up_bslowend2, trans_up_bslowend3, trans_up_fslow0, trans_up_fslow1, trans_up_fslow2, trans_up_fslow3, trans_up_fslowcycle3, trans_up_fslowend0, trans_up_fslowend1, trans_up_fslowend2, trans_up_fslowend3, trans_up_push0, trans_up_push1, trans_up_push2, trans_up_push3, trans_up_push4, trans_up_push5, trans_up_pushback0, trans_up_pushback1, trans_up_pushend0, trans_up_pushend1, trans_up_pushend2, trans_up_pushend3, trans_up_pushend4, trans_up_pushhold0, trans_up_pushhold1, trans_up_pushhold2, trans_up_pushhold3, trans_up_ridelowleft0, trans_up_ridemedleft0, trans_up_ridehighleft0, trans_up_ridenoriding0, trans_up_ridelowright0, trans_up_ridemedright0, trans_up_ridehighright0, trans_up_ducklowleft0, trans_up_ducklowleft1, trans_up_ducklowleft2, trans_up_duckmedleft0, trans_up_duckmedleft1, trans_up_duckmedleft2, trans_up_duckhighleft0, trans_up_duckhighleft1, trans_up_duckhighleft2, trans_up_ducknoriding0, trans_up_ducknoriding1, trans_up_ducknoriding2, trans_up_ducklowright0, trans_up_ducklowright1, trans_up_ducklowright2, trans_up_duckmedright0, trans_up_duckmedright1, trans_up_duckmedright2, trans_up_duckhighright0, trans_up_duckhighright1, trans_up_duckhighright2, trans_up_landlowleft0, trans_up_landlowleft1, trans_up_landlowleft2, trans_up_landmedleft0, trans_up_landmedleft1, trans_up_landmedleft2, trans_up_landhighleft0, trans_up_landhighleft1, trans_up_landhighleft2, trans_up_landnoriding0, trans_up_landnoriding1, trans_up_landnoriding2, trans_up_landlowright0, trans_up_landlowright1, trans_up_landlowright2, trans_up_landmedright0, trans_up_landmedright1, trans_up_landmedright2, trans_up_landhighright0, trans_up_landhighright1, trans_up_landhighright2, trans_up_landendlowleft0, trans_up_landendlowleft1, trans_up_landendlowleft2, trans_up_landendmedleft0, trans_up_landendmedleft1, trans_up_landendmedleft2, trans_up_landendhighleft0, trans_up_landendhighleft1, trans_up_landendhighleft2, trans_up_landendnoriding0, trans_up_landendnoriding1, trans_up_landendnoriding2, trans_up_landendlowright0, trans_up_landendlowright1, trans_up_landendlowright2, trans_up_landendmedright0, trans_up_landendmedright1, trans_up_landendmedright2, trans_up_landendhighright0, trans_up_landendhighright1, trans_up_landendhighright2, trans_up_nolducklowleft0, trans_up_nolducklowleft1, trans_up_nolducklowleft2, trans_up_nolduckmedleft0, trans_up_nolduckmedleft1, trans_up_nolduckmedleft2, trans_up_nolduckhighleft0, trans_up_nolduckhighleft1, trans_up_nolduckhighleft2, trans_up_nolducknoriding0, trans_up_nolducknoriding1, trans_up_nolducknoriding2, trans_up_nolducklowright0, trans_up_nolducklowright1, trans_up_nolducklowright2, trans_up_nolduckmedright0, trans_up_nolduckmedright1, trans_up_nolduckmedright2, trans_up_nolduckhighright0, trans_up_nolduckhighright1, trans_up_nolduckhighright2, trans_up_nolridelowleft0, trans_up_nolridemedleft0, trans_up_nolridehighleft0, trans_up_nolridenoriding0, trans_up_nolridelowright0, trans_up_nolridemedright0, trans_up_nolridehighright0, trans_up_stance0, trans_up_stance1, trans_up_stance2]"/>
+                <prop id="13" list="0" val="0.0"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val="0"/>
+                <prop id="36" list="0" val=""/>
+                <prop id="37" list="0" val="false"/>
+                <prop id="38" list="0" val=""/>
+                <prop id="39" list="0" val=""/>
+                <prop id="40" list="0" val=""/>
+                <prop id="41" list="0" val=""/>
+                <prop id="42" list="0" val=""/>
+                <prop id="43" list="0" val=""/>
+                <prop id="44" list="0" val=""/>
+                <prop id="45" list="0" val=""/>
+                <prop id="46" list="0" val=""/>
+                <prop id="47" list="0" val=""/>
+                <prop id="48" list="0" val=""/>
+                <prop id="49" list="0" val=""/>
+                <prop id="50" list="0" val="0"/>
+                <prop id="51" list="0" val=""/>
+                <prop id="52" list="0" val=""/>
+                <prop id="53" list="0" val=""/>
+                <prop id="54" list="0" val="false"/>
+                <prop id="55" list="0" val="0"/>
+                <prop id="56" list="0" val=""/>
+                <prop id="57" list="0" val=""/>
+                <prop id="58" list="0" val="0"/>
+                <prop id="59" list="0" val=""/>
+                <prop id="60" list="0" val=""/>
+                <prop id="61" list="0" val="0"/>
+                <prop id="62" list="0" val="false"/>
+                <prop id="63" list="0" val=""/>
+                <prop id="64" list="0" val="0,0,0,255"/>
+                <prop id="66" list="0" val="0"/>
+                <prop id="67" list="0" val="false"/>
+                <prop id="68" list="0" val="0,0,0,255"/>
+                <prop id="69" list="0" val="0,0,0,255"/>
+                <prop id="70" list="0" val="0"/>
+                <prop id="71" list="0" val="0,0,0,255"/>
+                <prop id="72" list="0" val=""/>
+                <prop id="73" list="0" val="0"/>
+                <prop id="74" list="0" val="0,0,0,255"/>
+                <prop id="75" list="0" val="0,0,0,255"/>
+                <prop id="76" list="0" val="false"/>
+                <prop id="77" list="0" val=""/>
+                <prop id="78" list="0" val=""/>
+                <prop id="79" list="0" val="false"/>
+                <prop id="80" list="0" val="false"/>
+                <prop id="81" list="0" val="false"/>
+                <prop id="82" list="0" val="false"/>
+                <prop id="83" list="0" val=""/>
+                <prop id="84" list="0" val=""/>
+                <prop id="85" list="0" val=""/>
+                <prop id="86" list="0" val=""/>
+                <prop id="87" list="0" val=""/>
+                <prop id="88" list="0" val=""/>
+                <prop id="89" list="0" val="0"/>
+                <prop id="90" list="0" val="0"/>
+                <prop id="91" list="0" val="0"/>
+                <prop id="92" list="0" val="0"/>
+                <prop id="93" list="0" val="0"/>
+                <prop id="94" list="0" val=""/>
+                <prop id="95" list="0" val=""/>
+                <prop id="96" list="0" val="false"/>
+                <prop id="97" list="0" val="false"/>
+                <prop id="98" list="0" val="false"/>
+                <prop id="99" list="0" val="false"/>
+                <prop id="100" list="0" val=""/>
+                <prop id="101" list="0" val=""/>
+                <prop id="102" list="0" val=""/>
+                <prop id="103" list="0" val="false"/>
+                <prop id="104" list="0" val=""/>
+                <prop id="105" list="0" val=""/>
+                <prop id="106" list="0" val=""/>
+                <prop id="107" list="0" val="false"/>
+                <prop id="108" list="0" val="false"/>
+                <prop id="109" list="0" val="0"/>
+                <prop id="110" list="0" val=""/>
+                <prop id="111" list="0" val=""/>
+                <prop id="112" list="0" val=""/>
+                <prop id="113" list="0" val=""/>
+                <prop id="114" list="0" val=""/>
+                <prop id="115" list="0" val=""/>
+                <prop id="116" list="0" val=""/>
+                <prop id="117" list="0" val=""/>
+                <prop id="118" list="0" val=""/>
+                <prop id="119" list="0" val=""/>
+                <prop id="120" list="0" val=""/>
+                <prop id="121" list="0" val=""/>
+                <prop id="122" list="0" val="0"/>
+                <prop id="123" list="0" val=""/>
+                <prop id="124" list="0" val=""/>
+                <prop id="125" list="0" val="0"/>
+                <prop id="126" list="0" val="0"/>
+                <prop id="127" list="0" val="0"/>
+                <prop id="128" list="0" val="0"/>
+                <prop id="129" list="0" val="0"/>
+                <prop id="130" list="0" val="0"/>
+                <prop id="131" list="0" val="false"/>
+                <prop id="132" list="0" val=""/>
+                <prop id="133" list="0" val=""/>
+                <prop id="134" list="0" val="0"/>
+                <prop id="135" list="0" val="false"/>
+            </s>
+        </snippets>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="100" id="64" name="Actor_CreateAnim" shared="false" width="100">
+        <anim across="1" down="1" durations="100" height="100" id="0" loop="true" name="Animation 0" numframes="1" originx="50" originy="50" sync="false" version="2" width="100">
+            <poly data="4,0,0,100,0,100,100,0,100" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="false"/>
+        </anim>
+    </sprite>
+    <music atlasID="0" desc="" id="174" loop="true" name="bail" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="88" fixedrot="false" fric="0.2" gid="3" id="94" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="BoardRot_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="95" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="40" id="95" name="BoardRot_ICON" shared="false" width="109">
+        <anim across="3" down="2" durations="100,100,100,100,100,100" height="80" id="0" loop="false" name="Animation 0" numframes="6" originx="54" originy="20" sync="false" version="2" width="327">
+            <poly data="4,0,0,109,0,109,40,0,40" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="107" fixedrot="false" fric="0.2" gid="3" id="172" ignoreg="false" inertia="1.0" ldamp="0.0" mass="1.0" name="ChooseColorPart" oid="-1" pausable="true" physicsMode="0" rest="0.0" shared="false" sprite="173" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="288" id="173" name="ChooseColorPart" shared="false" width="176">
+        <anim across="3" down="2" durations="100,100,100,100,100,100" height="576" id="0" loop="false" name="Animation 0" numframes="6" originx="88" originy="144" sync="false" version="2" width="528">
+            <poly data="4,0,0,176,0,176,288,0,288" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="false"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="4" fixedrot="false" fric="0.2" gid="3" id="0" ignoreg="false" inertia="1.0" ldamp="0.0" mass="1.0" name="displacement" oid="-1" pausable="true" physicsMode="0" rest="0.0" shared="false" sprite="1" static="false">
+        <snippets>
+            <s enabled="true" id="96">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="false"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="false"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val=""/>
+                <prop id="7" list="0" val=""/>
+                <prop id="8" list="0" val=""/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="false"/>
+                <prop id="13" list="0" val="false"/>
+                <prop id="14" list="0" val="false"/>
+                <prop id="15" list="0" val="false"/>
+                <prop id="16" list="0" val="false"/>
+                <prop id="17" list="0" val="false"/>
+                <prop id="18" list="0" val="0"/>
+                <prop id="19" list="0" val="0"/>
+                <prop id="20" list="0" val="0"/>
+                <prop id="21" list="0" val=""/>
+                <prop id="22" list="0" val="0"/>
+                <prop id="23" list="0" val="false"/>
+                <prop id="24" list="0" val="false"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="false"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val="0"/>
+                <prop id="31" list="0" val="false"/>
+                <prop id="32" list="0" val="0"/>
+                <prop id="33" list="0" val="false"/>
+                <prop id="34" list="0" val="0"/>
+                <prop id="35" list="0" val="0"/>
+                <prop id="36" list="0" val=""/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val="false"/>
+                <prop id="39" list="0" val="false"/>
+                <prop id="40" list="0" val="false"/>
+            </s>
+            <s enabled="true" id="1">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val=""/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val=""/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="false"/>
+                <prop id="15" list="0" val="false"/>
+                <prop id="16" list="0" val=""/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val=""/>
+                <prop id="20" list="0" val="false"/>
+                <prop id="21" list="0" val="false"/>
+                <prop id="22" list="0" val="0"/>
+                <prop id="23" list="0" val="0"/>
+                <prop id="24" list="0" val="0"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val="0"/>
+                <prop id="31" list="0" val="0"/>
+                <prop id="32" list="0" val="0"/>
+                <prop id="33" list="0" val="0"/>
+                <prop id="34" list="0" val="false"/>
+                <prop id="35" list="0" val="0"/>
+                <prop id="36" list="0" val="0"/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val="0"/>
+                <prop id="39" list="0" val="0"/>
+                <prop id="40" list="0" val=""/>
+                <prop id="41" list="0" val=""/>
+                <prop id="42" list="0" val="false"/>
+                <prop id="43" list="0" val=""/>
+                <prop id="44" list="0" val="0"/>
+                <prop id="45" list="0" val="0"/>
+                <prop id="46" list="0" val="false"/>
+                <prop id="47" list="0" val="false"/>
+                <prop id="48" list="0" val="0"/>
+                <prop id="49" list="0" val="false"/>
+                <prop id="50" list="0" val="false"/>
+                <prop id="51" list="0" val="0"/>
+                <prop id="52" list="0" val="0"/>
+                <prop id="53" list="0" val="false"/>
+                <prop id="54" list="0" val=""/>
+                <prop id="55" list="0" val=""/>
+            </s>
+            <s enabled="true" id="33">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val=""/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val="0.0"/>
+                <prop id="10" list="0" val=""/>
+                <prop id="11" list="0" val="false"/>
+                <prop id="12" list="0" val="false"/>
+                <prop id="13" list="0" val="false"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val="0"/>
+                <prop id="16" list="0" val=""/>
+                <prop id="17" list="0" val=""/>
+                <prop id="18" list="0" val="false"/>
+            </s>
+            <s enabled="true" id="67">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val=""/>
+                <prop id="2" list="0" val=""/>
+                <prop id="3" list="0" val=""/>
+                <prop id="5" list="0" val=""/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="false"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val=""/>
+                <prop id="10" list="0" val="0.0"/>
+                <prop id="11" list="0" val="0.0"/>
+                <prop id="12" list="0" val="0.0"/>
+                <prop id="13" list="0" val="false"/>
+                <prop id="14" list="0" val="false"/>
+                <prop id="15" list="0" val=""/>
+                <prop id="16" list="0" val=""/>
+                <prop id="17" list="0" val=""/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val="false"/>
+                <prop id="20" list="0" val=""/>
+                <prop id="21" list="0" val="false"/>
+                <prop id="22" list="0" val=""/>
+                <prop id="23" list="0" val="false"/>
+                <prop id="24" list="0" val="false"/>
+                <prop id="25" list="0" val=""/>
+                <prop id="26" list="0" val="false"/>
+                <prop id="27" list="0" val="false"/>
+                <prop id="28" list="0" val="false"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val="false"/>
+                <prop id="31" list="0" val=""/>
+                <prop id="32" list="0" val="0"/>
+                <prop id="33" list="0" val="false"/>
+                <prop id="34" list="0" val="false"/>
+                <prop id="35" list="0" val=""/>
+                <prop id="36" list="0" val=""/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val=""/>
+                <prop id="39" list="0" val=""/>
+                <prop id="40" list="0" val="0"/>
+                <prop id="41" list="0" val="0"/>
+                <prop id="42" list="0" val="false"/>
+                <prop id="43" list="0" val=""/>
+                <prop id="45" list="0" val="0"/>
+                <prop id="46" list="0" val=""/>
+                <prop id="47" list="0" val="false"/>
+                <prop id="48" list="0" val=""/>
+                <prop id="49" list="0" val="false"/>
+            </s>
+            <s enabled="true" id="5">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="false"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val="false"/>
+                <prop id="10" list="0" val="false"/>
+                <prop id="11" list="0" val="false"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="2"/>
+                <prop id="15" list="0" val="0"/>
+                <prop id="16" list="0" val="0"/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val="0"/>
+                <prop id="20" list="0" val="0"/>
+                <prop id="21" list="0" val="0"/>
+                <prop id="22" list="0" val=""/>
+                <prop id="23" list="0" val="0"/>
+                <prop id="24" list="0" val="0"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val="0"/>
+                <prop id="31" list="0" val="0"/>
+                <prop id="32" list="0" val="false"/>
+                <prop id="33" list="0" val="0"/>
+                <prop id="34" list="0" val="0"/>
+                <prop id="35" list="0" val=""/>
+                <prop id="36" list="0" val="false"/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val="0"/>
+                <prop id="39" list="0" val=""/>
+                <prop id="40" list="0" val="false"/>
+                <prop id="41" list="0" val="0"/>
+                <prop id="42" list="0" val="0"/>
+                <prop id="43" list="0" val="0"/>
+                <prop id="44" list="0" val="false"/>
+                <prop id="45" list="0" val="0"/>
+                <prop id="46" list="0" val="false"/>
+                <prop id="47" list="0" val="false"/>
+                <prop id="48" list="0" val=""/>
+                <prop id="49" list="0" val="0"/>
+                <prop id="50" list="0" val="false"/>
+                <prop id="51" list="0" val="false"/>
+                <prop id="52" list="0" val="0"/>
+                <prop id="53" list="0" val="0"/>
+                <prop id="54" list="0" val="false"/>
+                <prop id="55" list="0" val="false"/>
+                <prop id="56" list="0" val="false"/>
+                <prop id="57" list="0" val="0"/>
+                <prop id="58" list="0" val="false"/>
+                <prop id="59" list="0" val="false"/>
+                <prop id="60" list="0" val=""/>
+                <prop id="61" list="0" val="false"/>
+                <prop id="62" list="0" val="false"/>
+                <prop id="63" list="0" val="0"/>
+                <prop id="64" list="0" val=""/>
+                <prop id="65" list="0" val="0"/>
+                <prop id="66" list="0" val=""/>
+                <prop id="67" list="0" val=""/>
+                <prop id="68" list="0" val="0"/>
+                <prop id="69" list="0" val="0"/>
+                <prop id="70" list="0" val="false"/>
+                <prop id="71" list="0" val="0"/>
+                <prop id="72" list="0" val=""/>
+                <prop id="73" list="0" val="0"/>
+                <prop id="74" list="0" val="0"/>
+                <prop id="75" list="0" val="0"/>
+                <prop id="76" list="0" val="0"/>
+                <prop id="77" list="0" val="false"/>
+                <prop id="78" list="0" val="false"/>
+                <prop id="79" list="0" val="false"/>
+                <prop id="80" list="0" val="0"/>
+                <prop id="81" list="0" val="0"/>
+                <prop id="82" list="0" val="0"/>
+                <prop id="83" list="0" val="0"/>
+                <prop id="84" list="0" val="0"/>
+                <prop id="85" list="0" val="false"/>
+                <prop id="86" list="0" val="false"/>
+                <prop id="87" list="0" val="0"/>
+                <prop id="88" list="0" val=""/>
+                <prop id="89" list="0" val="false"/>
+                <prop id="90" list="0" val="false"/>
+                <prop id="91" list="0" val="false"/>
+                <prop id="92" list="0" val="0"/>
+                <prop id="93" list="0" val=""/>
+                <prop id="94" list="0" val="0"/>
+                <prop id="95" list="0" val="false"/>
+                <prop id="96" list="0" val="0"/>
+                <prop id="97" list="0" val="0"/>
+                <prop id="98" list="0" val=""/>
+                <prop id="99" list="0" val="false"/>
+                <prop id="100" list="0" val="false"/>
+                <prop id="101" list="0" val="false"/>
+                <prop id="102" list="0" val="false"/>
+                <prop id="103" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="9">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val=""/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val="false"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="false"/>
+                <prop id="14" list="0" val=""/>
+                <prop id="15" list="0" val=""/>
+                <prop id="16" list="0" val="0"/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val="false"/>
+                <prop id="21" list="0" val="0"/>
+                <prop id="22" list="0" val="false"/>
+                <prop id="23" list="0" val="0"/>
+                <prop id="24" list="0" val="0"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="false"/>
+                <prop id="28" list="0" val="false"/>
+                <prop id="29" list="0" val="false"/>
+                <prop id="30" list="0" val="0"/>
+                <prop id="31" list="0" val="false"/>
+                <prop id="32" list="0" val="0"/>
+                <prop id="33" list="0" val="0"/>
+                <prop id="34" list="0" val="false"/>
+                <prop id="35" list="0" val="0"/>
+                <prop id="36" list="0" val="false"/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val="0"/>
+                <prop id="39" list="0" val="false"/>
+                <prop id="40" list="0" val="0"/>
+                <prop id="41" list="0" val="false"/>
+                <prop id="42" list="0" val="0"/>
+                <prop id="43" list="0" val="0"/>
+                <prop id="44" list="0" val="0"/>
+                <prop id="45" list="0" val="0"/>
+                <prop id="46" list="0" val="0"/>
+                <prop id="47" list="0" val="0"/>
+                <prop id="48" list="0" val="false"/>
+                <prop id="49" list="0" val="0"/>
+                <prop id="50" list="0" val="false"/>
+                <prop id="51" list="0" val="0"/>
+                <prop id="52" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="10">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="2" list="0" val=""/>
+                <prop id="3" list="0" val="false"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="false"/>
+                <prop id="6" list="0" val="false"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val="false"/>
+                <prop id="9" list="0" val="false"/>
+                <prop id="10" list="0" val="false"/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val="[10.0, 40.0, 15.0, 30.0]"/>
+                <prop id="16" list="0" val="false"/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val="-1"/>
+                <prop id="20" list="0" val="false"/>
+                <prop id="21" list="0" val=""/>
+                <prop id="22" list="0" val="0"/>
+                <prop id="23" list="0" val="-1"/>
+                <prop id="24" list="0" val="false"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val="false"/>
+                <prop id="30" list="0" val=""/>
+                <prop id="31" list="0" val="0"/>
+                <prop id="32" list="0" val="0"/>
+                <prop id="33" list="0" val="false"/>
+                <prop id="34" list="0" val="0"/>
+                <prop id="35" list="0" val="0"/>
+                <prop id="36" list="0" val="0"/>
+                <prop id="37" list="0" val=""/>
+                <prop id="38" list="0" val="0"/>
+                <prop id="39" list="0" val="0"/>
+                <prop id="40" list="0" val="false"/>
+                <prop id="41" list="0" val="0"/>
+                <prop id="42" list="0" val="false"/>
+                <prop id="43" list="0" val="0"/>
+                <prop id="44" list="0" val="0"/>
+                <prop id="45" list="0" val="false"/>
+                <prop id="46" list="0" val=""/>
+                <prop id="47" list="0" val="0"/>
+                <prop id="48" list="0" val="false"/>
+                <prop id="49" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="106">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val=""/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val=""/>
+                <prop id="4" list="0" val=""/>
+                <prop id="5" list="0" val=""/>
+                <prop id="6" list="0" val=""/>
+                <prop id="7" list="0" val=""/>
+                <prop id="8" list="0" val=""/>
+                <prop id="9" list="0" val=""/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val="0"/>
+                <prop id="16" list="0" val="0"/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val=""/>
+                <prop id="20" list="0" val="false"/>
+                <prop id="21" list="0" val=""/>
+                <prop id="22" list="0" val="false"/>
+                <prop id="23" list="0" val=""/>
+                <prop id="24" list="0" val=""/>
+                <prop id="25" list="0" val=""/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val=""/>
+                <prop id="31" list="0" val=""/>
+                <prop id="32" list="0" val="false"/>
+                <prop id="33" list="0" val="0"/>
+                <prop id="34" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="111">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="false"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="false"/>
+                <prop id="8" list="0" val=""/>
+                <prop id="9" list="0" val=""/>
+                <prop id="10" list="0" val=""/>
+                <prop id="11" list="0" val=""/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="false"/>
+                <prop id="14" list="0" val=""/>
+                <prop id="15" list="0" val=""/>
+                <prop id="16" list="0" val="0"/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val="0"/>
+                <prop id="19" list="0" val="0"/>
+                <prop id="20" list="0" val=""/>
+                <prop id="21" list="0" val=""/>
+                <prop id="22" list="0" val="0"/>
+                <prop id="23" list="0" val=""/>
+                <prop id="24" list="0" val="false"/>
+                <prop id="25" list="0" val=""/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="49">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val=""/>
+                <prop id="4" list="0" val=""/>
+                <prop id="5" list="0" val=""/>
+                <prop id="6" list="1" val="">
+                    <text order="0" value="air_none_fall0"/>
+                    <text order="1" value="air_none_fall1"/>
+                    <text order="2" value="air_none_fall2"/>
+                    <text order="3" value="air_none_hang0"/>
+                    <text order="4" value="air_none_hang1"/>
+                    <text order="5" value="air_none_jump0"/>
+                    <text order="6" value="air_none_jump1"/>
+                    <text order="7" value="air_none_jump2"/>
+                </prop>
+                <prop id="7" list="1" val="">
+                    <text order="0" value="flat_none_bslow0"/>
+                    <text order="1" value="flat_none_bslow1"/>
+                    <text order="2" value="flat_none_bslow2"/>
+                    <text order="3" value="flat_none_bslow3"/>
+                    <text order="4" value="flat_none_bslowcycle0"/>
+                    <text order="5" value="flat_none_bslowend0"/>
+                    <text order="6" value="flat_none_bslowend1"/>
+                    <text order="7" value="flat_none_bslowend2"/>
+                    <text order="8" value="flat_none_bslowend3"/>
+                    <text order="9" value="flat_none_fslow0"/>
+                    <text order="10" value="flat_none_fslow1"/>
+                    <text order="11" value="flat_none_fslow2"/>
+                    <text order="12" value="flat_none_fslow3"/>
+                    <text order="13" value="flat_none_fslowcycle0"/>
+                    <text order="14" value="flat_none_fslowend0"/>
+                    <text order="15" value="flat_none_fslowend1"/>
+                    <text order="16" value="flat_none_fslowend2"/>
+                    <text order="17" value="flat_none_fslowend3"/>
+                    <text order="18" value="flat_none_push0"/>
+                    <text order="19" value="flat_none_push1"/>
+                    <text order="20" value="flat_none_push2"/>
+                    <text order="21" value="flat_none_push3"/>
+                    <text order="22" value="flat_none_push4"/>
+                    <text order="23" value="flat_none_push5"/>
+                    <text order="24" value="flat_none_pushback0"/>
+                    <text order="25" value="flat_none_pushback1"/>
+                    <text order="26" value="flat_none_pushend0"/>
+                    <text order="27" value="flat_none_pushend1"/>
+                    <text order="28" value="flat_none_pushend2"/>
+                    <text order="29" value="flat_none_pushend3"/>
+                    <text order="30" value="flat_none_pushend4"/>
+                    <text order="31" value="flat_none_pushhold0"/>
+                    <text order="32" value="flat_none_pushhold1"/>
+                    <text order="33" value="flat_none_pushhold2"/>
+                    <text order="34" value="flat_none_pushhold3"/>
+                    <text order="35" value="flat_none_rideleft0"/>
+                    <text order="36" value="flat_none_rideleft1"/>
+                    <text order="37" value="flat_none_rideleft2"/>
+                    <text order="38" value="flat_none_rideriding0"/>
+                    <text order="39" value="flat_none_rideright0"/>
+                    <text order="40" value="flat_none_rideright1"/>
+                    <text order="41" value="flat_none_rideright2"/>
+                </prop>
+                <prop id="8" list="1" val="">
+                    <text order="0" value="trans_down_bslow0"/>
+                    <text order="1" value="trans_down_bslow1"/>
+                    <text order="2" value="trans_down_bslow2"/>
+                    <text order="3" value="trans_down_bslow3"/>
+                    <text order="4" value="trans_down_bslowcycle0"/>
+                    <text order="5" value="trans_down_bslowend0"/>
+                    <text order="6" value="trans_down_bslowend1"/>
+                    <text order="7" value="trans_down_bslowend2"/>
+                    <text order="8" value="trans_down_bslowend3"/>
+                    <text order="9" value="trans_down_fslow0"/>
+                    <text order="10" value="trans_down_fslow1"/>
+                    <text order="11" value="trans_down_fslow2"/>
+                    <text order="12" value="trans_down_fslow3"/>
+                    <text order="13" value="trans_down_fslowcycle0"/>
+                    <text order="14" value="trans_down_fslowend0"/>
+                    <text order="15" value="trans_down_fslowend1"/>
+                    <text order="16" value="trans_down_fslowend2"/>
+                    <text order="17" value="trans_down_fslowend3"/>
+                    <text order="18" value="trans_down_push0"/>
+                    <text order="19" value="trans_down_push1"/>
+                    <text order="20" value="trans_down_push2"/>
+                    <text order="21" value="trans_down_push3"/>
+                    <text order="22" value="trans_down_push4"/>
+                    <text order="23" value="trans_down_push5"/>
+                    <text order="24" value="trans_down_pushback0"/>
+                    <text order="25" value="trans_down_pushback1"/>
+                    <text order="26" value="trans_down_pushend0"/>
+                    <text order="27" value="trans_down_pushend1"/>
+                    <text order="28" value="trans_down_pushend2"/>
+                    <text order="29" value="trans_down_pushend3"/>
+                    <text order="30" value="trans_down_pushend4"/>
+                    <text order="31" value="trans_down_pushhold0"/>
+                    <text order="32" value="trans_down_pushhold1"/>
+                    <text order="33" value="trans_down_pushhold2"/>
+                    <text order="34" value="trans_down_pushhold3"/>
+                    <text order="35" value="trans_down_rideleft0"/>
+                    <text order="36" value="trans_down_rideleft1"/>
+                    <text order="37" value="trans_down_rideleft2"/>
+                    <text order="38" value="trans_down_rideriding0"/>
+                    <text order="39" value="trans_down_rideright0"/>
+                    <text order="40" value="trans_down_rideright1"/>
+                    <text order="41" value="trans_down_rideright2"/>
+                </prop>
+                <prop id="9" list="1" val="">
+                    <text order="0" value="trans_left_bslow0"/>
+                    <text order="1" value="trans_left_bslow1"/>
+                    <text order="2" value="trans_left_bslow2"/>
+                    <text order="3" value="trans_left_bslow3"/>
+                    <text order="4" value="trans_left_bslowcycle0"/>
+                    <text order="5" value="trans_left_bslowend0"/>
+                    <text order="6" value="trans_left_bslowend1"/>
+                    <text order="7" value="trans_left_bslowend2"/>
+                    <text order="8" value="trans_left_bslowend3"/>
+                    <text order="9" value="trans_left_fslow0"/>
+                    <text order="10" value="trans_left_fslow1"/>
+                    <text order="11" value="trans_left_fslow2"/>
+                    <text order="12" value="trans_left_fslow3"/>
+                    <text order="13" value="trans_left_fslowcycle0"/>
+                    <text order="14" value="trans_left_fslowend0"/>
+                    <text order="15" value="trans_left_fslowend1"/>
+                    <text order="16" value="trans_left_fslowend2"/>
+                    <text order="17" value="trans_left_fslowend3"/>
+                    <text order="18" value="trans_left_push0"/>
+                    <text order="19" value="trans_left_push1"/>
+                    <text order="20" value="trans_left_push2"/>
+                    <text order="21" value="trans_left_push3"/>
+                    <text order="22" value="trans_left_push4"/>
+                    <text order="23" value="trans_left_push5"/>
+                    <text order="24" value="trans_left_pushback0"/>
+                    <text order="25" value="trans_left_pushback1"/>
+                    <text order="26" value="trans_left_pushend0"/>
+                    <text order="27" value="trans_left_pushend1"/>
+                    <text order="28" value="trans_left_pushend2"/>
+                    <text order="29" value="trans_left_pushend3"/>
+                    <text order="30" value="trans_left_pushend4"/>
+                    <text order="31" value="trans_left_pushhold0"/>
+                    <text order="32" value="trans_left_pushhold1"/>
+                    <text order="33" value="trans_left_pushhold2"/>
+                    <text order="34" value="trans_left_pushhold3"/>
+                    <text order="35" value="trans_left_rideleft0"/>
+                    <text order="36" value="trans_left_rideleft1"/>
+                    <text order="37" value="trans_left_rideleft2"/>
+                    <text order="38" value="trans_left_rideriding0"/>
+                    <text order="39" value="trans_left_rideright0"/>
+                    <text order="40" value="trans_left_rideright1"/>
+                    <text order="41" value="trans_left_rideright2"/>
+                </prop>
+                <prop id="10" list="1" val="">
+                    <text order="0" value="trans_right_bslow0"/>
+                    <text order="1" value="trans_right_bslow1"/>
+                    <text order="2" value="trans_right_bslow2"/>
+                    <text order="3" value="trans_right_bslow3"/>
+                    <text order="4" value="trans_right_bslowcycle0"/>
+                    <text order="5" value="trans_right_bslowend0"/>
+                    <text order="6" value="trans_right_bslowend1"/>
+                    <text order="7" value="trans_right_bslowend2"/>
+                    <text order="8" value="trans_right_bslowend3"/>
+                    <text order="9" value="trans_right_fslow0"/>
+                    <text order="10" value="trans_right_fslow1"/>
+                    <text order="11" value="trans_right_fslow2"/>
+                    <text order="12" value="trans_right_fslow3"/>
+                    <text order="13" value="trans_right_fslowcycle0"/>
+                    <text order="14" value="trans_right_fslowend0"/>
+                    <text order="15" value="trans_right_fslowend1"/>
+                    <text order="16" value="trans_right_fslowend2"/>
+                    <text order="17" value="trans_right_fslowend3"/>
+                    <text order="18" value="trans_right_push0"/>
+                    <text order="19" value="trans_right_push1"/>
+                    <text order="20" value="trans_right_push2"/>
+                    <text order="21" value="trans_right_push3"/>
+                    <text order="22" value="trans_right_push4"/>
+                    <text order="23" value="trans_right_push5"/>
+                    <text order="24" value="trans_right_pushback0"/>
+                    <text order="25" value="trans_right_pushback1"/>
+                    <text order="26" value="trans_right_pushend0"/>
+                    <text order="27" value="trans_right_pushend1"/>
+                    <text order="28" value="trans_right_pushend2"/>
+                    <text order="29" value="trans_right_pushend3"/>
+                    <text order="30" value="trans_right_pushend4"/>
+                    <text order="31" value="trans_right_pushhold0"/>
+                    <text order="32" value="trans_right_pushhold1"/>
+                    <text order="33" value="trans_right_pushhold2"/>
+                    <text order="34" value="trans_right_pushhold3"/>
+                    <text order="35" value="trans_right_rideleft0"/>
+                    <text order="36" value="trans_right_rideleft1"/>
+                    <text order="37" value="trans_right_rideleft2"/>
+                    <text order="38" value="trans_right_rideriding0"/>
+                    <text order="39" value="trans_right_rideright0"/>
+                    <text order="40" value="trans_right_rideright1"/>
+                    <text order="41" value="trans_right_rideright2"/>
+                </prop>
+                <prop id="11" list="1" val="">
+                    <text order="0" value="trans_up_bslow0"/>
+                    <text order="1" value="trans_up_bslow1"/>
+                    <text order="2" value="trans_up_bslow2"/>
+                    <text order="3" value="trans_up_bslow3"/>
+                    <text order="4" value="trans_up_bslowcycle0"/>
+                    <text order="5" value="trans_up_bslowend0"/>
+                    <text order="6" value="trans_up_bslowend1"/>
+                    <text order="7" value="trans_up_bslowend2"/>
+                    <text order="8" value="trans_up_bslowend3"/>
+                    <text order="9" value="trans_up_fslow0"/>
+                    <text order="10" value="trans_up_fslow1"/>
+                    <text order="11" value="trans_up_fslow2"/>
+                    <text order="12" value="trans_up_fslow3"/>
+                    <text order="13" value="trans_up_fslowcycle0"/>
+                    <text order="14" value="trans_up_fslowend0"/>
+                    <text order="15" value="trans_up_fslowend1"/>
+                    <text order="16" value="trans_up_fslowend2"/>
+                    <text order="17" value="trans_up_fslowend3"/>
+                    <text order="18" value="trans_up_push0"/>
+                    <text order="19" value="trans_up_push1"/>
+                    <text order="20" value="trans_up_push2"/>
+                    <text order="21" value="trans_up_push3"/>
+                    <text order="22" value="trans_up_push4"/>
+                    <text order="23" value="trans_up_push5"/>
+                    <text order="24" value="trans_up_pushback0"/>
+                    <text order="25" value="trans_up_pushback1"/>
+                    <text order="26" value="trans_up_pushend0"/>
+                    <text order="27" value="trans_up_pushend1"/>
+                    <text order="28" value="trans_up_pushend2"/>
+                    <text order="29" value="trans_up_pushend3"/>
+                    <text order="30" value="trans_up_pushend4"/>
+                    <text order="31" value="trans_up_pushhold0"/>
+                    <text order="32" value="trans_up_pushhold1"/>
+                    <text order="33" value="trans_up_pushhold2"/>
+                    <text order="34" value="trans_up_pushhold3"/>
+                    <text order="35" value="trans_up_rideleft0"/>
+                    <text order="36" value="trans_up_rideleft1"/>
+                    <text order="37" value="trans_up_rideleft2"/>
+                    <text order="38" value="trans_up_rideriding0"/>
+                    <text order="39" value="trans_up_rideright0"/>
+                    <text order="40" value="trans_up_rideright1"/>
+                    <text order="41" value="trans_up_rideright2"/>
+                </prop>
+                <prop id="12" list="0" val=""/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val="0"/>
+                <prop id="16" list="0" val="0"/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val="0"/>
+                <prop id="19" list="0" val="0"/>
+                <prop id="20" list="0" val="false"/>
+                <prop id="21" list="0" val="false"/>
+                <prop id="22" list="0" val="0"/>
+                <prop id="23" list="0" val="0"/>
+                <prop id="24" list="0" val=""/>
+                <prop id="25" list="0" val=""/>
+                <prop id="26" list="0" val=""/>
+                <prop id="27" list="0" val=""/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val="0.0"/>
+                <prop id="31" list="0" val="0"/>
+                <prop id="32" list="0" val=""/>
+                <prop id="33" list="0" val="false"/>
+                <prop id="34" list="0" val=""/>
+                <prop id="35" list="0" val=""/>
+                <prop id="36" list="0" val=""/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val=""/>
+                <prop id="39" list="0" val=""/>
+                <prop id="40" list="0" val="0"/>
+                <prop id="41" list="0" val=""/>
+                <prop id="42" list="0" val=""/>
+                <prop id="43" list="0" val="0"/>
+                <prop id="44" list="0" val="false"/>
+                <prop id="45" list="0" val=""/>
+                <prop id="46" list="0" val=""/>
+                <prop id="47" list="0" val=""/>
+                <prop id="48" list="0" val=""/>
+                <prop id="49" list="0" val="false"/>
+                <prop id="50" list="0" val="false"/>
+                <prop id="51" list="0" val="false"/>
+                <prop id="52" list="0" val="false"/>
+                <prop id="53" list="0" val=""/>
+                <prop id="54" list="0" val=""/>
+                <prop id="55" list="0" val=""/>
+                <prop id="56" list="0" val=""/>
+                <prop id="57" list="0" val="0"/>
+                <prop id="58" list="0" val="0"/>
+                <prop id="59" list="0" val=""/>
+                <prop id="60" list="0" val=""/>
+                <prop id="61" list="0" val=""/>
+                <prop id="62" list="0" val="0"/>
+                <prop id="63" list="0" val="0"/>
+                <prop id="64" list="0" val="0"/>
+                <prop id="65" list="0" val="0"/>
+                <prop id="66" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="81">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val="false"/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val=""/>
+                <prop id="14" list="0" val="0"/>
+            </s>
+            <s enabled="true" id="50">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="false"/>
+                <prop id="3" list="0" val="false"/>
+                <prop id="4" list="0" val="false"/>
+                <prop id="5" list="0" val=""/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val=""/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="false"/>
+                <prop id="14" list="0" val="false"/>
+                <prop id="15" list="0" val="false"/>
+                <prop id="16" list="0" val=""/>
+                <prop id="17" list="0" val=""/>
+                <prop id="18" list="0" val=""/>
+                <prop id="19" list="0" val=""/>
+                <prop id="20" list="0" val=""/>
+                <prop id="21" list="0" val=""/>
+                <prop id="22" list="0" val=""/>
+                <prop id="23" list="0" val="0"/>
+                <prop id="24" list="0" val="-1"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="-1"/>
+                <prop id="29" list="0" val="-1"/>
+                <prop id="30" list="0" val="-1"/>
+                <prop id="31" list="0" val="-1"/>
+                <prop id="32" list="0" val="-1"/>
+                <prop id="33" list="0" val="-1"/>
+                <prop id="34" list="0" val="-1"/>
+                <prop id="35" list="0" val="-1"/>
+                <prop id="36" list="0" val="-1"/>
+                <prop id="37" list="0" val="-1"/>
+                <prop id="38" list="0" val="false"/>
+                <prop id="39" list="0" val="false"/>
+                <prop id="40" list="0" val="-1"/>
+                <prop id="41" list="0" val="-1"/>
+                <prop id="42" list="0" val="false"/>
+                <prop id="43" list="0" val="0"/>
+                <prop id="44" list="0" val="0"/>
+                <prop id="45" list="0" val="false"/>
+                <prop id="46" list="0" val=""/>
+                <prop id="47" list="0" val="0"/>
+                <prop id="48" list="0" val="-1"/>
+                <prop id="49" list="0" val="-1"/>
+                <prop id="50" list="0" val="-1"/>
+                <prop id="51" list="0" val="-1"/>
+                <prop id="52" list="0" val="-1"/>
+                <prop id="53" list="0" val="-1"/>
+                <prop id="54" list="0" val="-1"/>
+                <prop id="55" list="0" val="-1"/>
+                <prop id="56" list="0" val="-1"/>
+                <prop id="57" list="0" val="-1"/>
+                <prop id="58" list="0" val="false"/>
+                <prop id="59" list="0" val=""/>
+                <prop id="60" list="0" val="false"/>
+                <prop id="61" list="0" val=""/>
+                <prop id="62" list="0" val="0"/>
+                <prop id="63" list="0" val="false"/>
+            </s>
+            <s enabled="true" id="57">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val=""/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val="false"/>
+                <prop id="16" list="0" val="0"/>
+                <prop id="17" list="0" val="false"/>
+                <prop id="18" list="0" val="0"/>
+                <prop id="19" list="0" val="false"/>
+                <prop id="20" list="0" val="0"/>
+                <prop id="21" list="0" val="0"/>
+                <prop id="22" list="0" val="false"/>
+                <prop id="23" list="0" val="0"/>
+                <prop id="24" list="0" val="0"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val="0"/>
+                <prop id="30" list="0" val="0"/>
+                <prop id="31" list="0" val=""/>
+                <prop id="32" list="0" val="false"/>
+                <prop id="33" list="0" val="false"/>
+                <prop id="34" list="0" val=""/>
+                <prop id="35" list="0" val="false"/>
+                <prop id="36" list="0" val="0"/>
+                <prop id="37" list="0" val="false"/>
+                <prop id="38" list="0" val="0"/>
+                <prop id="39" list="0" val=""/>
+                <prop id="40" list="0" val=""/>
+                <prop id="41" list="0" val="false"/>
+                <prop id="42" list="0" val="false"/>
+                <prop id="43" list="0" val=""/>
+                <prop id="44" list="0" val="false"/>
+                <prop id="45" list="0" val=""/>
+                <prop id="46" list="0" val="false"/>
+                <prop id="47" list="0" val="false"/>
+                <prop id="48" list="0" val="0"/>
+                <prop id="49" list="0" val="false"/>
+                <prop id="50" list="0" val="false"/>
+                <prop id="51" list="0" val="false"/>
+                <prop id="52" list="0" val="false"/>
+                <prop id="53" list="0" val="0"/>
+                <prop id="55" list="0" val="0"/>
+                <prop id="56" list="0" val="0"/>
+                <prop id="57" list="0" val="0"/>
+                <prop id="58" list="0" val=""/>
+                <prop id="59" list="0" val="0"/>
+                <prop id="60" list="0" val="false"/>
+                <prop id="61" list="0" val="0"/>
+                <prop id="62" list="0" val="0"/>
+                <prop id="63" list="0" val=""/>
+                <prop id="64" list="0" val="0"/>
+                <prop id="65" list="0" val="0"/>
+                <prop id="66" list="0" val="false"/>
+                <prop id="67" list="0" val="0"/>
+                <prop id="68" list="0" val="false"/>
+                <prop id="69" list="0" val="false"/>
+                <prop id="70" list="0" val=""/>
+                <prop id="71" list="0" val=""/>
+            </s>
+            <s enabled="true" id="61">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val=""/>
+                <prop id="2" list="0" val="false"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="false"/>
+                <prop id="8" list="0" val="false"/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val="0"/>
+                <prop id="11" list="0" val=""/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val=""/>
+                <prop id="15" list="0" val="0"/>
+                <prop id="16" list="0" val=""/>
+                <prop id="17" list="0" val="0"/>
+                <prop id="18" list="0" val="0"/>
+                <prop id="19" list="0" val="0"/>
+                <prop id="20" list="0" val=""/>
+                <prop id="21" list="0" val=""/>
+                <prop id="22" list="0" val="0"/>
+                <prop id="23" list="0" val="false"/>
+                <prop id="24" list="0" val="false"/>
+                <prop id="25" list="0" val="0"/>
+                <prop id="26" list="0" val="0"/>
+                <prop id="27" list="0" val="0"/>
+                <prop id="28" list="0" val="0"/>
+                <prop id="29" list="0" val=""/>
+                <prop id="30" list="0" val=""/>
+                <prop id="31" list="0" val="0"/>
+                <prop id="32" list="0" val="0"/>
+                <prop id="33" list="0" val="0"/>
+                <prop id="34" list="0" val="0"/>
+                <prop id="35" list="0" val="false"/>
+                <prop id="36" list="0" val="0"/>
+                <prop id="37" list="0" val="0"/>
+                <prop id="38" list="0" val="0"/>
+                <prop id="39" list="0" val="0"/>
+                <prop id="40" list="0" val="0"/>
+                <prop id="41" list="0" val="false"/>
+                <prop id="42" list="0" val="0"/>
+                <prop id="43" list="0" val="false"/>
+                <prop id="44" list="0" val=""/>
+                <prop id="45" list="0" val="0"/>
+                <prop id="46" list="0" val=""/>
+                <prop id="47" list="0" val="0"/>
+                <prop id="48" list="0" val=""/>
+                <prop id="49" list="0" val="false"/>
+                <prop id="50" list="0" val="0"/>
+                <prop id="51" list="0" val="0"/>
+                <prop id="52" list="0" val="0"/>
+                <prop id="53" list="0" val="0"/>
+                <prop id="54" list="0" val="false"/>
+            </s>
+            <s enabled="true" id="31">
+                <prop id="2147483647" list="0" val="thisactor"/>
+                <prop id="1" list="0" val="0"/>
+                <prop id="2" list="0" val="0"/>
+                <prop id="3" list="0" val="0"/>
+                <prop id="4" list="0" val="0"/>
+                <prop id="5" list="0" val="0"/>
+                <prop id="6" list="0" val="0"/>
+                <prop id="7" list="0" val="0"/>
+                <prop id="8" list="0" val="0"/>
+                <prop id="9" list="0" val="0"/>
+                <prop id="10" list="0" val=""/>
+                <prop id="11" list="0" val="0"/>
+                <prop id="12" list="0" val="0"/>
+                <prop id="13" list="0" val="0"/>
+                <prop id="14" list="0" val="0"/>
+                <prop id="15" list="0" val=""/>
+                <prop id="16" list="0" val="false"/>
+            </s>
+        </snippets>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="17" id="1" name="displacement" shared="false" width="14">
+        <anim across="1" down="1" durations="100" height="17" id="0" loop="true" name="Animation 0" numframes="1" originx="7" originy="8" sync="false" version="2" width="14">
+            <poly data="4,0,0,14,0,14,17,0,17" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="89" fixedrot="false" fric="0.2" gid="3" id="96" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="FlipRot_ICON" oid="-1" pausable="false" physicsMode="1" rest="0.0" shared="false" sprite="97" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="58" id="97" name="FlipRot_ICON" shared="false" width="59">
+        <anim across="2" down="1" durations="100,100" height="58" id="0" loop="false" name="Animation 0" numframes="2" originx="29" originy="29" sync="false" version="2" width="118">
+            <poly data="4,0,0,59,0,59,58,0,58" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <font alphabet=" !&quot;#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſ" atlasID="0" desc="" height="58" id="98" name="Font_Base" offsets="0|0|0|,8|0|8,12|0|12,20|0|20,34|0|34,48|0|48,68|0|68,84|0|84,88|0|88,96|0|96,104|0|104,114|0|114,127|0|127,131|0|131,140|0|140,144|0|144,152|0|152,165|0|165,173|0|173,187|0|187,200|0|200,214|0|214,227|0|227,241|0|241,254|0|254,267|0|267,280|0|280,284|0|284,288|0|288,301|0|301,314|0|314,327|0|327,340|0|340,364|0|364,381|0|381,396|0|396,413|0|413,430|0|430,445|0|445,458|0|458,476|0|476,492|0|492,496|0|496,508|0|508,524|0|524,537|0|537,556|0|556,572|0|572,590|0|590,605|0|605,623|0|623,640|0|640,655|0|655,671|0|671,687|0|687,704|0|704,728|0|728,745|0|745,762|0|762,778|0|778,785|0|785,793|0|793,800|0|800,812|0|812,828|0|828,834|0|834,848|0|848,861|0|861,873|0|873,886|0|886,900|0|900,909|0|909,922|0|922,934|0|934,938|0|938,945|0|945,957|0|957,961|0|961,980|0|980,992|0|992,1006|0|1006,1019|0|1019,1032|0|1032,1041|0|1041,1054|0|1054,1062|0|1062,1074|0|1074,1087|0|1087,1106|0|1106,1119|0|1119,1132|0|1132,1145|0|1145,1154|0|1154,1157|0|1157,1166|0|1166,1179|0|1179,1192|0|1192,1205|0|1205,1218|0|1218,1223|0|1223,1236|0|1236,1245|0|1245,1258|0|1258,1268|0|1268,1278|0|1278,1287|0|1287,1300|0|1300,1312|0|1312,1319|0|1319,1332|0|1332,1345|0|1345,1358|0|1358,1371|0|1371,1384|0|1384,1389|0|1389,1394|0|1394,1405|0|1405,1416|0|1416,1429|0|1429,1438|0|1438,1451|0|1451,1460|0|1460,1473|0|1473,1482|0|1482,1489|0|1489,1502|0|1502,1515|0|1515,1528|0|1528,1541|0|1541,1549|0|1549,1554|0|1554,1567|0|1567,1581|0|1581,1594|0|1594,1609|0|1609,1612|0|1612,1625|0|1625,1634|0|1634,1653|0|1653,1663|0|1663,1675|0|1675,1688|0|1688,1697|0|1697,1716|0|1716,1732|0|1732,1740|0|1740,1754|0|1754,1763|0|1763,1772|0|1772,1778|0|1778,1790|0|1790,1804|0|1804,1809|0|1809,1816|0|1816,1822|0|1822,1832|0|1832,1844|0|1844,1864|0|1864,1884|0|1884,1905|0|1905,1918|0|1918,1935|0|1935,1952|0|1952,1969|0|1969,1986|0|1986,2003|0|2003,2020|0|2020,2044|0|2044,2061|0|2061,2076|0|2076,2091|0|2091,2106|0|2106,2121|0|2121,2127|0|2127,2133|0|2133,2142|0|2142,2151|0|2151,2169|0|2169,2185|0|2185,2203|0|2203,2221|0|2221,2239|0|2239,2257|0|2257,2275|0|2275,2287|0|2287,2305|0|2305,2321|0|2321,2337|0|2337,2353|0|2353,2369|0|2369,2386|0|2386,2401|0|2401,2415|0|2415,2429|0|2429,2443|0|2443,2457|0|2457,2471|0|2471,2485|0|2485,2499|0|2499,2521|0|2521,2533|0|2533,2547|0|2547,2561|0|2561,2575|0|2575,2589|0|2589,2595|0|2595,2601|0|2601,2610|0|2610,2619|0|2619,2633|0|2633,2645|0|2645,2659|0|2659,2673|0|2673,2687|0|2687,2701|0|2701,2715|0|2715,2729|0|2729,2743|0|2743,2755|0|2755,2767|0|2767,2779|0|2779,2791|0|2791,2804|0|2804,2817|0|2817,2830|0|2830,2847|0|2847,2861|0|2861,2878|0|2878,2892|0|2892,2910|0|2910,2924|0|2924,2941|0|2941,2953|0|2953,2970|0|2970,2982|0|2982,2999|0|2999,3011|0|3011,3028|0|3028,3040|0|3040,3057|0|3057,3073|0|3073,3091|0|3091,3106|0|3106,0|29|3121,14|29|3135,29|29|3150,43|29|3164,58|29|3179,72|29|3193,87|29|3208,101|29|3222,116|29|3237,130|29|3251,148|29|3269,161|29|3282,179|29|3300,192|29|3313,210|29|3331,223|29|3344,241|29|3362,254|29|3375,270|29|3391,282|29|3403,300|29|3421,313|29|3434,322|29|3443,331|29|3452,340|29|3461,349|29|3470,358|29|3479,367|29|3488,373|29|3494,379|29|3500,383|29|3504,387|29|3508,402|29|3523,412|29|3533,426|29|3547,436|29|3557,452|29|3573,464|29|3585,476|29|3597,489|29|3610,495|29|3616,508|29|3629,513|29|3634,526|29|3647,533|29|3654,546|29|3667,554|29|3675,568|29|3689,575|29|3696,591|29|3712,603|29|3724,619|29|3740,631|29|3752,647|29|3768,659|29|3780,674|29|3795,690|29|3811,702|29|3823,720|29|3841,734|29|3855,752|29|3873,766|29|3887,784|29|3905,798|29|3919,822|29|3943,844|29|3965,861|29|3982,870|29|3991,887|29|4008,896|29|4017,913|29|4034,922|29|4043,937|29|4058,950|29|4071,965|29|4086,978|29|4099,993|29|4114,1006|29|4127,1021|29|4142,1034|29|4155,1050|29|4171,1059|29|4180,1075|29|4196,1085|29|4206,1101|29|4222,1109|29|4230,1125|29|4246,1137|29|4258,1153|29|4274,1165|29|4286,1181|29|4302,1193|29|4314,1209|29|4330,1221|29|4342,1237|29|4358,1249|29|4370,1265|29|4386,1278|29|4399,1302|29|4423,1321|29|4442,1338|29|4459,1351|29|4472,1368|29|4489,1384|29|4505,1397|29|4518,1413|29|4534,1426|29|4547,1442|29|4563,1455|29|4576" oid="-1" prerendered="false" rowHeight="29" shared="false"/>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="64" fixedrot="false" fric="0.2" gid="3" id="73" ignoreg="false" inertia="1.0" ldamp="0.0" mass="1.0" name="footing" oid="-1" pausable="true" physicsMode="0" rest="0.0" shared="false" sprite="74" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="200" id="74" name="footing" shared="false" width="110">
+        <anim across="2" down="2" durations="100,100,100,100" height="400" id="0" loop="false" name="anim" numframes="4" originx="55" originy="100" sync="false" version="2" width="220">
+            <poly data="4,0,0,110,0,110,200,0,200" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="94" fixedrot="true" fric="0.2" gid="3" id="103" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Gauge_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="104" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="3" defaultAnimation="3" desc="" height="72" id="104" name="Gauge_ICON" shared="false" width="16">
+        <anim across="2" down="1" durations="100,100" height="72" id="0" loop="false" name="blue" numframes="2" originx="8" originy="64" sync="false" version="2" width="32">
+            <poly data="4,0,0,96,0,96,96,0,96" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+        <anim across="2" down="2" durations="100,100,100" height="144" id="1" loop="false" name="green" numframes="3" originx="16" originy="64" sync="false" version="2" width="32">
+            <poly data="4,0,0,96,0,96,96,0,96" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+        <anim across="3" down="2" durations="100,100,100,100,100" height="144" id="2" loop="false" name="yellow" numframes="5" originx="16" originy="64" sync="false" version="2" width="48">
+            <poly data="4,0,0,96,0,96,96,0,96" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+        <anim across="1" down="1" durations="100" height="72" id="3" loop="false" name="empty" numframes="1" originx="8" originy="64" sync="false" version="2" width="16">
+            <poly data="4,0,0,96,0,96,96,0,96" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+        <anim across="2" down="2" durations="100,100,100,100" height="144" id="4" loop="false" name="red" numframes="4" originx="8" originy="64" sync="false" version="2" width="32">
+            <poly data="4,0,0,96,0,96,96,0,96" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="93" fixedrot="true" fric="0.2" gid="3" id="101" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Ghost_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="102" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="227" id="102" name="Ghost_ICON" shared="false" width="128">
+        <anim across="4" down="3" durations="100,100,100,100,100,100,100,100,100,100,100,100" height="681" id="0" loop="false" name="Animation 0" numframes="12" originx="64" originy="60" sync="false" version="2" width="512">
+            <poly data="4,0,0,128,0,128,120,0,120" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="108" fixedrot="true" fric="0.2" gid="3" id="183" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Grind_Icon" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="184" static="false">
+        <snippets/>
+    </actor>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="66" fixedrot="true" fric="0.2" gid="3" id="75" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="GrindOUT_Icon" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="76" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="47" id="76" name="GrindOUT_Icon" shared="false" width="75">
+        <anim across="1" down="1" durations="100" height="47" id="0" loop="false" name="none" numframes="1" originx="37" originy="23" sync="false" version="2" width="75">
+            <poly data="4,0,0,75,0,75,47,0,47" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="false"/>
+        </anim>
+        <anim across="1" down="1" durations="100" height="47" id="1" loop="false" name="left" numframes="1" originx="37" originy="23" sync="false" version="2" width="75">
+            <poly data="4,0,0,75,0,75,47,0,47" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+        <anim across="1" down="1" durations="100" height="47" id="2" loop="false" name="right" numframes="1" originx="37" originy="23" sync="false" version="2" width="75">
+            <poly data="4,0,0,75,0,75,47,0,47" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="false"/>
+        </anim>
+    </sprite>
+    <sprite atlasID="0" default="3" defaultAnimation="3" desc="" height="100" id="184" name="GrindOUT_Icon" shared="false" width="30">
+        <anim across="2" down="2" durations="100,100,100,100" height="200" id="3" loop="false" name="grind" numframes="4" originx="37" originy="23" sync="false" version="2" width="60">
+            <poly data="4,0,0,75,0,75,47,0,47" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="109" fixedrot="true" fric="0.2" gid="3" id="185" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="HS_Numbers_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="186" static="false">
+        <snippets/>
+    </actor>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="110" fixedrot="true" fric="0.2" gid="3" id="187" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="HS_NumbersTen_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="188" static="false">
+        <snippets/>
+    </actor>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="99" fixedrot="true" fric="0.2" gid="3" id="111" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Numbers_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="112" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="16" id="112" name="Numbers_ICON" shared="false" width="16">
+        <anim across="4" down="3" durations="100,100,100,100,100,100,100,100,100,100" height="48" id="0" loop="false" name="Animation 0" numframes="10" originx="8" originy="8" sync="false" version="2" width="64">
+            <poly data="4,0,0,16,0,16,16,0,16" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="16" id="114" name="Numbers_ICON" shared="false" width="16">
+        <anim across="4" down="3" durations="100,100,100,100,100,100,100,100,100,100" height="48" id="0" loop="false" name="Animation 0" numframes="10" originx="8" originy="8" sync="false" version="2" width="64">
+            <poly data="4,0,0,16,0,16,16,0,16" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="16" id="186" name="Numbers_ICON" shared="false" width="16">
+        <anim across="4" down="3" durations="100,100,100,100,100,100,100,100,100,100" height="48" id="0" loop="false" name="Animation 0" numframes="10" originx="8" originy="8" sync="false" version="2" width="64">
+            <poly data="4,0,0,16,0,16,16,0,16" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="16" id="188" name="Numbers_ICON" shared="false" width="16">
+        <anim across="4" down="3" durations="100,100,100,100,100,100,100,100,100,100" height="48" id="0" loop="false" name="Animation 0" numframes="10" originx="8" originy="8" sync="false" version="2" width="64">
+            <poly data="4,0,0,16,0,16,16,0,16" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="100" fixedrot="true" fric="0.2" gid="3" id="113" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="NumbersTen_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="114" static="false">
+        <snippets/>
+    </actor>
+    <music atlasID="0" desc="" id="189" loop="true" name="rail_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="190" loop="true" name="rail_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="191" loop="true" name="rail_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="192" loop="true" name="rail_in_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="194" loop="true" name="rail_in_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="195" loop="true" name="rail_in_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="193" loop="true" name="rail_out_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="196" loop="true" name="rail_out_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="197" loop="true" name="rail_out_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <background atlasID="0" desc="" durations="100" dx="-0.0" dy="-0.0" height="704" id="203" name="sancreation" numframes="1" oid="-1" repeats="false" resized="false" shared="false" width="1024" xpf="1.0" ypf="1.0"/>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="1" continuous="false" desc="" eventsnippetid="102" fixedrot="true" fric="0.2" gid="3" id="116" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Selector_PadConfig" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="117" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="31" id="117" name="Selector_PadConfig" shared="false" width="31">
+        <anim across="2" down="2" durations="100,100,100" height="62" id="0" loop="false" name="Animation 0" numframes="3" originx="15" originy="15" sync="false" version="2" width="62">
+            <poly data="4,0,0,31,0,31,31,0,31" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="false"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="32" fixedrot="false" fric="0.2" gid="3" id="36" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Shadow" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="37" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="50" id="37" name="Shadow" shared="false" width="50">
+        <anim across="13" down="13" durations="100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100" height="650" id="0" loop="false" name="Animation 0" numframes="161" originx="25" originy="25" sync="false" version="2" width="650">
+            <poly data="4,0,0,46,0,46,14,0,14" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="63" fixedrot="false" fric="0.2" gid="3" id="71" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Sk8_Icon" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="72" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="200" id="72" name="Sk8_Icon" shared="false" width="110">
+        <anim across="2" down="2" durations="100,100,100,100" height="400" id="0" loop="false" name="regular" numframes="4" originx="55" originy="100" sync="false" version="2" width="220">
+            <poly data="4,0,0,110,0,110,200,0,200" density="0.1" fric="0.2" gid="-1000" id="0" name="regular" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <music atlasID="0" desc="" id="177" loop="true" name="SND_bail_fast1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="175" loop="true" name="SND_bail_med1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="176" loop="true" name="SND_bail_med2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="179" loop="true" name="SND_bail_slow1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="180" loop="true" name="SND_bail_slow2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="178" loop="true" name="SND_bail_stop1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="142" loop="true" name="SND_bslow_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="143" loop="true" name="SND_bslow_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="144" loop="true" name="SND_bslow_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="166" loop="true" name="SND_catch_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="167" loop="true" name="SND_catch_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="168" loop="true" name="SND_catch_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="157" loop="true" name="SND_grind_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="158" loop="true" name="SND_grind_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="159" loop="true" name="SND_grind_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="151" loop="true" name="SND_grind_in_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="152" loop="true" name="SND_grind_in_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="153" loop="true" name="SND_grind_in_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="154" loop="true" name="SND_grind_out_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="155" loop="true" name="SND_grind_out_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="156" loop="true" name="SND_grind_out_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="169" loop="true" name="SND_jump_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="170" loop="true" name="SND_jump_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="171" loop="true" name="SND_jump_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="163" loop="true" name="SND_land_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="164" loop="true" name="SND_land_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="165" loop="true" name="SND_land_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="198" loop="true" name="SND_manual_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="199" loop="true" name="SND_manual_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="200" loop="true" name="SND_manual_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="201" loop="true" name="SND_manual_3" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="202" loop="true" name="SND_manual_4" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="134" loop="true" name="SND_push_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="135" loop="true" name="SND_push_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="136" loop="true" name="SND_push_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="137" loop="true" name="SND_push_3" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="138" loop="true" name="SND_push_4" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="129" loop="true" name="SND_roll_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="130" loop="true" name="SND_roll_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="131" loop="true" name="SND_roll_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="132" loop="true" name="SND_roll_3" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="133" loop="true" name="SND_roll_4" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="160" loop="true" name="SND_slide_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="161" loop="true" name="SND_slide_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="162" loop="true" name="SND_slide_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="139" loop="true" name="SND_slow_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="140" loop="true" name="SND_slow_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="141" loop="true" name="SND_slow_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="145" loop="true" name="SND_slowend_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="146" loop="true" name="SND_slowend_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="147" loop="true" name="SND_slowend_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="148" loop="true" name="SND_turn_0" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="149" loop="true" name="SND_turn_1" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <music atlasID="0" desc="" id="150" loop="true" name="SND_turn_2" oid="-1" pan="0" shared="false" stream="false" type="mp3" volume="1"/>
+    <actor adamp="0.0" ascale="false" atlasID="0" bodytype="2" continuous="false" desc="" eventsnippetid="95" fixedrot="true" fric="0.2" gid="3" id="105" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Speed_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="106" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="16" id="106" name="Speed_ICON" shared="false" width="96">
+        <anim across="4" down="4" durations="100,100,100,100,100,100,100,100,100,100,100,100,100" height="64" id="0" loop="false" name="Animation 0" numframes="13" originx="48" originy="8" sync="false" version="2" width="384">
+            <poly data="4,0,0,96,0,96,16,0,16" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="97" fixedrot="true" fric="0.2" gid="3" id="107" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="Timer_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="108" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="144" id="108" name="Timer_ICON" shared="false" width="16">
+        <anim across="5" down="4" durations="100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100" height="576" id="0" loop="false" name="Animation 0" numframes="19" originx="16" originy="72" sync="false" version="2" width="80">
+            <poly data="4,0,0,64,0,64,32,0,32" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+    <actor adamp="0.0" ascale="true" atlasID="0" bodytype="2" continuous="true" desc="" eventsnippetid="98" fixedrot="true" fric="0.2" gid="3" id="109" ignoreg="true" inertia="1.0" ldamp="0.0" mass="1.0" name="TimerChallenge_ICON" oid="-1" pausable="true" physicsMode="1" rest="0.0" shared="false" sprite="110" static="false">
+        <snippets/>
+    </actor>
+    <sprite atlasID="0" default="0" defaultAnimation="0" desc="" height="80" id="110" name="TimerChallenge_ICON" shared="false" width="140">
+        <anim across="5" down="5" durations="100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100" height="400" id="0" loop="false" name="timer" numframes="24" originx="48" originy="16" sync="false" version="2" width="700">
+            <poly data="4,0,0,96,0,96,32,0,32" density="0.1" fric="0.2" gid="-1000" id="0" name="Animation 0" rest="0.0" sensor="true"/>
+        </anim>
+        <anim across="1" down="1" durations="100" height="80" id="1" loop="false" name="onspot" numframes="1" originx="70" originy="31" sync="false" version="2" width="140">
+            <poly data="4,0,0,96,0,96,80,0,80" density="0.1" fric="0.2" gid="-1000" id="0" name="onspot" rest="0.0" sensor="true"/>
+        </anim>
+    </sprite>
+</pack>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<scene depth="3" desc="" eventsnippetid="53" extheight="768" extwidth="1088" extx="-32" exty="-32" format="3.4.0" gravx="-0.0" gravy="0.0" height="704" id="4" name="LOADING" revision="" savecount="0" tiled="1" tileh="32" tilew="32" type="standard" width="1024">
+    <layers>
+        <color-bg blue="255" green="255" red="255"/>
+        <layer blendMode="normal" color="100,168,234" id="0" locked="false" name="Layer 0" opacity="100" order="2" scrollFactorX="1.0" scrollFactorY="1.0" visible="true"/>
+        <layer blendMode="normal" color="0,255,0" id="1" locked="false" name="Layer 1" opacity="100" order="1" scrollFactorX="1.0" scrollFactorY="1.0" visible="true"/>
+        <layer blendMode="normal" color="64,64,64" id="2" locked="false" name="Layer 2" opacity="100" order="0" scrollFactorX="1.0" scrollFactorY="1.0" visible="true"/>
+    </layers>
+    <joints/>
+    <regions/>
+    <terrainRegions/>
+    <actors>
+        <actor a="0.0" aid="1" c="true" group="3" id="63" name="Actor_CreateAnim 1" sx="1.0" sy="1.0" x="-14" y="-16" z="1">
+            <snippets>
+                <s enabled="true" id="51"/>
+                <s enabled="true" id="52">
+                    <prop id="2147483647" list="0" val="thisactor"/>
+                    <prop id="13" list="0" val="0.0"/>
+                    <prop id="14" list="0" val="0"/>
+                    <prop id="15" list="0" val="0"/>
+                    <prop id="36" list="0" val=""/>
+                    <prop id="37" list="0" val="false"/>
+                    <prop id="38" list="0" val=""/>
+                    <prop id="40" list="1" val=""/>
+                    <prop id="41" list="1" val=""/>
+                    <prop id="42" list="1" val=""/>
+                    <prop id="43" list="1" val=""/>
+                    <prop id="44" list="1" val=""/>
+                    <prop id="45" list="1" val=""/>
+                    <prop id="46" list="1" val=""/>
+                    <prop id="47" list="0" val=""/>
+                    <prop id="48" list="1" val=""/>
+                    <prop id="49" list="1" val=""/>
+                    <prop id="50" list="0" val="0"/>
+                    <prop id="51" list="1" val=""/>
+                    <prop id="52" list="1" val=""/>
+                    <prop id="53" list="1" val=""/>
+                    <prop id="54" list="0" val="false"/>
+                    <prop id="55" list="0" val="0"/>
+                    <prop id="56" list="0" val=""/>
+                    <prop id="57" list="1" val=""/>
+                    <prop id="58" list="0" val="0"/>
+                    <prop id="59" list="1" val=""/>
+                    <prop id="60" list="1" val=""/>
+                    <prop id="61" list="0" val="0"/>
+                    <prop id="62" list="0" val="false"/>
+                    <prop id="63" list="1" val=""/>
+                    <prop id="64" list="0" val="0,0,0,255"/>
+                    <prop id="66" list="0" val="0"/>
+                    <prop id="67" list="0" val="false"/>
+                    <prop id="68" list="0" val="0,0,0,255"/>
+                    <prop id="69" list="0" val="0,0,0,255"/>
+                    <prop id="70" list="0" val="0"/>
+                    <prop id="71" list="0" val="0,0,0,255"/>
+                    <prop id="72" list="1" val=""/>
+                    <prop id="73" list="0" val="0"/>
+                    <prop id="74" list="0" val="0,0,0,255"/>
+                    <prop id="75" list="0" val="0,0,0,255"/>
+                    <prop id="76" list="0" val="false"/>
+                    <prop id="77" list="0" val=""/>
+                    <prop id="78" list="0" val=""/>
+                    <prop id="79" list="0" val="false"/>
+                    <prop id="80" list="0" val="false"/>
+                    <prop id="81" list="0" val="false"/>
+                    <prop id="82" list="0" val="false"/>
+                    <prop id="83" list="0" val="0,0,0,255"/>
+                    <prop id="84" list="0" val="0,0,0,255"/>
+                    <prop id="85" list="0" val="0,0,0,255"/>
+                    <prop id="86" list="0" val="0,0,0,255"/>
+                    <prop id="87" list="0" val="0,0,0,255"/>
+                    <prop id="88" list="1" val=""/>
+                    <prop id="89" list="0" val="0"/>
+                    <prop id="90" list="0" val="0"/>
+                    <prop id="91" list="0" val="0"/>
+                    <prop id="92" list="0" val="0"/>
+                    <prop id="93" list="0" val="0"/>
+                    <prop id="94" list="0" val=""/>
+                    <prop id="95" list="0" val=""/>
+                    <prop id="96" list="0" val="false"/>
+                    <prop id="97" list="0" val="false"/>
+                    <prop id="98" list="0" val="false"/>
+                    <prop id="99" list="0" val="false"/>
+                    <prop id="100" list="1" val=""/>
+                    <prop id="101" list="0" val=""/>
+                    <prop id="102" list="0" val=""/>
+                    <prop id="103" list="0" val="false"/>
+                    <prop id="104" list="0" val=""/>
+                    <prop id="105" list="0" val=""/>
+                    <prop id="106" list="0" val=""/>
+                    <prop id="107" list="0" val="false"/>
+                    <prop id="108" list="0" val="false"/>
+                    <prop id="109" list="0" val="0"/>
+                    <prop id="110" list="0" val="0,0,0,255"/>
+                    <prop id="111" list="0" val="0,0,0,255"/>
+                    <prop id="112" list="0" val="-1"/>
+                    <prop id="113" list="1" val=""/>
+                    <prop id="114" list="0" val=""/>
+                    <prop id="115" list="0" val=""/>
+                    <prop id="116" list="0" val=""/>
+                    <prop id="117" list="0" val=""/>
+                    <prop id="118" list="0" val=""/>
+                    <prop id="119" list="0" val=""/>
+                    <prop id="120" list="0" val=""/>
+                    <prop id="121" list="0" val=""/>
+                    <prop id="122" list="0" val="0"/>
+                    <prop id="123" list="0" val=""/>
+                    <prop id="124" list="1" val="">
+                        <text order="0" value="0.15"/>
+                        <text order="1" value="0.01"/>
+                        <text order="2" value="0.7"/>
+                        <text order="3" value="0.08"/>
+                        <text order="4" value="0.08"/>
+                        <text order="5" value="0.33"/>
+                        <text order="6" value="800"/>
+                        <text order="7" value="160"/>
+                        <text order="8" value="50"/>
+                        <text order="9" value="0"/>
+                        <text order="10" value="35"/>
+                        <text order="11" value="0.48"/>
+                        <text order="12" value="45"/>
+                        <text order="13" value="20"/>
+                        <text order="14" value="30"/>
+                        <text order="15" value="50"/>
+                        <text order="16" value="50"/>
+                        <text order="17" value="10"/>
+                        <text order="18" value="5"/>
+                        <text order="19" value="3"/>
+                        <text order="20" value="0.5"/>
+                        <text order="21" value="0.3"/>
+                        <text order="22" value="0.3"/>
+                        <text order="23" value="1.5"/>
+                        <text order="24" value="24"/>
+                        <text order="25" value="1"/>
+                        <text order="26" value="0.8"/>
+                        <text order="27" value="0.6"/>
+                        <text order="28" value="0"/>
+                        <text order="29" value="29"/>
+                        <text order="30" value="20"/>
+                        <text order="31" value="40"/>
+                        <text order="32" value="0.5"/>
+                        <text order="33" value="0.1"/>
+                        <text order="34" value="34"/>
+                        <text order="35" value="-2"/>
+                        <text order="36" value="-6"/>
+                        <text order="37" value="-15"/>
+                        <text order="38" value="38"/>
+                        <text order="39" value="39"/>
+                        <text order="40" value="0.04"/>
+                        <text order="41" value="3.5"/>
+                        <text order="42" value="1.5"/>
+                        <text order="43" value="50"/>
+                        <text order="44" value="4"/>
+                        <text order="45" value="1.5"/>
+                        <text order="46" value="5"/>
+                        <text order="47" value="5"/>
+                        <text order="48" value="7"/>
+                        <text order="49" value="10"/>
+                        <text order="50" value="0.08"/>
+                        <text order="51" value="1.2"/>
+                        <text order="52" value="1.5"/>
+                        <text order="53" value="0.6"/>
+                        <text order="54" value="54"/>
+                        <text order="55" value="55"/>
+                        <text order="56" value="56"/>
+                        <text order="57" value="57"/>
+                        <text order="58" value="58"/>
+                        <text order="59" value="59"/>
+                        <text order="60" value="0.3"/>
+                        <text order="61" value="0"/>
+                        <text order="62" value="0.4"/>
+                        <text order="63" value="15"/>
+                        <text order="64" value="1"/>
+                        <text order="65" value="25"/>
+                        <text order="66" value="1.1"/>
+                        <text order="67" value="17"/>
+                        <text order="68" value="68"/>
+                        <text order="69" value="69"/>
+                        <text order="70" value="0.2"/>
+                        <text order="71" value="20"/>
+                        <text order="72" value="20"/>
+                        <text order="73" value="5"/>
+                        <text order="74" value="0.45"/>
+                        <text order="75" value="11"/>
+                        <text order="76" value="0.7"/>
+                        <text order="77" value="11"/>
+                        <text order="78" value="78"/>
+                        <text order="79" value="79"/>
+                        <text order="80" value="0.23"/>
+                        <text order="81" value="0"/>
+                        <text order="82" value="0.4"/>
+                        <text order="83" value="15"/>
+                        <text order="84" value="0.6"/>
+                        <text order="85" value="15"/>
+                        <text order="86" value="0.85"/>
+                        <text order="87" value="13"/>
+                        <text order="88" value="88"/>
+                        <text order="89" value="89"/>
+                        <text order="90" value="0.45"/>
+                        <text order="91" value="0"/>
+                        <text order="92" value="0.4"/>
+                        <text order="93" value="15"/>
+                        <text order="94" value="1"/>
+                        <text order="95" value="25"/>
+                        <text order="96" value="0.45"/>
+                        <text order="97" value="28"/>
+                        <text order="98" value="98"/>
+                        <text order="99" value="99"/>
+                        <text order="100" value="0.25"/>
+                        <text order="101" value="20"/>
+                        <text order="102" value="20"/>
+                        <text order="103" value="5"/>
+                        <text order="104" value="0.4"/>
+                        <text order="105" value="9"/>
+                        <text order="106" value="0.2"/>
+                        <text order="107" value="12"/>
+                        <text order="108" value="108"/>
+                        <text order="109" value="109"/>
+                        <text order="110" value="0.25"/>
+                        <text order="111" value="0"/>
+                        <text order="112" value="0.4"/>
+                        <text order="113" value="15"/>
+                        <text order="114" value="0.7"/>
+                        <text order="115" value="16"/>
+                        <text order="116" value="0.32"/>
+                        <text order="117" value="20"/>
+                        <text order="118" value="118"/>
+                        <text order="119" value="119"/>
+                        <text order="120" value="0.5"/>
+                        <text order="121" value="0"/>
+                        <text order="122" value="0.4"/>
+                        <text order="123" value="15"/>
+                        <text order="124" value="1.3"/>
+                        <text order="125" value="33"/>
+                        <text order="126" value="0.75"/>
+                        <text order="127" value="23"/>
+                        <text order="128" value="128"/>
+                        <text order="129" value="129"/>
+                        <text order="130" value="0.3"/>
+                        <text order="131" value="20"/>
+                        <text order="132" value="20"/>
+                        <text order="133" value="5"/>
+                        <text order="134" value="0.4"/>
+                        <text order="135" value="9"/>
+                        <text order="136" value="0.32"/>
+                        <text order="137" value="10"/>
+                        <text order="138" value="138"/>
+                        <text order="139" value="139"/>
+                        <text order="140" value="0.25"/>
+                        <text order="141" value="0"/>
+                        <text order="142" value="0.4"/>
+                        <text order="143" value="15"/>
+                        <text order="144" value="0.7"/>
+                        <text order="145" value="17"/>
+                        <text order="146" value="0.5"/>
+                        <text order="147" value="15"/>
+                        <text order="148" value="148"/>
+                        <text order="149" value="149"/>
+                        <text order="150" value="150"/>
+                    </prop>
+                    <prop id="125" list="0" val="0"/>
+                    <prop id="126" list="0" val="0"/>
+                    <prop id="127" list="0" val="0"/>
+                    <prop id="128" list="0" val="0"/>
+                    <prop id="129" list="0" val="0"/>
+                    <prop id="130" list="0" val="0"/>
+                    <prop id="131" list="0" val="false"/>
+                    <prop id="132" list="0" val=""/>
+                    <prop id="133" list="1" val=""/>
+                    <prop id="134" list="0" val="0"/>
+                    <prop id="135" list="0" val="false"/>
+                </s>
+            </snippets>
+        </actor>
+    </actors>
+    <snippets>
+        <s enabled="true" id="65">
+            <prop id="1" list="0" val="0.0"/>
+        </s>
+    </snippets>
+    <terrain/>
+    <atlases members="" retainAtlases="true"/>
+</scene>

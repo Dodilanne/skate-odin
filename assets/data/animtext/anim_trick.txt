@@ -1,0 +1,16 @@
+air_flip_jump0
+air_flip_jump1
+air_flip_hang0
+air_flip_hang1
+air_flip_noljump0
+air_flip_noljump1
+air_flip_nolhang0
+air_flip_nolhang1
+air_heel_jump0
+air_heel_jump1
+air_heel_hang0
+air_heel_hang1
+air_heel_noljump0
+air_heel_noljump1
+air_heel_nolhang0
+air_heel_nolhang1

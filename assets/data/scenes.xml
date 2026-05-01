@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<scenes>
+    <scene desc="" format="3.4.0" id="0" name="test"/>
+    <scene desc="" format="3.4.0" id="16" name="Contact"/>
+    <scene desc="" format="3.4.0" id="17" name="preload"/>
+    <scene desc="" format="3.4.0" id="4" name="LOADING"/>
+    <scene desc="" format="3.4.0" id="5" name="ChooseMAP"/>
+    <scene desc="" format="3.4.0" id="11" name="Start_Controller"/>
+    <scene desc="" format="3.4.0" id="13" name="HowToPlay2"/>
+    <scene desc="" format="3.4.0" id="14" name="Menu"/>
+    <scene desc="" format="3.4.0" id="15" name="Settings"/>
+</scenes>

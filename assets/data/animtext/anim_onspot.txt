@@ -1,0 +1,10 @@
+flat_none_onspot0
+flat_none_ondeck0
+flat_none_ondeck1
+flat_none_ondeck2
+flat_none_ondeck3
+flat_none_offdeck0
+flat_none_offdeck1
+flat_none_offdeck2
+flat_none_offdeck3
+flat_none_ghost0
