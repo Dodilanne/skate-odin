@@ -48,6 +48,8 @@ main :: proc() {
 			{name = "jump_back", o = {-2, -5, 0}, w = 3, h = 1, n = {0, -1, 0}},
 			{name = "jump_right_high", o = {1, -5, 0}, w = 1, h = f32(2) / 3, n = {1, 0, 0}},
 			{name = "jump_right_low", o = {1, -4, 0}, w = 1, h = f32(1) / 3, n = {1, 0, 0}},
+			{name = "jump_left_high", o = {-2, -5, 0}, w = 1, h = f32(2) / 3, n = {-1, 0, 0}},
+			{name = "jump_left_low", o = {-2, -4, 0}, w = 1, h = f32(1) / 3, n = {-1, 0, 0}},
 		},
 	}
 
