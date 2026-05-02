@@ -22,8 +22,8 @@ main :: proc() {
 
 	player_radius: f32 = 0.5
 	initial_player := Player {
-		pos        = rl.Vector3(player_radius * 2),
-		dir        = linalg.normalize(rl.Vector3({1, 1, 0})),
+		pos        = {0, 0, player_radius},
+		dir        = linalg.normalize(rl.Vector3({0, -1, 0})),
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
@@ -32,16 +32,22 @@ main :: proc() {
 	}
 
 	state := State {
+		show_normals = true,
 		color_mode   = .dark,
-		drawing_mode = .dimetric,
+		drawing_mode = .side,
 		player       = initial_player,
 		surfaces     = {
-			{name = "floor", o = {-10, 0, 0}, w = 60, h = 30, n = {0, 0, 1}},
-			{name = "back wall", o = {0, 0, 0}, w = 20, h = 10, n = {1, 0, 0}},
-			{name = "right wall", o = {0, 0, 0}, w = 15, h = 10, n = {0, 1, 0}},
-			{name = "left wall", o = {0, 20, 0}, w = 15, h = 10, n = {0.5, -1, 0}},
-			{name = "ceiling", o = {0, 0, 10}, w = 15, h = 20, n = {0, 0, -1}},
-			{name = "slope", o = {15, 0, 0}, w = 20, h = 10, n = {-0.2, 0, 0.8}},
+			{name = "floor", o = {-30, -30, 0}, w = 60, h = 60, n = {0, 0, 1}},
+			{
+				name = "jump",
+				o = {-2, -5, 1},
+				w = 3,
+				h = math.sqrt(f32(3 * 3 + 1 * 1)),
+				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {1, 0, 0}, -math.atan2_f32(1, 3)),
+			},
+			{name = "jump_back", o = {-2, -5, 0}, w = 3, h = 1, n = {0, -1, 0}},
+			{name = "jump_right_high", o = {1, -5, 0}, w = 1, h = f32(2) / 3, n = {1, 0, 0}},
+			{name = "jump_right_low", o = {1, -4, 0}, w = 1, h = f32(1) / 3, n = {1, 0, 0}},
 		},
 	}
 
@@ -138,6 +144,10 @@ main :: proc() {
 			state.player = initial_player
 		}
 
+		if rl.IsKeyPressed(.N) {
+			state.show_normals = !state.show_normals
+		}
+
 		rl.BeginDrawing()
 
 		bg: rl.Color
@@ -149,6 +159,27 @@ main :: proc() {
 		rl.ClearBackground(bg)
 
 		for &surface in state.surfaces {
+			if state.show_normals {
+				rl.DrawCircleV(project(surface.o - state.player.pos, &state), 4, rl.BLUE)
+				rl.DrawLineEx(
+					project(surface.o - state.player.pos, &state),
+					project(surface.o + surface.n - state.player.pos, &state),
+					2,
+					rl.RED,
+				)
+				rl.DrawLineEx(
+					project(surface.o - state.player.pos, &state),
+					project(surface.o + surface.u - state.player.pos, &state),
+					2,
+					rl.GREEN,
+				)
+				rl.DrawLineEx(
+					project(surface.o - state.player.pos, &state),
+					project(surface.o + surface.v - state.player.pos, &state),
+					2,
+					rl.YELLOW,
+				)
+			}
 			for col in 0 ..= surface.w {
 				start := surface.o + surface.u * col - state.player.pos
 				end := start + surface.v * surface.h
@@ -234,7 +265,7 @@ project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
 		return point.xy * state.cell_size + state.offset
 	}
 	if state.drawing_mode == .side {
-		return rl.Vector2{point.x, -point.z} * state.cell_size + state.offset
+		return rl.Vector2{-point.y, -point.z} * state.cell_size + state.offset
 	}
 	return PRO_MATRIX * point * state.cell_size + state.offset
 }
@@ -290,6 +321,7 @@ State :: struct {
 	color_mode:   Color_Mode,
 	cell_size:    f32,
 	offset:       rl.Vector2,
+	show_normals: bool,
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
