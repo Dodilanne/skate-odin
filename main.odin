@@ -22,8 +22,8 @@ main :: proc() {
 
 	player_radius: f32 = 0.5
 	initial_player := Player {
-		pos        = {0, 0, player_radius},
-		dir        = linalg.normalize(rl.Vector3({0, -1, 0})),
+		pos        = rl.Vector3{1, 1, 4} + rl.Vector3(player_radius),
+		dir        = linalg.normalize(rl.Vector3({1, 1, 0})),
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
@@ -34,22 +34,43 @@ main :: proc() {
 	state := State {
 		show_normals = true,
 		color_mode   = .dark,
-		drawing_mode = .side,
+		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
-			{name = "floor", o = {-30, -30, 0}, w = 60, h = 60, n = {0, 0, 1}},
+			{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
+			{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
+			{name = "ledge_1_side_long", o = {1, 1, 4}, w = 9, h = 1, n = {1, 0, 0}},
+			{name = "ledge_1_side_tall", o = {1, 10, 3}, w = 3, h = 2, n = {1, 0, 0}},
+			{name = "ledge_1_front_tall", o = {0, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
+			{name = "ledge_2_top", o = {1, 0, 5}, w = 12, h = 1, n = {0, 0, 1}},
+			{name = "ledge_2_side", o = {1, 1, 4}, w = 11, h = 1, n = {0, 1, 0}},
+			{name = "ledge_3_side", o = {12, 1, 5}, w = 1, h = 12, n = {0, 0, 1}},
+			{name = "ledge_3_side_tall", o = {13, 0, 3}, w = 13, h = 2, n = {1, 0, 0}},
+			{name = "ledge_3_back_tall", o = {12, 0, 3}, w = 13, h = 2, n = {-1, 0, 0}},
+			{name = "ledge_3_front_tall", o = {12, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
+			{name = "floor_2", o = {0, 0, 3}, w = 16, h = 26, n = {0, 0, 1}},
+			{name = "floor_3", o = {0, 0, 2}, w = 50, h = 50, n = {0, 0, 1}},
 			{
-				name = "jump",
-				o = {-2, -5, 1},
-				w = 3,
-				h = math.sqrt(f32(3 * 3 + 1 * 1)),
-				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {1, 0, 0}, -math.atan2_f32(1, 3)),
+				name = "jump_1",
+				o = {1, 10, 4},
+				w = 11,
+				h = math.sqrt(f32(2 * 2 + 1 * 1)),
+				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {1, 0, 0}, -math.atan2_f32(1, 2)),
 			},
-			{name = "jump_back", o = {-2, -5, 0}, w = 3, h = 1, n = {0, -1, 0}},
-			{name = "jump_right_high", o = {1, -5, 0}, w = 1, h = f32(2) / 3, n = {1, 0, 0}},
-			{name = "jump_right_low", o = {1, -4, 0}, w = 1, h = f32(1) / 3, n = {1, 0, 0}},
-			{name = "jump_left_high", o = {-2, -5, 0}, w = 1, h = f32(2) / 3, n = {-1, 0, 0}},
-			{name = "jump_left_low", o = {-2, -4, 0}, w = 1, h = f32(1) / 3, n = {-1, 0, 0}},
+			{
+				name = "jump_2",
+				o = {16, 0, 3},
+				w = 26,
+				h = math.sqrt(f32(2 * 2 + 1 * 1)),
+				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {0, 1, 0}, math.atan2_f32(1, 2)),
+			},
+
+
+			// {name = "jump_back", o = {-2, -5, 0}, w = 2, h = 1, n = {0, -1, 0}},
+			// {name = "jump_right_high", o = {1, -5, 0}, w = 1, h = f32(2) / 2, n = {1, 0, 0}},
+			// {name = "jump_right_low", o = {1, -4, 0}, w = 1, h = f32(1) / 2, n = {1, 0, 0}},
+			// {name = "jump_left_high", o = {-2, -5, 0}, w = 1, h = f32(2) / 2, n = {-1, 0, 0}},
+			// {name = "jump_left_low", o = {-2, -4, 0}, w = 1, h = f32(1) / 2, n = {-1, 0, 0}},
 		},
 	}
 
@@ -318,7 +339,7 @@ Color_Mode :: enum {
 
 State :: struct {
 	player:       Player,
-	surfaces:     [dynamic; 10]Surface,
+	surfaces:     [dynamic; 20]Surface,
 	drawing_mode: Drawing_Mode,
 	color_mode:   Color_Mode,
 	cell_size:    f32,
