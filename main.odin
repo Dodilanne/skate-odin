@@ -146,6 +146,7 @@ main :: proc() {
 
 		state.player.pos += state.player.vel * dt
 
+		state.player.airborne = true
 		for &surface in state.surfaces {
 			p := state.player.pos - surface.o
 			d := linalg.dot(surface.n, p)
@@ -158,6 +159,9 @@ main :: proc() {
 			state.player.pos += (state.player.radius - d) * surface.n
 			state.player.vel -= linalg.dot(state.player.vel, surface.n) * surface.n
 			if linalg.length(state.player.vel) != 0 do state.player.dir = linalg.normalize(state.player.vel)
+			if surface.n.z != 0 {
+				state.player.airborne = false
+			}
 		}
 
 		if state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
@@ -317,6 +321,7 @@ Player :: struct {
 	steer_rate: f32,
 	max_speed:  f32,
 	radius:     f32,
+	airborne:   bool,
 }
 
 Surface :: struct {
