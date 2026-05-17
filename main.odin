@@ -32,8 +32,8 @@ main :: proc() {
 	}
 
 	state := State {
-		show_normals = true,
-		color_mode   = .dark,
+		show_normals = false,
+		color_mode   = .light,
 		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
