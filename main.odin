@@ -135,6 +135,10 @@ main :: proc() {
 			state.player.vel += state.player.dir
 		}
 
+		if rl.IsKeyReleased(.COMMA) {
+			state.player.vel.z += 4
+		}
+
 		state.player.vel -= rl.Vector3{0, 0, state.player.mass * 10 * dt}
 
 		if math.abs(linalg.length(state.player.vel.xy)) > 0.1 {
