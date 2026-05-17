@@ -131,7 +131,7 @@ main :: proc() {
 			)
 		}
 
-		if rl.IsKeyPressed(.SPACE) {
+		if rl.IsKeyPressed(.ENTER) {
 			state.player.vel += state.player.dir
 		}
 
@@ -139,7 +139,7 @@ main :: proc() {
 
 		if math.abs(linalg.length(state.player.vel.xy)) > 0.1 {
 			friction_coeff: f32 = 0.5
-			if rl.IsKeyDown(.ENTER) do friction_coeff *= 10
+			if rl.IsKeyDown(.SPACE) do friction_coeff *= 10
 			state.player.vel = state.player.vel - state.player.dir * friction_coeff * dt
 		} else {
 			state.player.vel.xy = {0, 0}
