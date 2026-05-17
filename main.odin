@@ -64,13 +64,6 @@ main :: proc() {
 				h = math.sqrt(f32(2 * 2 + 1 * 1)),
 				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {0, 1, 0}, math.atan2_f32(1, 2)),
 			},
-
-
-			// {name = "jump_back", o = {-2, -5, 0}, w = 2, h = 1, n = {0, -1, 0}},
-			// {name = "jump_right_high", o = {1, -5, 0}, w = 1, h = f32(2) / 2, n = {1, 0, 0}},
-			// {name = "jump_right_low", o = {1, -4, 0}, w = 1, h = f32(1) / 2, n = {1, 0, 0}},
-			// {name = "jump_left_high", o = {-2, -5, 0}, w = 1, h = f32(2) / 2, n = {-1, 0, 0}},
-			// {name = "jump_left_low", o = {-2, -4, 0}, w = 1, h = f32(1) / 2, n = {-1, 0, 0}},
 		},
 	}
 
