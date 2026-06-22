@@ -16,6 +16,7 @@ main :: proc() {
 		defer for _, v in track.allocation_map do log.warnf("%v Leaked %v bytes.\n", v.location, v.size)
 	}
 
+	rl.SetTargetFPS(60)
 	rl.SetTraceLogLevel(.WARNING)
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
@@ -33,7 +34,7 @@ main :: proc() {
 
 	state := State {
 		show_normals = false,
-		color_mode   = .light,
+		color_mode   = .dark,
 		drawing_mode = .dimetric,
 		player       = initial_player,
 		surfaces     = {
@@ -255,7 +256,9 @@ main :: proc() {
 			for p in 0 ..< points_per_circle {
 				start := base_points[c * points_per_circle + p]
 				end := base_points[c * points_per_circle + (p + 1) % points_per_circle]
-				rl.DrawLineEx(project(start, &state), project(end, &state), 2, rl.ORANGE)
+				color := rl.ORANGE
+				if state.player.airborne do color = rl.GREEN
+				rl.DrawLineEx(project(start, &state), project(end, &state), 2, color)
 			}
 		}
 
