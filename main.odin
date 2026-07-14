@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:math/linalg"
@@ -24,7 +25,8 @@ main :: proc() {
 	player_radius: f32 = 0.5
 	initial_player := Player {
 		pos        = rl.Vector3{1, 1, 4} + rl.Vector3(player_radius),
-		dir        = linalg.normalize(rl.Vector3({1, 1, 0})),
+		move_dir   = linalg.normalize(rl.Vector3({1, 1, 0})),
+		look_dir   = linalg.normalize(rl.Vector3({1, 1, 0})),
 		norm       = {0, 0, 1},
 		steer_rate = 0.2,
 		mass       = 1,
@@ -101,23 +103,35 @@ main :: proc() {
 
 		dt := rl.GetFrameTime()
 
-		player_angle := linalg.atan2(state.player.dir.y, state.player.dir.x)
+		player_angle: f32
 
 		steer_dir: f32 = 0
 		if rl.IsKeyDown(.R) do steer_dir = -1
 		if rl.IsKeyDown(.T) do steer_dir = +1
 
-		if steer_dir != 0 {
-			speed := linalg.length(state.player.vel) * state.player.steer_rate
-			if speed == 0 do speed = 2
+		if state.player.airborne {
+			speed: f32 = 6
 			angle_change := steer_dir * dt * speed
-			player_angle += angle_change
-			state.player.dir = rl.Vector3RotateByAxisAngle(
+			player_angle =
+				angle_change + linalg.atan2(state.player.look_dir.y, state.player.look_dir.x)
+			state.player.look_dir = rl.Vector3RotateByAxisAngle(
 				rl.Vector3{1, 0, 0},
 				rl.Vector3{0, 0, 1},
 				player_angle,
 			)
-			state.player.dir = linalg.normalize(state.player.dir)
+			state.player.look_dir = linalg.normalize(state.player.look_dir)
+		} else if steer_dir != 0 {
+			speed := linalg.length(state.player.vel) * state.player.steer_rate
+			if speed == 0 do speed = 2
+			angle_change := steer_dir * dt * speed
+			player_angle =
+				angle_change + linalg.atan2(state.player.move_dir.y, state.player.move_dir.x)
+			state.player.move_dir = rl.Vector3RotateByAxisAngle(
+				rl.Vector3{1, 0, 0},
+				rl.Vector3{0, 0, 1},
+				player_angle,
+			)
+			state.player.move_dir = linalg.normalize(state.player.move_dir)
 			state.player.vel = rl.Vector3RotateByAxisAngle(
 				state.player.vel,
 				rl.Vector3{0, 0, 1},
@@ -126,7 +140,7 @@ main :: proc() {
 		}
 
 		if rl.IsKeyPressed(.ENTER) {
-			state.player.vel += state.player.dir
+			state.player.vel += state.player.move_dir
 		}
 
 		if rl.IsKeyReleased(.COMMA) {
@@ -138,7 +152,7 @@ main :: proc() {
 		if math.abs(linalg.length(state.player.vel.xy)) > 0.1 {
 			friction_coeff: f32 = 0.5
 			if rl.IsKeyDown(.SPACE) do friction_coeff *= 10
-			state.player.vel = state.player.vel - state.player.dir * friction_coeff * dt
+			state.player.vel = state.player.vel - state.player.move_dir * friction_coeff * dt
 		} else {
 			state.player.vel.xy = {0, 0}
 		}
@@ -159,13 +173,24 @@ main :: proc() {
 			if py < 0 || py > surface.h do continue
 			state.player.pos += (state.player.radius - d) * surface.n
 			state.player.vel -= linalg.dot(state.player.vel, surface.n) * surface.n
-			if linalg.length(state.player.vel) != 0 do state.player.dir = linalg.normalize(state.player.vel)
+			if linalg.length(state.player.vel) != 0 do state.player.move_dir = linalg.normalize(state.player.vel)
 			if surface.n.z != 0 {
 				state.player.airborne = false
 			}
 		}
 
-		if state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
+		crashed := false
+		if !state.player.airborne {
+			diff := linalg.dot(state.player.move_dir, state.player.look_dir)
+			abs := math.abs(diff)
+			if abs < 0.85 {
+				crashed = true
+			} else {
+				state.player.look_dir = state.player.move_dir * math.sign(diff)
+			}
+		}
+
+		if crashed || state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
 			state.player = initial_player
 		}
 
@@ -276,9 +301,16 @@ main :: proc() {
 
 		rl.DrawLineEx(
 			project(rl.Vector3(0), &state),
-			project(state.player.dir, &state),
+			project(state.player.move_dir, &state),
 			4,
 			rl.BLUE,
+		)
+
+		rl.DrawLineEx(
+			project(rl.Vector3(0), &state),
+			project(state.player.look_dir, &state),
+			4,
+			rl.YELLOW,
 		)
 
 		rl.DrawFPS(0, 0)
@@ -315,7 +347,8 @@ Drawing_Mode :: enum {
 
 
 Player :: struct {
-	dir:        rl.Vector3,
+	move_dir:   rl.Vector3,
+	look_dir:   rl.Vector3,
 	norm:       rl.Vector3,
 	pos:        rl.Vector3,
 	vel:        rl.Vector3,
