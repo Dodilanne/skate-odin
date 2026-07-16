@@ -4,43 +4,40 @@ import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
 
-new_state :: proc() -> State {
-	state := State {
-		show_normals = false,
-		color_mode   = .dark,
-		drawing_mode = .dimetric,
-		player       = initial_player,
-		surfaces     = {
-			{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
-			{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
-			{name = "ledge_1_side_long", o = {1, 1, 4}, w = 9, h = 1, n = {1, 0, 0}},
-			{name = "ledge_1_side_tall", o = {1, 10, 3}, w = 3, h = 2, n = {1, 0, 0}},
-			{name = "ledge_1_front_tall", o = {0, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
-			{name = "ledge_2_top", o = {1, 0, 5}, w = 12, h = 1, n = {0, 0, 1}},
-			{name = "ledge_2_side", o = {1, 1, 4}, w = 11, h = 1, n = {0, 1, 0}},
-			{name = "ledge_3_side", o = {12, 1, 5}, w = 1, h = 12, n = {0, 0, 1}},
-			{name = "ledge_3_side_tall", o = {13, 0, 3}, w = 13, h = 2, n = {1, 0, 0}},
-			{name = "ledge_3_back_tall", o = {12, 0, 3}, w = 13, h = 2, n = {-1, 0, 0}},
-			{name = "ledge_3_front_tall", o = {12, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
-			{name = "floor_2", o = {0, 0, 3}, w = 16, h = 26, n = {0, 0, 1}},
-			{name = "floor_3", o = {0, 0, 2}, w = 50, h = 50, n = {0, 0, 1}},
-			{
-				name = "jump_1",
-				o = {1, 10, 4},
-				w = 11,
-				h = math.sqrt(f32(2 * 2 + 1 * 1)),
-				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {1, 0, 0}, -math.atan2_f32(1, 2)),
-			},
-			{
-				name = "jump_2",
-				o = {16, 0, 3},
-				w = 26,
-				h = math.sqrt(f32(2 * 2 + 1 * 1)),
-				n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {0, 1, 0}, math.atan2_f32(1, 2)),
-			},
+init :: proc(state: ^State) {
+	state.show_normals = false
+	state.color_mode = .dark
+	state.drawing_mode = .dimetric
+	state.player = initial_player
+	state.surfaces = {
+		{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
+		{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
+		{name = "ledge_1_side_long", o = {1, 1, 4}, w = 9, h = 1, n = {1, 0, 0}},
+		{name = "ledge_1_side_tall", o = {1, 10, 3}, w = 3, h = 2, n = {1, 0, 0}},
+		{name = "ledge_1_front_tall", o = {0, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
+		{name = "ledge_2_top", o = {1, 0, 5}, w = 12, h = 1, n = {0, 0, 1}},
+		{name = "ledge_2_side", o = {1, 1, 4}, w = 11, h = 1, n = {0, 1, 0}},
+		{name = "ledge_3_side", o = {12, 1, 5}, w = 1, h = 12, n = {0, 0, 1}},
+		{name = "ledge_3_side_tall", o = {13, 0, 3}, w = 13, h = 2, n = {1, 0, 0}},
+		{name = "ledge_3_back_tall", o = {12, 0, 3}, w = 13, h = 2, n = {-1, 0, 0}},
+		{name = "ledge_3_front_tall", o = {12, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
+		{name = "floor_2", o = {0, 0, 3}, w = 16, h = 26, n = {0, 0, 1}},
+		{name = "floor_3", o = {0, 0, 2}, w = 50, h = 50, n = {0, 0, 1}},
+		{
+			name = "jump_1",
+			o = {1, 10, 4},
+			w = 11,
+			h = math.sqrt(f32(2 * 2 + 1 * 1)),
+			n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {1, 0, 0}, -math.atan2_f32(1, 2)),
+		},
+		{
+			name = "jump_2",
+			o = {16, 0, 3},
+			w = 26,
+			h = math.sqrt(f32(2 * 2 + 1 * 1)),
+			n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {0, 1, 0}, math.atan2_f32(1, 2)),
 		},
 	}
-
 
 	for &surface in state.surfaces {
 		surface.n = linalg.normalize(surface.n)
@@ -56,8 +53,6 @@ new_state :: proc() -> State {
 		if linalg.dot(v, largest_abs_component(v)) < 0.01 do v *= -1
 		surface.v = v
 	}
-
-	return state
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {

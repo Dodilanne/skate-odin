@@ -20,7 +20,8 @@ main :: proc() {
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
-	state := game.new_state()
+	state: game.State
+	game.init(&state)
 
 	for !rl.WindowShouldClose() {
 		game.update(&state)
