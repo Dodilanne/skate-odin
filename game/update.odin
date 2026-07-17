@@ -2,6 +2,7 @@ package game
 
 import "core:math"
 import "core:math/linalg"
+import "input"
 import rl "vendor:raylib"
 
 player_radius: f32 = 0.5
@@ -16,25 +17,23 @@ initial_player := Player {
 	radius     = player_radius,
 }
 
-update :: proc(state: ^State) {
+update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
 	state.cell_size = f32(32)
 	state.offset = screen / 2
 
-	if rl.IsKeyPressed(.D) {
+	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
 		state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
 	}
 
-	if rl.IsKeyPressed(.C) {
+	if .Pressed in inputs.actions[.Toggle_Color_Mode] {
 		state.color_mode = Color_Mode((int(state.color_mode) + 1) % len(Color_Mode))
 	}
 
-	dt := rl.GetFrameTime()
-
 	steer_dir: f32 = 0
-	if rl.IsKeyDown(.R) do steer_dir = -1
-	if rl.IsKeyDown(.T) do steer_dir = +1
+	if .Down in inputs.actions[.Left] do steer_dir = -1
+	if .Down in inputs.actions[.Right] do steer_dir = +1
 
 	if state.player.airborne {
 		speed: f32 = 6
@@ -66,11 +65,11 @@ update :: proc(state: ^State) {
 		)
 	}
 
-	if rl.IsKeyPressed(.ENTER) {
+	if .Pressed in inputs.actions[.Push] {
 		state.player.vel += state.player.move_dir
 	}
 
-	if rl.IsKeyReleased(.COMMA) {
+	if .Released in inputs.actions[.Trick_S] {
 		state.player.vel.z += 4
 	}
 
@@ -78,7 +77,7 @@ update :: proc(state: ^State) {
 
 	if math.abs(linalg.length(state.player.vel.xy)) > 0.1 {
 		friction_coeff: f32 = 0.5
-		if rl.IsKeyDown(.SPACE) do friction_coeff *= 10
+		if .Down in inputs.actions[.Break] do friction_coeff *= 10
 		state.player.vel = state.player.vel - state.player.move_dir * friction_coeff * dt
 	} else {
 		state.player.vel.xy = {0, 0}
@@ -117,11 +116,11 @@ update :: proc(state: ^State) {
 		}
 	}
 
-	if crashed || state.player.pos.z < -10 || rl.IsKeyPressed(.ZERO) {
+	if crashed || state.player.pos.z < -10 || .Pressed in inputs.actions[.Reset] {
 		state.player = initial_player
 	}
 
-	if rl.IsKeyPressed(.N) {
+	if .Pressed in inputs.actions[.Toggle_Normals] {
 		state.show_normals = !state.show_normals
 	}
 }
