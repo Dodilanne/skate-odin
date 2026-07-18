@@ -65,7 +65,11 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			}
 		case .crouched:
 			if check(state, inputs, i, .Trick_S, .Released) {
-				skater.vel.z += 4
+				height := 6 * skater.state_timer
+				height = math.max(height, 3)
+				skater.vel.z += height
+			} else {
+				skater.state_timer = math.min(skater.state_timer + dt * 1.5, 1)
 			}
 		}
 
@@ -114,8 +118,10 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 
 		if !touching_a_surface {
 			skater.state = .airborne
+			skater.state_timer = 0
 		} else if skater.state == .airborne {
 			skater.state = .idle
+			skater.state_timer = 0
 		}
 
 		crashed := false

@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
@@ -114,7 +115,17 @@ render :: proc(state: ^State) {
 		if state.show_normals {
 			rl.DrawLineEx(project(offset, state), project(skater.norm + offset, state), 4, rl.RED)
 		}
+
 	}
+
+	font_size: i32 = 20
+	rl.DrawText(
+		fmt.ctprintf("%f", target.state_timer),
+		rl.GetScreenWidth() / 2 + 30,
+		(rl.GetScreenHeight() - font_size) / 2,
+		font_size,
+		rl.WHITE,
+	)
 }
 
 project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {

@@ -57,5 +57,7 @@ main :: proc() {
 		defer rl.EndDrawing()
 
 		game.render(&game_state)
+
+		free_all(context.temp_allocator)
 	}
 }
