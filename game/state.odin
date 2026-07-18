@@ -4,11 +4,26 @@ import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
 
+MAX_SKATERS :: 20
+
+
+skater_radius: f32 = 0.5
+initial_skater := Skater {
+	pos        = rl.Vector3{1, 1, 4} + rl.Vector3(skater_radius),
+	move_dir   = linalg.normalize(rl.Vector3({1, 1, 0})),
+	look_dir   = linalg.normalize(rl.Vector3({1, 1, 0})),
+	norm       = {0, 0, 1},
+	steer_rate = 0.2,
+	max_speed  = 8,
+	radius     = skater_radius,
+}
+
+
 init :: proc(state: ^State) {
 	state.show_normals = false
 	state.color_mode = .dark
 	state.drawing_mode = .dimetric
-	state.player = initial_player
+	state.skaters = [dynamic; MAX_SKATERS]Skater{initial_skater}
 	state.surfaces = {
 		{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
 		{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
@@ -74,14 +89,12 @@ Drawing_Mode :: enum {
 }
 
 
-Player :: struct {
+Skater :: struct {
 	move_dir:   rl.Vector3,
 	look_dir:   rl.Vector3,
 	norm:       rl.Vector3,
 	pos:        rl.Vector3,
 	vel:        rl.Vector3,
-	forces:     rl.Vector3,
-	mass:       f32,
 	steer_rate: f32,
 	max_speed:  f32,
 	radius:     f32,
@@ -105,7 +118,7 @@ Color_Mode :: enum {
 }
 
 State :: struct {
-	player:       Player,
+	skaters:      [dynamic; MAX_SKATERS]Skater,
 	surfaces:     [dynamic; 20]Surface,
 	drawing_mode: Drawing_Mode,
 	color_mode:   Color_Mode,

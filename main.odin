@@ -46,6 +46,10 @@ main :: proc() {
 			input.clear_flags(&input_state, {.Pressed, .Released})
 		}
 
+
+		rl.BeginDrawing()
+		defer rl.EndDrawing()
+
 		game.render(&game_state)
 	}
 }
