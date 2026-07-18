@@ -58,7 +58,7 @@ render :: proc(state: ^State) {
 
 	for &skater, i in state.skaters {
 		offset: rl.Vector3
-		if i != state.target_skater_idx do offset = target.pos
+		if i != state.target_skater_idx do offset = -skater.pos + target.pos
 
 		num_circles := 6
 		base_points: [100]rl.Vector3

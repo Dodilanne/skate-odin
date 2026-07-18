@@ -30,6 +30,9 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	if .Pressed in inputs.actions[.Toggle_Normals] {
 		state.show_normals = !state.show_normals
 	}
+	if .Pressed in inputs.actions[.Cycle_Target] {
+		state.target_skater_idx = (state.target_skater_idx + 1) % len(state.skaters)
+	}
 
 	for &skater, i in state.skaters {
 		intentions: bit_set[Player_Intention]
@@ -135,5 +138,4 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.steer_rate = 0.2
 	skater.max_speed = 8
 	skater.radius = SKATER_RADIUS
-	skater.color = rl.ORANGE
 }

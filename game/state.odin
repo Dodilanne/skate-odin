@@ -9,11 +9,15 @@ MAX_SKATERS :: 20
 init :: proc(state: ^State) {
 	append(&state.skaters, Skater{})
 	reset_skater(&state.skaters[0])
+	state.skaters[0].color = rl.ORANGE
 
 	append(&state.skaters, Skater{})
 	reset_skater(&state.skaters[1])
-	state.skaters[1].pos = rl.Vector3{3, 3, 4} + rl.Vector3(SKATER_RADIUS)
 	state.skaters[1].color = rl.GREEN
+
+	append(&state.skaters, Skater{})
+	reset_skater(&state.skaters[2])
+	state.skaters[2].color = rl.BLUE
 
 	state.show_normals = false
 	state.color_mode = .dark

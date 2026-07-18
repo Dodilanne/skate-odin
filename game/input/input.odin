@@ -19,6 +19,7 @@ Action :: enum u8 {
 	Push,
 	Break,
 	Reset,
+	Cycle_Target,
 	Trick_O,
 	Trick_N,
 	Trick_NE,
@@ -62,6 +63,7 @@ gather :: proc(state: ^State) {
 	state.actions[.Push] = flags(.ENTER)
 	state.actions[.Break] = flags(.SPACE)
 	state.actions[.Reset] = flags(.ZERO)
+	state.actions[.Cycle_Target] = flags(.Z)
 	state.actions[.Trick_O] = flags(.E)
 	state.actions[.Trick_N] = flags(.U)
 	state.actions[.Trick_NE] = flags(.Y)
