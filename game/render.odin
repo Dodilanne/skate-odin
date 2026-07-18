@@ -44,7 +44,7 @@ render :: proc(state: ^State) {
 		}
 	}
 
-	for &skater, i in state.skaters {
+	for &skater in state.skaters {
 		num_circles := 6
 		base_points: [100]rl.Vector3
 		points_per_circle := len(base_points) / num_circles

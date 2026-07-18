@@ -1,3 +1,5 @@
+#+vet !unused-imports
+
 package main
 
 import "core:log"

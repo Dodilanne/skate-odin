@@ -1,6 +1,5 @@
 package input
 
-import "core:log"
 import "core:testing"
 import rl "vendor:raylib"
 
