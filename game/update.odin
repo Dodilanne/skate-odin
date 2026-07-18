@@ -5,6 +5,16 @@ import "core:math/linalg"
 import "input"
 import rl "vendor:raylib"
 
+
+Player_Intention :: enum u8 {
+	steer_left,
+	steer_right,
+	push,
+	stop,
+	pop,
+	reset,
+}
+
 update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
@@ -14,16 +24,27 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
 		state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
 	}
-
 	if .Pressed in inputs.actions[.Toggle_Color_Mode] {
 		state.color_mode = Color_Mode((int(state.color_mode) + 1) % len(Color_Mode))
 	}
+	if .Pressed in inputs.actions[.Toggle_Normals] {
+		state.show_normals = !state.show_normals
+	}
 
+	for &skater, i in state.skaters {
+		intentions: bit_set[Player_Intention]
+		if state.target_skater_idx == i {
+			if .Down in inputs.actions[.Left] do intentions |= {.steer_left}
+			if .Down in inputs.actions[.Right] do intentions |= {.steer_right}
+			if .Pressed in inputs.actions[.Push] do intentions |= {.push}
+			if .Down in inputs.actions[.Break] do intentions |= {.stop}
+			if .Released in inputs.actions[.Trick_S] do intentions |= {.pop}
+			if .Pressed in inputs.actions[.Reset] do intentions |= {.reset}
+		}
 
-	for &skater in state.skaters {
 		steer_dir: f32 = 0
-		if .Down in inputs.actions[.Left] do steer_dir = -1
-		if .Down in inputs.actions[.Right] do steer_dir = +1
+		if .steer_left in intentions do steer_dir = -1
+		if .steer_right in intentions do steer_dir = +1
 
 		if skater.airborne {
 			speed: f32 = 6
@@ -49,19 +70,14 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
 		}
 
-		if .Pressed in inputs.actions[.Push] {
-			skater.vel += skater.move_dir
-		}
-
-		if .Released in inputs.actions[.Trick_S] {
-			skater.vel.z += 4
-		}
+		if .push in intentions do skater.vel += skater.move_dir
+		if .pop in intentions do skater.vel.z += 4
 
 		skater.vel -= rl.Vector3{0, 0, 10 * dt}
 
 		if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
 			friction_coeff: f32 = 0.5
-			if .Down in inputs.actions[.Break] do friction_coeff *= 10
+			if .stop in intentions do friction_coeff *= 10
 			skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
 		} else {
 			skater.vel.xy = {0, 0}
@@ -100,13 +116,10 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			}
 		}
 
-		if crashed || skater.pos.z < -10 || .Pressed in inputs.actions[.Reset] {
+		if crashed || skater.pos.z < -10 || .reset in intentions {
 			reset_skater(&skater)
 		}
-
-		if .Pressed in inputs.actions[.Toggle_Normals] {
-			state.show_normals = !state.show_normals
-		}}
+	}
 }
 
 SKATER_RADIUS :: 0.5
@@ -122,4 +135,5 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.steer_rate = 0.2
 	skater.max_speed = 8
 	skater.radius = SKATER_RADIUS
+	skater.color = rl.ORANGE
 }

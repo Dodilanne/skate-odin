@@ -10,6 +10,11 @@ init :: proc(state: ^State) {
 	append(&state.skaters, Skater{})
 	reset_skater(&state.skaters[0])
 
+	append(&state.skaters, Skater{})
+	reset_skater(&state.skaters[1])
+	state.skaters[1].pos = rl.Vector3{3, 3, 4} + rl.Vector3(SKATER_RADIUS)
+	state.skaters[1].color = rl.GREEN
+
 	state.show_normals = false
 	state.color_mode = .dark
 	state.drawing_mode = .dimetric
@@ -90,6 +95,7 @@ Skater :: struct {
 	radius:     f32,
 	airborne:   bool,
 	angle:      f32,
+	color:      rl.Color,
 }
 
 Surface :: struct {
@@ -108,11 +114,12 @@ Color_Mode :: enum {
 }
 
 State :: struct {
-	skaters:      [dynamic; MAX_SKATERS]Skater,
-	surfaces:     [dynamic; 20]Surface,
-	drawing_mode: Drawing_Mode,
-	color_mode:   Color_Mode,
-	cell_size:    f32,
-	offset:       rl.Vector2,
-	show_normals: bool,
+	target_skater_idx: int,
+	skaters:           [dynamic; MAX_SKATERS]Skater,
+	surfaces:          [dynamic; 20]Surface,
+	drawing_mode:      Drawing_Mode,
+	color_mode:        Color_Mode,
+	cell_size:         f32,
+	offset:            rl.Vector2,
+	show_normals:      bool,
 }
