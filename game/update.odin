@@ -11,6 +11,7 @@ Player_Intention :: enum u8 {
 	steer_right,
 	push,
 	stop,
+	crouch,
 	pop,
 	reset,
 }
@@ -41,6 +42,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			if .Down in inputs.actions[.Right] do intentions |= {.steer_right}
 			if .Pressed in inputs.actions[.Push] do intentions |= {.push}
 			if .Down in inputs.actions[.Break] do intentions |= {.stop}
+			if .Pressed in inputs.actions[.Trick_S] do intentions |= {.crouch}
 			if .Released in inputs.actions[.Trick_S] do intentions |= {.pop}
 			if .Pressed in inputs.actions[.Reset] do intentions |= {.reset}
 		}
@@ -73,9 +75,17 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
 		}
 
-		if skater.state != .airborne {
-			if .push in intentions do skater.vel += skater.move_dir
-			if .pop in intentions do skater.vel.z += 4
+		#partial switch skater.state {
+		case .idle:
+			if .push in intentions {
+				skater.vel += skater.move_dir
+			} else if .crouch in intentions {
+				skater.state = .crouched
+			}
+		case .crouched:
+			if .pop in intentions {
+				skater.vel.z += 4
+			}
 		}
 
 		skater.vel -= rl.Vector3{0, 0, 10 * dt}
