@@ -96,19 +96,18 @@ render :: proc(state: ^State) {
 			)
 		}
 
-		rl.DrawLineEx(
-			project(+offset, state),
-			project(skater.move_dir + offset, state),
-			4,
-			rl.BLUE,
-		)
+		rl.DrawLineEx(project(offset, state), project(skater.move_dir + offset, state), 4, rl.BLUE)
 
 		rl.DrawLineEx(
-			project(+offset, state),
+			project(offset, state),
 			project(skater.look_dir + offset, state),
 			4,
 			rl.YELLOW,
 		)
+
+		if state.show_normals {
+			rl.DrawLineEx(project(offset, state), project(skater.norm + offset, state), 4, rl.RED)
+		}
 	}
 }
 
