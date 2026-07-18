@@ -6,16 +6,6 @@ import "input"
 import rl "vendor:raylib"
 
 
-Player_Intention :: enum u8 {
-	steer_left,
-	steer_right,
-	push,
-	stop,
-	crouch,
-	pop,
-	reset,
-}
-
 update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
@@ -36,20 +26,9 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	}
 
 	for &skater, i in state.skaters {
-		intentions: bit_set[Player_Intention]
-		if state.target_skater_idx == i {
-			if .Down in inputs.actions[.Left] {intentions |= {.steer_left}}
-			if .Down in inputs.actions[.Right] {intentions |= {.steer_right}}
-			if .Pressed in inputs.actions[.Push] {intentions |= {.push}}
-			if .Down in inputs.actions[.Break] {intentions |= {.stop}}
-			if .Pressed in inputs.actions[.Trick_S] {intentions |= {.crouch}}
-			if .Released in inputs.actions[.Trick_S] {intentions |= {.pop}}
-			if .Pressed in inputs.actions[.Reset] {intentions |= {.reset}}
-		}
-
-		steer_dir: f32 = 0
-		if .steer_left in intentions {steer_dir = -1}
-		if .steer_right in intentions {steer_dir = +1}
+		steer_dir: f32
+		if check(state, inputs, i, .Left, .Down) {steer_dir = -1}
+		if check(state, inputs, i, .Right, .Down) {steer_dir = +1}
 
 		if skater.state == .airborne {
 			speed: f32 = 6
@@ -79,13 +58,13 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 
 		#partial switch skater.state {
 		case .idle:
-			if .push in intentions {
+			if check(state, inputs, i, .Push, .Pressed) {
 				skater.vel += skater.move_dir
-			} else if .crouch in intentions {
+			} else if check(state, inputs, i, .Trick_S, .Pressed) {
 				skater.state = .crouched
 			}
 		case .crouched:
-			if .pop in intentions {
+			if check(state, inputs, i, .Trick_S, .Released) {
 				skater.vel.z += 4
 			}
 		}
@@ -94,7 +73,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 
 		if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
 			friction_coeff: f32 = 0.5
-			if .stop in intentions {
+			if check(state, inputs, i, .Break, .Down) {
 				friction_coeff *= 10
 			}
 			skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
@@ -150,7 +129,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			}
 		}
 
-		if crashed || skater.pos.z < -10 || .reset in intentions {
+		if crashed || skater.pos.z < -10 || check(state, inputs, i, .Reset, .Pressed) {
 			reset_skater(&skater)
 		}
 	}
@@ -169,4 +148,17 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.steer_rate = 0.2
 	skater.max_speed = 8
 	skater.radius = SKATER_RADIUS
+}
+
+check :: proc(
+	state: ^State,
+	inputs: input.State,
+	skater_idx: int,
+	action: input.Action,
+	flag: input.Flag,
+) -> bool {
+	if state.target_skater_idx != skater_idx {
+		return false
+	}
+	return flag in inputs.actions[action]
 }
