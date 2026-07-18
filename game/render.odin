@@ -78,7 +78,7 @@ render :: proc(state: ^State) {
 				end := base_points[c * points_per_circle + (p + 1) % points_per_circle] + offset
 
 				color := skater.color
-				if skater.airborne do color = rl.ColorBrightness(color, 0.5)
+				if skater.state == .airborne do color = rl.ColorBrightness(color, 0.5)
 
 				rl.DrawLineEx(project(start, state), project(end, state), 2, color)
 			}

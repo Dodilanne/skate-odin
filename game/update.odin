@@ -49,7 +49,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 		if .steer_left in intentions do steer_dir = -1
 		if .steer_right in intentions do steer_dir = +1
 
-		if skater.airborne {
+		if skater.state == .airborne {
 			speed: f32 = 6
 			angle_change := steer_dir * dt * speed
 			skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
@@ -73,7 +73,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
 		}
 
-		if !skater.airborne {
+		if skater.state != .airborne {
 			if .push in intentions do skater.vel += skater.move_dir
 			if .pop in intentions do skater.vel.z += 4
 		}
@@ -92,7 +92,8 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 
 		skater.pos += skater.vel * dt
 
-		skater.airborne = true
+
+		touching_a_surface := false
 		for &surface in state.surfaces {
 			p := skater.pos - surface.o
 			d := linalg.dot(surface.n, p)
@@ -106,12 +107,15 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
 			if linalg.length(skater.vel) != 0 do skater.move_dir = linalg.normalize(skater.vel)
 			if surface.n.z != 0 {
-				skater.airborne = false
+				touching_a_surface = true
 			}
 		}
 
+		if !touching_a_surface do skater.state = .airborne
+		else if skater.state == .airborne do skater.state = .idle
+
 		crashed := false
-		if !skater.airborne {
+		if skater.state != .airborne {
 			diff := linalg.dot(skater.move_dir, skater.look_dir)
 			abs := math.abs(diff)
 			if abs < 0.85 {
@@ -131,7 +135,7 @@ SKATER_RADIUS :: 0.5
 
 reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
-	skater.airborne = false
+	skater.state = .idle
 	skater.angle = 0
 	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))

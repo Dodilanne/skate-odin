@@ -87,19 +87,25 @@ Drawing_Mode :: enum {
 	side,
 }
 
-
 Skater :: struct {
-	move_dir:   rl.Vector3,
-	look_dir:   rl.Vector3,
-	norm:       rl.Vector3,
-	pos:        rl.Vector3,
-	vel:        rl.Vector3,
-	steer_rate: f32,
-	max_speed:  f32,
-	radius:     f32,
-	airborne:   bool,
-	angle:      f32,
-	color:      rl.Color,
+	move_dir:    rl.Vector3,
+	look_dir:    rl.Vector3,
+	norm:        rl.Vector3,
+	pos:         rl.Vector3,
+	vel:         rl.Vector3,
+	steer_rate:  f32,
+	max_speed:   f32,
+	radius:      f32,
+	angle:       f32,
+	color:       rl.Color,
+	state:       Skater_State,
+	state_timer: f32,
+}
+
+Skater_State :: enum {
+	idle,
+	crouched,
+	airborne,
 }
 
 Surface :: struct {
