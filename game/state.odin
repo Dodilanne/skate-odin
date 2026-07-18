@@ -56,14 +56,20 @@ init :: proc(state: ^State) {
 		surface.n = linalg.normalize(surface.n)
 
 		a := rl.Vector3{0, 0, 1} // arbitrary
-		if surface.n == a do a = rl.Vector3{0, 1, 0} // cross product will give 0, need to use another ref vector
+		if surface.n == a {
+			a = rl.Vector3{0, 1, 0} // cross product will give 0, need to use another ref vector
+		}
 
 		u := linalg.normalize(linalg.cross(surface.n, a))
-		if linalg.dot(u, largest_abs_component(u)) < 0.01 do u *= -1
+		if linalg.dot(u, largest_abs_component(u)) < 0.01 {
+			u *= -1
+		}
 		surface.u = u
 
 		v := linalg.normalize(linalg.cross(surface.n, u))
-		if linalg.dot(v, largest_abs_component(v)) < 0.01 do v *= -1
+		if linalg.dot(v, largest_abs_component(v)) < 0.01 {
+			v *= -1
+		}
 		surface.v = v
 	}
 
@@ -71,8 +77,12 @@ init :: proc(state: ^State) {
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
 	abs := linalg.abs(v)
-	if abs.x >= abs.y && abs.x >= abs.z do return {1, 0, 0}
-	if abs.y >= abs.z do return {0, 1, 0}
+	if abs.x >= abs.y && abs.x >= abs.z {
+		return {1, 0, 0}
+	}
+	if abs.y >= abs.z {
+		return {0, 1, 0}
+	}
 	return {0, 0, 1}
 }
 

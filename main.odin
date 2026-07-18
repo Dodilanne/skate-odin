@@ -18,7 +18,9 @@ main :: proc() {
 		track: mem.Tracking_Allocator
 		mem.tracking_allocator_init(&track, context.allocator)
 		context.allocator = mem.tracking_allocator(&track)
-		defer for _, v in track.allocation_map do log.warnf("%v Leaked %v bytes.\n", v.location, v.size)
+		defer for _, v in track.allocation_map {
+			log.warnf("%v Leaked %v bytes.\n", v.location, v.size)
+		}
 	}
 
 	rl.SetTraceLogLevel(.WARNING)
@@ -40,7 +42,9 @@ main :: proc() {
 		input.add(&input_state, frame_input_state)
 
 		update_did_run := accumulator >= FIXED_DT
-		defer if update_did_run do input_state = {}
+		defer if update_did_run {
+			input_state = {}
+		}
 
 		for ; accumulator >= FIXED_DT; accumulator -= FIXED_DT {
 			game.update(&game_state, input_state, FIXED_DT)

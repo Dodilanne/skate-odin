@@ -6,7 +6,10 @@ import rl "vendor:raylib"
 
 render :: proc(state: ^State) {
 	bg := rl.DARKGRAY
-	if state.color_mode == .light do bg = rl.WHITE
+	if state.color_mode == .light {
+		bg = rl.WHITE
+	}
+
 	rl.ClearBackground(bg)
 
 	rl.DrawFPS(0, 0)
@@ -22,6 +25,7 @@ render :: proc(state: ^State) {
 			rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
 			rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
 		}
+
 		for col in 0 ..= surface.w {
 			start := surface.u * col + offset
 			end := start + surface.v * surface.h
@@ -78,7 +82,9 @@ render :: proc(state: ^State) {
 				end := base_points[c * points_per_circle + (p + 1) % points_per_circle] + offset
 
 				color := skater.color
-				if skater.state == .airborne do color = rl.ColorBrightness(color, 0.5)
+				if skater.state == .airborne {
+					color = rl.ColorBrightness(color, 0.5)
+				}
 
 				rl.DrawLineEx(project(start, state), project(end, state), 2, color)
 			}

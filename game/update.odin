@@ -38,18 +38,18 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	for &skater, i in state.skaters {
 		intentions: bit_set[Player_Intention]
 		if state.target_skater_idx == i {
-			if .Down in inputs.actions[.Left] do intentions |= {.steer_left}
-			if .Down in inputs.actions[.Right] do intentions |= {.steer_right}
-			if .Pressed in inputs.actions[.Push] do intentions |= {.push}
-			if .Down in inputs.actions[.Break] do intentions |= {.stop}
-			if .Pressed in inputs.actions[.Trick_S] do intentions |= {.crouch}
-			if .Released in inputs.actions[.Trick_S] do intentions |= {.pop}
-			if .Pressed in inputs.actions[.Reset] do intentions |= {.reset}
+			if .Down in inputs.actions[.Left] {intentions |= {.steer_left}}
+			if .Down in inputs.actions[.Right] {intentions |= {.steer_right}}
+			if .Pressed in inputs.actions[.Push] {intentions |= {.push}}
+			if .Down in inputs.actions[.Break] {intentions |= {.stop}}
+			if .Pressed in inputs.actions[.Trick_S] {intentions |= {.crouch}}
+			if .Released in inputs.actions[.Trick_S] {intentions |= {.pop}}
+			if .Pressed in inputs.actions[.Reset] {intentions |= {.reset}}
 		}
 
 		steer_dir: f32 = 0
-		if .steer_left in intentions do steer_dir = -1
-		if .steer_right in intentions do steer_dir = +1
+		if .steer_left in intentions {steer_dir = -1}
+		if .steer_right in intentions {steer_dir = +1}
 
 		if skater.state == .airborne {
 			speed: f32 = 6
@@ -63,7 +63,9 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			skater.look_dir = linalg.normalize(skater.look_dir)
 		} else if steer_dir != 0 {
 			speed := linalg.length(skater.vel) * skater.steer_rate
-			if speed == 0 do speed = 2
+			if speed == 0 {
+				speed = 2
+			}
 			angle_change := steer_dir * dt * speed
 			skater.angle = angle_change + linalg.atan2(skater.move_dir.y, skater.move_dir.x)
 			skater.move_dir = rl.Vector3RotateByAxisAngle(
@@ -92,7 +94,9 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 
 		if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
 			friction_coeff: f32 = 0.5
-			if .stop in intentions do friction_coeff *= 10
+			if .stop in intentions {
+				friction_coeff *= 10
+			}
 			skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
 		} else {
 			skater.vel.xy = {0, 0}
@@ -107,22 +111,33 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 		for &surface in state.surfaces {
 			p := skater.pos - surface.o
 			d := linalg.dot(surface.n, p)
-			if math.abs(d) > skater.radius do continue
+			if math.abs(d) > skater.radius {
+				continue
+			}
 			pp := p - d * surface.n
 			px := linalg.dot(pp, surface.u)
-			if px < 0 || px > surface.w do continue
+			if px < 0 || px > surface.w {
+				continue
+			}
 			py := linalg.dot(pp, surface.v)
-			if py < 0 || py > surface.h do continue
+			if py < 0 || py > surface.h {
+				continue
+			}
 			skater.pos += (skater.radius - d) * surface.n
 			skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
-			if linalg.length(skater.vel) != 0 do skater.move_dir = linalg.normalize(skater.vel)
+			if linalg.length(skater.vel) != 0 {
+				skater.move_dir = linalg.normalize(skater.vel)
+			}
 			if surface.n.z != 0 {
 				touching_a_surface = true
 			}
 		}
 
-		if !touching_a_surface do skater.state = .airborne
-		else if skater.state == .airborne do skater.state = .idle
+		if !touching_a_surface {
+			skater.state = .airborne
+		} else if skater.state == .airborne {
+			skater.state = .idle
+		}
 
 		crashed := false
 		if skater.state != .airborne {
