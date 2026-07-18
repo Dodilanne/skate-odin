@@ -101,10 +101,25 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 		}
 
 		if crashed || skater.pos.z < -10 || .Pressed in inputs.actions[.Reset] {
-			skater = initial_skater
+			reset_skater(&skater)
 		}
 
 		if .Pressed in inputs.actions[.Toggle_Normals] {
 			state.show_normals = !state.show_normals
 		}}
+}
+
+SKATER_RADIUS :: 0.5
+
+reset_skater :: proc(skater: ^Skater) {
+	skater.vel = rl.Vector3{}
+	skater.airborne = false
+	skater.angle = 0
+	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
+	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
+	skater.look_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
+	skater.norm = {0, 0, 1}
+	skater.steer_rate = 0.2
+	skater.max_speed = 8
+	skater.radius = SKATER_RADIUS
 }

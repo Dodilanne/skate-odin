@@ -6,24 +6,13 @@ import rl "vendor:raylib"
 
 MAX_SKATERS :: 20
 
-
-skater_radius: f32 = 0.5
-initial_skater := Skater {
-	pos        = rl.Vector3{1, 1, 4} + rl.Vector3(skater_radius),
-	move_dir   = linalg.normalize(rl.Vector3({1, 1, 0})),
-	look_dir   = linalg.normalize(rl.Vector3({1, 1, 0})),
-	norm       = {0, 0, 1},
-	steer_rate = 0.2,
-	max_speed  = 8,
-	radius     = skater_radius,
-}
-
-
 init :: proc(state: ^State) {
+	append(&state.skaters, Skater{})
+	reset_skater(&state.skaters[0])
+
 	state.show_normals = false
 	state.color_mode = .dark
 	state.drawing_mode = .dimetric
-	state.skaters = [dynamic; MAX_SKATERS]Skater{initial_skater}
 	state.surfaces = {
 		{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
 		{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
@@ -68,6 +57,7 @@ init :: proc(state: ^State) {
 		if linalg.dot(v, largest_abs_component(v)) < 0.01 do v *= -1
 		surface.v = v
 	}
+
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
