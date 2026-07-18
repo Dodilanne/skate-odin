@@ -12,30 +12,18 @@ render :: proc(state: ^State) {
 	rl.DrawFPS(0, 0)
 
 	target := &state.skaters[state.target_skater_idx]
+
 	for &surface in state.surfaces {
+		offset := surface.o - target.pos
+
 		if state.show_normals {
-			rl.DrawCircleV(project(surface.o - target.pos, state), 4, rl.BLUE)
-			rl.DrawLineEx(
-				project(surface.o - target.pos, state),
-				project(surface.o + surface.n - target.pos, state),
-				2,
-				rl.RED,
-			)
-			rl.DrawLineEx(
-				project(surface.o - target.pos, state),
-				project(surface.o + surface.u - target.pos, state),
-				2,
-				rl.GREEN,
-			)
-			rl.DrawLineEx(
-				project(surface.o - target.pos, state),
-				project(surface.o + surface.v - target.pos, state),
-				2,
-				rl.YELLOW,
-			)
+			rl.DrawCircleV(project(offset, state), 4, rl.BLUE)
+			rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
+			rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
+			rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
 		}
 		for col in 0 ..= surface.w {
-			start := surface.o + surface.u * col - target.pos
+			start := surface.u * col + offset
 			end := start + surface.v * surface.h
 			rl.DrawLineEx(
 				project(start, state),
@@ -45,7 +33,7 @@ render :: proc(state: ^State) {
 			)
 		}
 		for row in 0 ..= surface.h {
-			start := surface.o + surface.v * row - target.pos
+			start := surface.v * row + offset
 			end := start + surface.u * surface.w
 			rl.DrawLineEx(
 				project(start, state),
@@ -57,12 +45,10 @@ render :: proc(state: ^State) {
 	}
 
 	for &skater, i in state.skaters {
-		offset: rl.Vector3
-		if i != state.target_skater_idx do offset = -skater.pos + target.pos
-
 		num_circles := 6
 		base_points: [100]rl.Vector3
 		points_per_circle := len(base_points) / num_circles
+		offset := skater.pos - target.pos
 
 		for c in 0 ..< num_circles {
 			for p in 0 ..< points_per_circle {
@@ -88,8 +74,8 @@ render :: proc(state: ^State) {
 
 		for c in 0 ..< num_circles {
 			for p in 0 ..< points_per_circle {
-				start := base_points[c * points_per_circle + p] - offset
-				end := base_points[c * points_per_circle + (p + 1) % points_per_circle] - offset
+				start := base_points[c * points_per_circle + p] + offset
+				end := base_points[c * points_per_circle + (p + 1) % points_per_circle] + offset
 
 				color := skater.color
 				if skater.airborne do color = rl.ColorBrightness(color, 0.5)
@@ -98,28 +84,28 @@ render :: proc(state: ^State) {
 			}
 		}
 
-		rl.DrawCircleV(project(-skater.pos - offset, state), 2, rl.Fade(rl.LIGHTGRAY, 0.5))
-		rl.DrawCircleV(project(rl.Vector3(0) - offset, state), 4, rl.Fade(rl.LIGHTGRAY, 0.5))
+		rl.DrawCircleV(project(-skater.pos + offset, state), 2, rl.Fade(rl.LIGHTGRAY, 0.5))
+		rl.DrawCircleV(project(rl.Vector3(0) + offset, state), 4, rl.Fade(rl.LIGHTGRAY, 0.5))
 
 		if linalg.length(skater.vel) > 0 {
 			rl.DrawLineEx(
-				project(rl.Vector3(0) - offset, state),
-				project(skater.vel - offset, state),
+				project(rl.Vector3(0) + offset, state),
+				project(skater.vel + offset, state),
 				4,
 				rl.PINK,
 			)
 		}
 
 		rl.DrawLineEx(
-			project(-offset, state),
-			project(skater.move_dir - offset, state),
+			project(+offset, state),
+			project(skater.move_dir + offset, state),
 			4,
 			rl.BLUE,
 		)
 
 		rl.DrawLineEx(
-			project(-offset, state),
-			project(skater.look_dir - offset, state),
+			project(+offset, state),
+			project(skater.look_dir + offset, state),
 			4,
 			rl.YELLOW,
 		)
