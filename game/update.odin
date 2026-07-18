@@ -73,8 +73,10 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
 		}
 
-		if .push in intentions do skater.vel += skater.move_dir
-		if .pop in intentions do skater.vel.z += 4
+		if !skater.airborne {
+			if .push in intentions do skater.vel += skater.move_dir
+			if .pop in intentions do skater.vel.z += 4
+		}
 
 		skater.vel -= rl.Vector3{0, 0, 10 * dt}
 
