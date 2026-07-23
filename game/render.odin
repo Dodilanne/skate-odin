@@ -126,6 +126,17 @@ render :: proc(state: ^State) {
 		font_size,
 		rl.WHITE,
 	)
+	if target.trick_committed != "" {
+		str := fmt.ctprintf("%s", target.trick_committed)
+		measure := rl.MeasureText(str, font_size)
+		rl.DrawText(
+			str,
+			rl.GetScreenWidth() / 2 - 30 - measure,
+			(rl.GetScreenHeight() - font_size) / 2,
+			font_size,
+			rl.YELLOW,
+		)
+	}
 }
 
 project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {

@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import "input"
@@ -62,10 +63,14 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 				skater.vel += skater.move_dir
 			} else if check(state, inputs, i, .Trick_S, .Pressed) {
 				skater.state = .crouched
-				skater.trick_buffer = {.Trick_S, .None, .None}
+				skater.state_timer = 0
+				clear(&skater.trick_buffer)
+				append(&skater.trick_buffer, input.Action.Trick_S)
 			} else if check(state, inputs, i, .Trick_N, .Pressed) {
 				skater.state = .crouched
-				skater.trick_buffer = {.Trick_N, .None, .None}
+				skater.state_timer = 0
+				clear(&skater.trick_buffer)
+				append(&skater.trick_buffer, input.Action.Trick_N)
 			}
 
 		case .crouched:
@@ -76,7 +81,54 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 			} else {
 				skater.state_timer = math.min(skater.state_timer + dt * 1.5, 1)
 			}
+
+		case .airborne:
+			skater.state_timer += dt
+			fmt.printfln("%f", skater.state_timer)
+			if skater.trick_committed != "" || len(skater.trick_buffer) < 1 {
+				break
+			}
+			finished_trick := false
+			switch len(skater.trick_buffer) {
+			case 1:
+				for action in input.Action.Trick_NE ..= input.Action.Trick_WN {
+					if check(state, inputs, i, action, .Pressed) {
+						append(&skater.trick_buffer, action)
+						break
+					}
+				}
+				fallthrough
+			case 2:
+				for action in input.Action.Trick_E ..= input.Action.Trick_W {
+					if check(state, inputs, i, action, .Pressed) {
+						append(&skater.trick_buffer, action)
+						finished_trick = true
+						break
+					}
+				}
+			}
+			if finished_trick || skater.state_timer > 0.3 {
+				#partial switch skater.trick_buffer[len(skater.trick_buffer) - 1] {
+				case .Trick_E:
+					if skater.trick_buffer[0] == .Trick_N {
+						skater.trick_committed = "Nollie Heelflip"
+					} else {
+						skater.trick_committed = "Heelflip"
+					}
+				case .Trick_W:
+					if skater.trick_buffer[0] == .Trick_N {
+						skater.trick_committed = "Nollie kickflip"
+					} else {
+						skater.trick_committed = "Kickflip"
+					}
+				case .Trick_N:
+					skater.trick_committed = "Nollie"
+				case .Trick_S:
+					skater.trick_committed = "Ollie"
+				}
+			}
 		}
+
 
 		skater.vel -= rl.Vector3{0, 0, 10 * dt}
 
@@ -122,11 +174,15 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 		}
 
 		if !touching_a_surface {
+			if skater.state != .airborne {
+				skater.state_timer = 0
+			}
 			skater.state = .airborne
-			skater.state_timer = 0
 		} else if skater.state == .airborne {
 			skater.state = .idle
 			skater.state_timer = 0
+			clear(&skater.trick_buffer)
+			skater.trick_committed = ""
 		}
 
 		crashed := false
@@ -151,6 +207,9 @@ SKATER_RADIUS :: 0.5
 reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
 	skater.state = .idle
+	skater.state_timer = 0
+	clear(&skater.trick_buffer)
+	skater.trick_committed = ""
 	skater.angle = 0
 	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
