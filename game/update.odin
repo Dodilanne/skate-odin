@@ -62,9 +62,14 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 				skater.vel += skater.move_dir
 			} else if check(state, inputs, i, .Trick_S, .Pressed) {
 				skater.state = .crouched
+				skater.trick_buffer = {.Trick_S, .None, .None}
+			} else if check(state, inputs, i, .Trick_N, .Pressed) {
+				skater.state = .crouched
+				skater.trick_buffer = {.Trick_N, .None, .None}
 			}
+
 		case .crouched:
-			if check(state, inputs, i, .Trick_S, .Released) {
+			if check(state, inputs, i, skater.trick_buffer[0], .Released) {
 				height := 6 * skater.state_timer
 				height = math.max(height, 3)
 				skater.vel.z += height

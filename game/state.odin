@@ -2,6 +2,7 @@ package game
 
 import "core:math"
 import "core:math/linalg"
+import "input"
 import rl "vendor:raylib"
 
 MAX_SKATERS :: 20
@@ -98,18 +99,19 @@ Drawing_Mode :: enum {
 }
 
 Skater :: struct {
-	move_dir:    rl.Vector3,
-	look_dir:    rl.Vector3,
-	norm:        rl.Vector3,
-	pos:         rl.Vector3,
-	vel:         rl.Vector3,
-	steer_rate:  f32,
-	max_speed:   f32,
-	radius:      f32,
-	angle:       f32,
-	color:       rl.Color,
-	state:       Skater_State,
-	state_timer: f32,
+	move_dir:     rl.Vector3,
+	look_dir:     rl.Vector3,
+	norm:         rl.Vector3,
+	pos:          rl.Vector3,
+	vel:          rl.Vector3,
+	steer_rate:   f32,
+	max_speed:    f32,
+	radius:       f32,
+	angle:        f32,
+	color:        rl.Color,
+	state:        Skater_State,
+	state_timer:  f32,
+	trick_buffer: [3]input.Action,
 }
 
 Skater_State :: enum {

@@ -8,6 +8,7 @@ State :: struct {
 }
 
 Action :: enum u8 {
+	None = 0,
 	Up,
 	Right,
 	Down,
