@@ -1,6 +1,5 @@
 package game
 
-import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import "input"
@@ -84,7 +83,6 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 
 		case .airborne:
 			skater.state_timer += dt
-			fmt.printfln("%f", skater.state_timer)
 			if skater.trick_committed != "" || len(skater.trick_buffer) < 1 {
 				break
 			}
