@@ -20,15 +20,15 @@ Action :: enum u8 {
 	Break,
 	Reset,
 	Cycle_Target,
-	Trick_O, // origin
-	Trick_N,
-	Trick_S,
-	Trick_E,
 	Trick_W,
+	Trick_O, // origin
+	Trick_E,
+	Trick_WN,
+	Trick_N,
 	Trick_NE,
 	Trick_ES,
+	Trick_S,
 	Trick_SW,
-	Trick_WN,
 }
 
 Flag :: enum u8 {
