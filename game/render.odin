@@ -141,13 +141,15 @@ render :: proc(state: ^State) {
 
 project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
 	if state.drawing_mode == .top_down {
-		return point.xy * state.cell_size + state.offset
+		return point.xy * CELL_SIZE + state.offset
 	}
 	if state.drawing_mode == .side {
-		return rl.Vector2{-point.y, -point.z} * state.cell_size + state.offset
+		return rl.Vector2{-point.y, -point.z} * CELL_SIZE + state.offset
 	}
-	return PRO_MATRIX * point * state.cell_size + state.offset
+	return PRO_MATRIX * point * CELL_SIZE + state.offset
 }
+
+CELL_SIZE: f32 : 32
 
 PRO_MATRIX :: matrix[2, 3]f32{
 	1, -1, 0,

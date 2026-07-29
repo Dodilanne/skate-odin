@@ -9,7 +9,6 @@ import rl "vendor:raylib"
 update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 
-	state.cell_size = f32(32)
 	state.offset = screen / 2
 
 	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
@@ -200,7 +199,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	}
 }
 
-SKATER_RADIUS :: 0.5
+SKATER_RADIUS: f32 : 0.5
 
 reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}

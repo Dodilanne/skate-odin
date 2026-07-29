@@ -142,7 +142,6 @@ State :: struct {
 	surfaces:          [dynamic; 20]Surface,
 	drawing_mode:      Drawing_Mode,
 	color_mode:        Color_Mode,
-	cell_size:         f32,
 	offset:            rl.Vector2,
 	show_normals:      bool,
 }
