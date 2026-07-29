@@ -6,6 +6,9 @@ import "core:math/linalg"
 import rl "vendor:raylib"
 
 render :: proc(state: ^State) {
+	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
+	state.offset = screen / 2
+
 	bg := rl.DARKGRAY
 	if state.color_mode == .light {
 		bg = rl.WHITE

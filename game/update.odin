@@ -5,12 +5,204 @@ import "core:math/linalg"
 import "input"
 import rl "vendor:raylib"
 
+SKATER_RADIUS: f32 : 0.5
 
 update :: proc(state: ^State, inputs: input.State, dt: f32) {
-	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
+	when ODIN_DEBUG {read_debug_inputs(state, inputs)}
+	for &skater, skater_idx in state.skaters {
+		steer(state, inputs, &skater, skater_idx, dt)
+		move(state, inputs, &skater, skater_idx, dt)
+		physics(state, inputs, &skater, skater_idx, dt)
+		touching_a_surface := collisions(state, &skater, skater_idx)
+		should_reset := transition(state, inputs, &skater, skater_idx, dt, touching_a_surface)
+		if should_reset {reset_skater(&skater)}
+	}
+}
 
-	state.offset = screen / 2
+steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
+	steer_dir: f32
+	if check(state, inputs, skater_idx, .Left, .Down) {steer_dir = -1}
+	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
 
+	if skater.state == .airborne {
+		speed: f32 = 6
+		angle_change := steer_dir * dt * speed
+		skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+		skater.look_dir = rl.Vector3RotateByAxisAngle(
+			rl.Vector3{1, 0, 0},
+			rl.Vector3{0, 0, 1},
+			skater.angle,
+		)
+		skater.look_dir = linalg.normalize(skater.look_dir)
+	} else if steer_dir != 0 {
+		speed := linalg.length(skater.vel) * skater.steer_rate
+		if speed == 0 {speed = 2}
+
+		angle_change := steer_dir * dt * speed
+
+		skater.angle = angle_change + linalg.atan2(skater.move_dir.y, skater.move_dir.x)
+		skater.move_dir = rl.Vector3RotateByAxisAngle(
+			rl.Vector3{1, 0, 0},
+			rl.Vector3{0, 0, 1},
+			skater.angle,
+		)
+		skater.move_dir = linalg.normalize(skater.move_dir)
+		skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
+	}
+
+}
+
+move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
+	#partial switch skater.state {
+	case .idle:
+		if check(state, inputs, skater_idx, .Push, .Pressed) {
+			skater.vel += skater.move_dir
+		} else if check(state, inputs, skater_idx, .Trick_S, .Pressed) {
+			skater.state = .crouched
+			skater.state_timer = 0
+			clear(&skater.trick_buffer)
+			append(&skater.trick_buffer, input.Action.Trick_S)
+		} else if check(state, inputs, skater_idx, .Trick_N, .Pressed) {
+			skater.state = .crouched
+			skater.state_timer = 0
+			clear(&skater.trick_buffer)
+			append(&skater.trick_buffer, input.Action.Trick_N)
+		}
+	case .crouched:
+		if check(state, inputs, skater_idx, skater.trick_buffer[0], .Released) {
+			height := 6 * skater.state_timer
+			height = math.max(height, 3)
+			skater.vel.z += height
+		} else {
+			skater.state_timer = math.min(skater.state_timer + dt * 1.5, 1)
+		}
+	case .airborne:
+		skater.state_timer += dt
+		if skater.trick_committed != "" || len(skater.trick_buffer) < 1 {
+			break
+		}
+		finished_trick := false
+		switch len(skater.trick_buffer) {
+		case 1:
+			for action in input.Action.Trick_NE ..= input.Action.Trick_WN {
+				if check(state, inputs, skater_idx, action, .Pressed) {
+					append(&skater.trick_buffer, action)
+					break
+				}
+			}
+			fallthrough
+		case 2:
+			for action in input.Action.Trick_E ..= input.Action.Trick_W {
+				if check(state, inputs, skater_idx, action, .Pressed) {
+					append(&skater.trick_buffer, action)
+					finished_trick = true
+					break
+				}
+			}
+		}
+		if finished_trick || skater.state_timer > 0.3 {
+			#partial switch skater.trick_buffer[len(skater.trick_buffer) - 1] {
+			case .Trick_E:
+				if skater.trick_buffer[0] == .Trick_N {
+					skater.trick_committed = "Nollie Heelflip"
+				} else {
+					skater.trick_committed = "Heelflip"
+				}
+			case .Trick_W:
+				if skater.trick_buffer[0] == .Trick_N {
+					skater.trick_committed = "Nollie kickflip"
+				} else {
+					skater.trick_committed = "Kickflip"
+				}
+			case .Trick_N:
+				skater.trick_committed = "Nollie"
+			case .Trick_S:
+				skater.trick_committed = "Ollie"
+			}
+		}
+	}
+}
+
+physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
+	skater.vel -= rl.Vector3{0, 0, 10 * dt}
+
+	if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
+		friction_coeff: f32 = 0.5
+		if check(state, inputs, skater_idx, .Break, .Down) {
+			friction_coeff *= 10
+		}
+		skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
+	} else {
+		skater.vel.xy = {0, 0}
+	}
+
+	skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, skater.max_speed)
+
+	skater.pos += skater.vel * dt
+}
+
+collisions :: proc(state: ^State, skater: ^Skater, skater_idx: int) -> bool {
+	touching_a_surface := false
+	for &surface in state.surfaces {
+		p := skater.pos - surface.o
+		d := linalg.dot(surface.n, p)
+		if math.abs(d) > skater.radius {
+			continue
+		}
+		pp := p - d * surface.n
+		px := linalg.dot(pp, surface.u)
+		if px < 0 || px > surface.w {
+			continue
+		}
+		py := linalg.dot(pp, surface.v)
+		if py < 0 || py > surface.h {
+			continue
+		}
+		skater.pos += (skater.radius - d) * surface.n
+		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
+		if linalg.length(skater.vel) != 0 {
+			skater.move_dir = linalg.normalize(skater.vel)
+		}
+		if surface.n.z != 0 {
+			touching_a_surface = true
+		}
+	}
+	return touching_a_surface
+}
+
+transition :: proc(
+	state: ^State,
+	inputs: input.State,
+	skater: ^Skater,
+	skater_idx: int,
+	dt: f32,
+	touching_a_surface: bool,
+) -> bool {
+	if !touching_a_surface {
+		if skater.state != .airborne {
+			skater.state_timer = 0
+		}
+		skater.state = .airborne
+	} else if skater.state == .airborne {
+		skater.state = .idle
+		skater.state_timer = 0
+		clear(&skater.trick_buffer)
+		skater.trick_committed = ""
+	}
+
+	if skater.state != .airborne {
+		diff := linalg.dot(skater.move_dir, skater.look_dir)
+		abs := math.abs(diff)
+		if abs < 0.85 {
+			return true
+		}
+		skater.look_dir = skater.move_dir * math.sign(diff)
+	}
+
+	return skater.pos.z < -10 || check(state, inputs, skater_idx, .Reset, .Pressed)
+}
+
+read_debug_inputs :: proc(state: ^State, inputs: input.State) {
 	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
 		state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
 	}
@@ -23,183 +215,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	if .Pressed in inputs.actions[.Cycle_Target] {
 		state.target_skater_idx = (state.target_skater_idx + 1) % len(state.skaters)
 	}
-
-	for &skater, i in state.skaters {
-		steer_dir: f32
-		if check(state, inputs, i, .Left, .Down) {steer_dir = -1}
-		if check(state, inputs, i, .Right, .Down) {steer_dir = +1}
-
-		if skater.state == .airborne {
-			speed: f32 = 6
-			angle_change := steer_dir * dt * speed
-			skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-			skater.look_dir = rl.Vector3RotateByAxisAngle(
-				rl.Vector3{1, 0, 0},
-				rl.Vector3{0, 0, 1},
-				skater.angle,
-			)
-			skater.look_dir = linalg.normalize(skater.look_dir)
-		} else if steer_dir != 0 {
-			speed := linalg.length(skater.vel) * skater.steer_rate
-			if speed == 0 {
-				speed = 2
-			}
-			angle_change := steer_dir * dt * speed
-			skater.angle = angle_change + linalg.atan2(skater.move_dir.y, skater.move_dir.x)
-			skater.move_dir = rl.Vector3RotateByAxisAngle(
-				rl.Vector3{1, 0, 0},
-				rl.Vector3{0, 0, 1},
-				skater.angle,
-			)
-			skater.move_dir = linalg.normalize(skater.move_dir)
-			skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
-		}
-
-		#partial switch skater.state {
-		case .idle:
-			if check(state, inputs, i, .Push, .Pressed) {
-				skater.vel += skater.move_dir
-			} else if check(state, inputs, i, .Trick_S, .Pressed) {
-				skater.state = .crouched
-				skater.state_timer = 0
-				clear(&skater.trick_buffer)
-				append(&skater.trick_buffer, input.Action.Trick_S)
-			} else if check(state, inputs, i, .Trick_N, .Pressed) {
-				skater.state = .crouched
-				skater.state_timer = 0
-				clear(&skater.trick_buffer)
-				append(&skater.trick_buffer, input.Action.Trick_N)
-			}
-
-		case .crouched:
-			if check(state, inputs, i, skater.trick_buffer[0], .Released) {
-				height := 6 * skater.state_timer
-				height = math.max(height, 3)
-				skater.vel.z += height
-			} else {
-				skater.state_timer = math.min(skater.state_timer + dt * 1.5, 1)
-			}
-
-		case .airborne:
-			skater.state_timer += dt
-			if skater.trick_committed != "" || len(skater.trick_buffer) < 1 {
-				break
-			}
-			finished_trick := false
-			switch len(skater.trick_buffer) {
-			case 1:
-				for action in input.Action.Trick_NE ..= input.Action.Trick_WN {
-					if check(state, inputs, i, action, .Pressed) {
-						append(&skater.trick_buffer, action)
-						break
-					}
-				}
-				fallthrough
-			case 2:
-				for action in input.Action.Trick_E ..= input.Action.Trick_W {
-					if check(state, inputs, i, action, .Pressed) {
-						append(&skater.trick_buffer, action)
-						finished_trick = true
-						break
-					}
-				}
-			}
-			if finished_trick || skater.state_timer > 0.3 {
-				#partial switch skater.trick_buffer[len(skater.trick_buffer) - 1] {
-				case .Trick_E:
-					if skater.trick_buffer[0] == .Trick_N {
-						skater.trick_committed = "Nollie Heelflip"
-					} else {
-						skater.trick_committed = "Heelflip"
-					}
-				case .Trick_W:
-					if skater.trick_buffer[0] == .Trick_N {
-						skater.trick_committed = "Nollie kickflip"
-					} else {
-						skater.trick_committed = "Kickflip"
-					}
-				case .Trick_N:
-					skater.trick_committed = "Nollie"
-				case .Trick_S:
-					skater.trick_committed = "Ollie"
-				}
-			}
-		}
-
-
-		skater.vel -= rl.Vector3{0, 0, 10 * dt}
-
-		if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
-			friction_coeff: f32 = 0.5
-			if check(state, inputs, i, .Break, .Down) {
-				friction_coeff *= 10
-			}
-			skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
-		} else {
-			skater.vel.xy = {0, 0}
-		}
-
-		skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, skater.max_speed)
-
-		skater.pos += skater.vel * dt
-
-
-		touching_a_surface := false
-		for &surface in state.surfaces {
-			p := skater.pos - surface.o
-			d := linalg.dot(surface.n, p)
-			if math.abs(d) > skater.radius {
-				continue
-			}
-			pp := p - d * surface.n
-			px := linalg.dot(pp, surface.u)
-			if px < 0 || px > surface.w {
-				continue
-			}
-			py := linalg.dot(pp, surface.v)
-			if py < 0 || py > surface.h {
-				continue
-			}
-			skater.pos += (skater.radius - d) * surface.n
-			skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
-			if linalg.length(skater.vel) != 0 {
-				skater.move_dir = linalg.normalize(skater.vel)
-			}
-			if surface.n.z != 0 {
-				touching_a_surface = true
-			}
-		}
-
-		if !touching_a_surface {
-			if skater.state != .airborne {
-				skater.state_timer = 0
-			}
-			skater.state = .airborne
-		} else if skater.state == .airborne {
-			skater.state = .idle
-			skater.state_timer = 0
-			clear(&skater.trick_buffer)
-			skater.trick_committed = ""
-		}
-
-		crashed := false
-		if skater.state != .airborne {
-			diff := linalg.dot(skater.move_dir, skater.look_dir)
-			abs := math.abs(diff)
-			if abs < 0.85 {
-				crashed = true
-			} else {
-				skater.look_dir = skater.move_dir * math.sign(diff)
-			}
-		}
-
-		if crashed || skater.pos.z < -10 || check(state, inputs, i, .Reset, .Pressed) {
-			reset_skater(&skater)
-		}
-	}
 }
-
-SKATER_RADIUS: f32 : 0.5
 
 reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
