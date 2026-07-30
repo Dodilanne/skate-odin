@@ -136,6 +136,15 @@ physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx:
 	skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, skater.max_speed)
 
 	skater.pos += skater.vel * dt
+
+	if skater.state != .airborne {
+		skater.skate_angles = {0, 0}
+	} else {
+		switch skater.trick_committed {
+		case "Kickflip":
+			skater.skate_angles.y += dt * 10
+		}
+	}
 }
 
 collisions :: proc(state: ^State, skater: ^Skater, skater_idx: int) -> bool {
