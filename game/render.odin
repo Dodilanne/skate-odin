@@ -106,14 +106,14 @@ render :: proc(state: ^State) {
 		// 	)
 		// }
 
-		rl.DrawLineEx(project(offset, state), project(skater.move_dir + offset, state), 4, rl.BLUE)
+		// rl.DrawLineEx(project(offset, state), project(skater.move_dir + offset, state), 4, rl.BLUE)
 
-		rl.DrawLineEx(
-			project(offset, state),
-			project(skater.look_dir + offset, state),
-			4,
-			rl.YELLOW,
-		)
+		// rl.DrawLineEx(
+		// 	project(offset, state),
+		// 	project(skater.look_dir + offset, state),
+		// 	4,
+		// 	rl.YELLOW,
+		// )
 
 		if state.show_normals {
 			rl.DrawLineEx(project(offset, state), project(skater.norm + offset, state), 4, rl.RED)
@@ -122,9 +122,9 @@ render :: proc(state: ^State) {
 
 		angle := skater.skate_angles.x + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 		rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, angle)
-		rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BEIGE)
+		rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
 		ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, skater.skate_angles.y)
-		rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.BROWN)
+		rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
 	}
 
 	font_size: i32 = 20

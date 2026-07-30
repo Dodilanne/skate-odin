@@ -87,6 +87,9 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 		skater.state_timer += dt
 
 		if skater.trick_committed != "" {
+			if check(state, inputs, skater_idx, .Trick_O, .Pressed) {
+				skater.trick_caught = true
+			}
 			break
 		}
 
@@ -137,7 +140,7 @@ physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx:
 
 	skater.pos += skater.vel * dt
 
-	if skater.state != .airborne {
+	if skater.state != .airborne || skater.trick_caught {
 		skater.skate_angles = {0, 0}
 	} else {
 		switch skater.trick_committed {
@@ -254,4 +257,5 @@ transition_state :: proc(skater: ^Skater, state: Skater_State) {
 	skater.state_timer = 0
 	skater.trick_buffer_len = 0
 	skater.trick_committed = ""
+	skater.trick_caught = false
 }
