@@ -62,18 +62,20 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 		for action in input.Action.Trick_WN ..= input.Action.Trick_SW {
 			if check(state, inputs, skater_idx, action, .Pressed) {
 				transition_state(skater, .crouched)
-				append(&skater.trick_buffer, action)
+				skater.trick_buffer[0] = action
+				skater.trick_buffer_len = 1
 			}
 		}
 	case .crouched:
-		for action in input.Action.Trick_WN ..= input.Action.Trick_SW {
-			if len(skater.trick_buffer) >= 3 {break}
+		for action in input.Action.Trick_W ..= input.Action.Trick_SW {
+			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater_idx, action, .Pressed) {
-				append(&skater.trick_buffer, action)
+				skater.trick_buffer[skater.trick_buffer_len] = action
+				skater.trick_buffer_len += 1
 			}
 		}
 
-		if len(skater.trick_buffer) >= 3 ||
+		if skater.trick_buffer_len >= 3 ||
 		   check(state, inputs, skater_idx, skater.trick_buffer[0], .Released) {
 			height := 6 * skater.state_timer
 			height = math.max(height, 3)
@@ -88,25 +90,31 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			break
 		}
 
-		for action in input.Action.Trick_WN ..= input.Action.Trick_SW {
-			if len(skater.trick_buffer) >= 3 {break}
+		for action in input.Action.Trick_W ..= input.Action.Trick_SW {
+			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater_idx, action, .Pressed) {
-				append(&skater.trick_buffer, action)
+				skater.trick_buffer[skater.trick_buffer_len] = action
+				skater.trick_buffer_len += 1
 			}
 		}
 
-		if len(skater.trick_buffer) < 1 {
+		if skater.trick_buffer_len < 1 {
 			break
 		}
 
-		if len(skater.trick_buffer) >= 3 || skater.state_timer > 0.3 {
-			if len(skater.trick_buffer) < 3 {
-				#partial switch skater.trick_buffer[0] {
-				case .Trick_WN, .Trick_N, .Trick_NE:
-					skater.trick_committed = "Nollie"
-				case .Trick_ES, .Trick_S, .Trick_SW:
-					skater.trick_committed = "Ollie"
-				}
+		if skater.trick_buffer_len >= 3 {
+			switch skater.trick_buffer {
+			case {.Trick_ES, .Trick_S, .Trick_W}:
+				skater.trick_committed = "Kickflip"
+			case:
+				skater.trick_committed = "NONE"
+			}
+		} else if skater.state_timer > 0.3 {
+			#partial switch skater.trick_buffer[0] {
+			case .Trick_WN, .Trick_N, .Trick_NE:
+				skater.trick_committed = "Nollie"
+			case .Trick_ES, .Trick_S, .Trick_SW:
+				skater.trick_committed = "Ollie"
 			}
 		}
 	}
@@ -173,10 +181,7 @@ transition :: proc(
 		}
 		skater.state = .airborne
 	} else if skater.state == .airborne {
-		skater.state = .idle
-		skater.state_timer = 0
-		clear(&skater.trick_buffer)
-		skater.trick_committed = ""
+		transition_state(skater, .idle)
 	}
 
 	if skater.state != .airborne {
@@ -210,7 +215,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
 	skater.state = .idle
 	skater.state_timer = 0
-	clear(&skater.trick_buffer)
+	skater.trick_buffer_len = 0
 	skater.trick_committed = ""
 	skater.angle = 0
 	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
@@ -238,5 +243,6 @@ check :: proc(
 transition_state :: proc(skater: ^Skater, state: Skater_State) {
 	skater.state = state
 	skater.state_timer = 0
-	clear(&skater.trick_buffer)
+	skater.trick_buffer_len = 0
+	skater.trick_committed = ""
 }
