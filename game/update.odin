@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import "input"
@@ -105,24 +106,33 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			break
 		}
 
+		board_speed: f32 = 12
 		if skater.trick_buffer_len >= 2 {
 			switch skater.trick_buffer {
 			case {.Trick_S, .Trick_W, .None}:
 				skater.trick_committed = "Kickflip"
+				skater.skate_angles.xy = {0, +board_speed}
 			case {.Trick_S, .Trick_E, .None}:
 				skater.trick_committed = "Heelflip"
+				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_N, .Trick_W, .None}:
 				skater.trick_committed = "Nollie Flip"
+				skater.skate_angles.xy = {0, +board_speed}
 			case {.Trick_N, .Trick_E, .None}:
 				skater.trick_committed = "Nollie Heel"
+				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_ES, .Trick_W, .None}:
 				skater.trick_committed = "Varial Flip"
+				skater.skate_angles.xy = {board_speed / 2, board_speed}
 			case {.Trick_ES, .Trick_SW, .None}:
 				skater.trick_committed = "Shuv It"
+				skater.skate_angles.xy = {board_speed / 2, 0}
 			case {.Trick_ES, .Trick_S, .Trick_W}:
 				skater.trick_committed = "Tre Flip"
+				skater.skate_angles.xy = {board_speed, board_speed}
 			case {.Trick_ES, .Trick_S, .Trick_SW}:
 				skater.trick_committed = "Tre Shuv"
+				skater.skate_angles.xy = {board_speed, 0}
 			}
 		}
 
@@ -155,20 +165,9 @@ physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx:
 	skater.pos += skater.vel * dt
 
 	if skater.state != .airborne || skater.trick_caught {
-		skater.skate_angles = {0, 0}
+		skater.skate_angles.xy = {}
 	} else {
-		switch skater.trick_committed {
-		case "Kickflip", "Nollie Flip", "Varial Flip", "Tre Flip":
-			skater.skate_angles.y += dt * 10
-		case "Heelflip", "Nollie Heel":
-			skater.skate_angles.y -= dt * 10
-		}
-		switch skater.trick_committed {
-		case "Shuv It", "Varial Flip":
-			skater.skate_angles.x += dt * 5
-		case "Tre Shuv", "Tre Flip":
-			skater.skate_angles.x += dt * 10
-		}
+		skater.skate_angles.zw += dt * skater.skate_angles.xy
 	}
 }
 
@@ -219,12 +218,34 @@ transition :: proc(
 	}
 
 	if skater.state != .airborne {
-		diff := linalg.dot(skater.move_dir, skater.look_dir)
-		abs := math.abs(diff)
-		if abs < 0.85 {
-			return true
+		{ 	// player position
+			diff := linalg.dot(skater.move_dir, skater.look_dir)
+			abs := math.abs(diff)
+			if abs < 0.85 {
+				return true
+			}
+			skater.look_dir = skater.move_dir * math.sign(diff)
 		}
-		skater.look_dir = skater.move_dir * math.sign(diff)
+
+		{ 	// board position
+			deg := linalg.floor(linalg.abs(rl.RAD2DEG * skater.skate_angles.zw))
+			switch int(deg.x) % 360 {
+			case 340 ..= 360, 0 ..= 20:
+				skater.skate_angles.z = 0
+			case 160 ..= 200:
+				skater.skate_angles.z = math.PI
+			case:
+				fmt.printfln("board spin: %f %f", skater.skate_angles.z, deg.x)
+				return true
+			}
+			switch int(deg.y) % 360 {
+			case 340 ..= 360, 0 ..= 20:
+				skater.skate_angles.w = 0
+			case:
+				fmt.printfln("board flip: %f", deg.y)
+				return true
+			}
+		}
 	}
 
 	return skater.pos.z < -10 || check(state, inputs, skater_idx, .Reset, .Pressed)
@@ -251,6 +272,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.state_timer = 0
 	skater.trick_buffer_len = 0
 	skater.trick_committed = ""
+	skater.skate_angles = {}
 	skater.angle = 0
 	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
