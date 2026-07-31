@@ -74,6 +74,7 @@ init :: proc(state: ^State) {
 		surface.v = v
 	}
 
+	state.textures.anim_ride = rl.LoadTexture("assets/data/anim/anim_ride.png")
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -139,6 +140,10 @@ Color_Mode :: enum {
 	light,
 }
 
+Textures :: struct {
+	anim_ride: rl.Texture2D,
+}
+
 State :: struct {
 	target_skater_idx: int,
 	skaters:           [dynamic; MAX_SKATERS]Skater,
@@ -147,4 +152,5 @@ State :: struct {
 	color_mode:        Color_Mode,
 	offset:            rl.Vector2,
 	show_normals:      bool,
+	textures:          Textures,
 }
