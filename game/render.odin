@@ -28,6 +28,9 @@ render :: proc(state: ^State) {
 	for &skater in state.skaters {
 		offset := skater.pos - target.pos
 
+		// draw_skater_wireframe(state, &skater, offset)
+		draw_skater_sprite(state, &skater, offset)
+
 		if skater.skate_angles.z != 0 {
 			ax := skater.skate_angles.z + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 			rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
@@ -39,9 +42,6 @@ render :: proc(state: ^State) {
 			ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
 			rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
 		}
-
-		// draw_skater_wireframe(state, &skater, offset)
-		draw_skater_sprite(state, &skater, offset)
 	}
 
 	font_size: i32 = 20
@@ -57,8 +57,8 @@ render :: proc(state: ^State) {
 		measure := rl.MeasureText(str, font_size)
 		rl.DrawText(
 			str,
-			rl.GetScreenWidth() / 2 - 30 - measure,
-			(rl.GetScreenHeight() - font_size) / 2,
+			(rl.GetScreenWidth() - measure) / 2,
+			(rl.GetScreenHeight() - font_size - 100) / 2,
 			font_size,
 			rl.YELLOW,
 		)
@@ -85,7 +85,20 @@ PRO_MATRIX :: matrix[2, 3]f32{
 
 draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	text_pos := rl.Vector2{0, 0}
-	text_idx := math.round((skater.angle * 32) / (2 * math.PI))
+	look_angle := rl.Vector2Angle({1, 0}, skater.look_dir.xy)
+	if skater.look_dir.y < 0 {look_angle = 2 * math.PI - look_angle}
+	{
+		str := fmt.ctprintf("%d", int(math.round(look_angle * rl.RAD2DEG)))
+		measure := rl.MeasureText(str, 20)
+		rl.DrawText(
+			str,
+			(rl.GetScreenWidth() - 50) / 2 - measure,
+			(rl.GetScreenHeight() - 20) / 2,
+			20,
+			rl.WHITE,
+		)
+	}
+	text_idx := math.round((look_angle * 32) / (2 * math.PI))
 	text_pos.x = text_idx * 75
 
 	target_pos := project(offset, state) - 75 / 2

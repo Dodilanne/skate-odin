@@ -1,6 +1,5 @@
 package game
 
-import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import "input"
@@ -237,14 +236,12 @@ transition :: proc(
 			case 160 ..= 200:
 				skater.skate_angles.z = math.PI
 			case:
-				fmt.printfln("board spin: %f %f", skater.skate_angles.z, deg.x)
 				return true
 			}
 			switch int(deg.y) % 360 {
 			case 340 ..= 360, 0 ..= 20:
 				skater.skate_angles.w = 0
 			case:
-				fmt.printfln("board flip: %f", deg.y)
 				return true
 			}
 		}
