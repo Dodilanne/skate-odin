@@ -97,33 +97,12 @@ render :: proc(state: ^State) {
 		rl.DrawCircleV(project(-skater.pos + offset, state), 2, rl.Fade(rl.LIGHTGRAY, 0.5))
 		rl.DrawCircleV(project(rl.Vector3(0) + offset, state), 4, rl.Fade(rl.LIGHTGRAY, 0.5))
 
-		// if linalg.length(skater.vel) > 0 {
-		// 	rl.DrawLineEx(
-		// 		project(rl.Vector3(0) + offset, state),
-		// 		project(skater.vel + offset, state),
-		// 		4,
-		// 		rl.PINK,
-		// 	)
-		// }
-
-		// rl.DrawLineEx(project(offset, state), project(skater.move_dir + offset, state), 4, rl.BLUE)
-
-		// rl.DrawLineEx(
-		// 	project(offset, state),
-		// 	project(skater.look_dir + offset, state),
-		// 	4,
-		// 	rl.YELLOW,
-		// )
-
-		if state.show_normals {
-			rl.DrawLineEx(project(offset, state), project(skater.norm + offset, state), 4, rl.RED)
-		}
-
-
-		angle := skater.skate_angles.x + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-		rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, angle)
+		ax := skater.skate_angles.x + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+		rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
 		rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
-		ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, skater.skate_angles.y)
+
+		ay := skater.skate_angles.y
+		ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
 		rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
 	}
 

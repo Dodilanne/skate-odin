@@ -105,13 +105,19 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			break
 		}
 
-		if skater.trick_buffer_len >= 3 {
+		if skater.trick_buffer_len == 2 {
 			switch skater.trick_buffer {
-			case {.Trick_ES, .Trick_S, .Trick_W}:
+			case {.Trick_S, .Trick_W, .None}:
 				skater.trick_committed = "Kickflip"
-			case:
-				skater.trick_committed = "NONE"
+			case {.Trick_S, .Trick_E, .None}:
+				skater.trick_committed = "Heelflip"
+			case {.Trick_N, .Trick_W, .None}:
+				skater.trick_committed = "Nollie Flip"
+			case {.Trick_N, .Trick_E, .None}:
+				skater.trick_committed = "Nollie Heel"
 			}
+		} else if skater.trick_buffer_len >= 3 {
+			skater.trick_committed = "BIG MOVE"
 		} else if skater.state_timer > 0.3 {
 			#partial switch skater.trick_buffer[0] {
 			case .Trick_WN, .Trick_N, .Trick_NE:
@@ -144,8 +150,10 @@ physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx:
 		skater.skate_angles = {0, 0}
 	} else {
 		switch skater.trick_committed {
-		case "Kickflip":
+		case "Kickflip", "Nollie Flip":
 			skater.skate_angles.y += dt * 10
+		case "Heelflip", "Nollie Heel":
+			skater.skate_angles.y -= dt * 10
 		}
 	}
 }
@@ -256,6 +264,7 @@ transition_state :: proc(skater: ^Skater, state: Skater_State) {
 	skater.state = state
 	skater.state_timer = 0
 	skater.trick_buffer_len = 0
+	skater.trick_buffer = {.None, .None, .None}
 	skater.trick_committed = ""
 	skater.trick_caught = false
 }
