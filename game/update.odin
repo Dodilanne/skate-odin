@@ -29,6 +29,7 @@ steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: i
 		speed: f32 = 6
 		angle_change := steer_dir * dt * speed
 		skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+		if skater.angle < 0 {skater.angle += 2 * math.PI}
 		skater.look_dir = rl.Vector3RotateByAxisAngle(
 			rl.Vector3{1, 0, 0},
 			rl.Vector3{0, 0, 1},
@@ -42,6 +43,7 @@ steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: i
 		angle_change := steer_dir * dt * speed
 
 		skater.angle = angle_change + linalg.atan2(skater.move_dir.y, skater.move_dir.x)
+		if skater.angle < 0 {skater.angle += 2 * math.PI}
 		skater.move_dir = rl.Vector3RotateByAxisAngle(
 			rl.Vector3{1, 0, 0},
 			rl.Vector3{0, 0, 1},

@@ -22,49 +22,26 @@ render :: proc(state: ^State) {
 
 	for &surface in state.surfaces {
 		offset := surface.o - target.pos
-
-		if state.show_normals {
-			rl.DrawCircleV(project(offset, state), 4, rl.BLUE)
-			rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
-			rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
-			rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
-		}
-
-		for col in 0 ..= surface.w {
-			start := surface.u * col + offset
-			end := start + surface.v * surface.h
-			rl.DrawLineEx(
-				project(start, state),
-				project(end, state),
-				1.1,
-				rl.Fade(rl.LIGHTGRAY, 0.5),
-			)
-		}
-		for row in 0 ..= surface.h {
-			start := surface.v * row + offset
-			end := start + surface.u * surface.w
-			rl.DrawLineEx(
-				project(start, state),
-				project(end, state),
-				1.1,
-				rl.Fade(rl.LIGHTGRAY, 0.5),
-			)
-		}
+		draw_surface_wireframe(state, &surface, offset)
 	}
 
 	for &skater in state.skaters {
 		offset := skater.pos - target.pos
 
+		if skater.skate_angles.z != 0 {
+			ax := skater.skate_angles.z + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+			rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
+			rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
+		}
+
+		if skater.skate_angles.w != 0 {
+			ay := skater.skate_angles.w
+			ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
+			rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
+		}
+
 		// draw_skater_wireframe(state, &skater, offset)
 		draw_skater_sprite(state, &skater, offset)
-
-		ax := skater.skate_angles.z + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-		rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
-		rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
-
-		ay := skater.skate_angles.w
-		ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
-		rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
 	}
 
 	font_size: i32 = 20
@@ -107,11 +84,15 @@ PRO_MATRIX :: matrix[2, 3]f32{
 
 
 draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	origin := project(offset, state) - 75 / 2
+	text_pos := rl.Vector2{0, 0}
+	text_idx := math.round((skater.angle * 32) / (2 * math.PI))
+	text_pos.x = text_idx * 75
+
+	target_pos := project(offset, state) - 75 / 2
 	rl.DrawTexturePro(
 		state.textures.anim_ride,
-		{0, 0, 75, 75},
-		{origin.x, origin.y, 75, 75},
+		{text_pos.x, text_pos.y, 75, 75},
+		{target_pos.x, target_pos.y, 75, 75},
 		{0, 0},
 		0,
 		rl.WHITE,
@@ -159,5 +140,26 @@ draw_skater_wireframe :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3
 		}
 	}
 
+
+}
+
+draw_surface_wireframe :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
+	if state.show_normals {
+		rl.DrawCircleV(project(offset, state), 4, rl.BLUE)
+		rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
+		rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
+		rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
+	}
+
+	for col in 0 ..= surface.w {
+		start := surface.u * col + offset
+		end := start + surface.v * surface.h
+		rl.DrawLineEx(project(start, state), project(end, state), 1.1, rl.Fade(rl.LIGHTGRAY, 0.5))
+	}
+	for row in 0 ..= surface.h {
+		start := surface.v * row + offset
+		end := start + surface.u * surface.w
+		rl.DrawLineEx(project(start, state), project(end, state), 1.1, rl.Fade(rl.LIGHTGRAY, 0.5))
+	}
 
 }
