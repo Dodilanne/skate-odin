@@ -105,7 +105,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			break
 		}
 
-		if skater.trick_buffer_len == 2 {
+		if skater.trick_buffer_len >= 2 {
 			switch skater.trick_buffer {
 			case {.Trick_S, .Trick_W, .None}:
 				skater.trick_committed = "Kickflip"
@@ -119,9 +119,6 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 				skater.trick_committed = "Varial Flip"
 			case {.Trick_ES, .Trick_SW, .None}:
 				skater.trick_committed = "Shuv It"
-			}
-		} else if skater.trick_buffer_len >= 3 {
-			switch skater.trick_buffer {
 			case {.Trick_ES, .Trick_S, .Trick_W}:
 				skater.trick_committed = "Tre Flip"
 			case {.Trick_ES, .Trick_S, .Trick_SW}:
