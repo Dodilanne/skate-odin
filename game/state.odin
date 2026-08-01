@@ -128,6 +128,7 @@ Skater_State :: enum {
 	idle,
 	crouched,
 	airborne,
+	landing,
 }
 
 Surface :: struct {

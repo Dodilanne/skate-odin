@@ -55,7 +55,7 @@ steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: i
 }
 
 move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
-	#partial switch skater.state {
+	switch skater.state {
 	case .idle:
 		if check(state, inputs, skater_idx, .Push, .Pressed) {
 			skater.vel += skater.move_dir
@@ -146,6 +146,11 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 				skater.trick_committed = "Ollie"
 			}
 		}
+	case .landing:
+		skater.timer[.landing] -= dt
+		if skater.timer[.landing] <= 0 {
+			transition_state(skater, .idle)
+		}
 	}
 }
 
@@ -213,7 +218,7 @@ transition :: proc(
 	if !touching_a_surface {
 		transition_state(skater, .airborne)
 	} else if skater.state == .airborne {
-		transition_state(skater, .idle)
+		transition_state(skater, .landing)
 	}
 
 	if skater.state != .airborne {
@@ -305,5 +310,7 @@ transition_state :: proc(skater: ^Skater, state: Skater_State) {
 		skater.trick_buffer = {.None, .None, .None}
 		skater.trick_committed = ""
 		skater.trick_caught = false
+	case .landing:
+		skater.timer[.landing] = skater.timer[.airborne] * 0.2
 	}
 }

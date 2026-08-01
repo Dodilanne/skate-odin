@@ -52,6 +52,15 @@ render :: proc(state: ^State) {
 		font_size,
 		rl.WHITE,
 	)
+	str := fmt.ctprintf("%v", target.state)
+	measure := rl.MeasureText(str, font_size)
+	rl.DrawText(
+		str,
+		(rl.GetScreenWidth() - measure) / 2,
+		(rl.GetScreenHeight() + font_size + 100) / 2,
+		font_size,
+		rl.WHITE,
+	)
 	if target.trick_committed != "" {
 		str := fmt.ctprintf("%s", target.trick_committed)
 		measure := rl.MeasureText(str, font_size)
@@ -91,18 +100,17 @@ skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
 
 draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	sprite_idx: rl.Vector2
+	sprite_idx.x = skater_rot_to_sprite_idx(skater)
 	sprite_sheet: Sprite_Sheet
-	#partial switch skater.state {
+	switch skater.state {
 	case .crouched:
 		sprite_sheet = .duck
-		sprite_idx.x = skater_rot_to_sprite_idx(skater)
 		sprite_idx.y = min(2, math.round(skater.timer[.crouched] * 3))
 		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
 			sprite_idx.y += 3
 		}
 	case .airborne:
 		sprite_sheet = .air
-		sprite_idx.x = skater_rot_to_sprite_idx(skater)
 		height := skater.jump_height
 		if skater.jump_height > 0 {
 			sprite_idx.y = math.round(3 * -skater.vel.z / skater.jump_height + 3)
@@ -112,9 +120,13 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
 			sprite_idx.y += 7
 		}
-	case:
+	case .idle:
 		sprite_sheet = .ride
-		sprite_idx.x = skater_rot_to_sprite_idx(skater)
+	case .landing:
+		sprite_sheet = .land
+		sprite_idx.y = math.round(
+			(-6 * skater.timer[.landing]) / (skater.timer[.airborne] * 0.2) + 6,
+		)
 	}
 
 	sprite_pos := sprite_idx * 75
