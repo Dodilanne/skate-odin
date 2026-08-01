@@ -105,7 +105,8 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	switch skater.state {
 	case .crouched:
 		sprite_sheet = .duck
-		sprite_idx.y = min(2, math.round(skater.timer[.crouched] * 3))
+		sprite_idx.y = math.round(skater.timer[.crouched] * 3)
+		sprite_idx.y = min(sprite_idx.y, 2)
 		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
 			sprite_idx.y += 3
 		}
@@ -114,6 +115,7 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 		height := skater.jump_height
 		if skater.jump_height > 0 {
 			sprite_idx.y = math.round(3 * -skater.vel.z / skater.jump_height + 3)
+			sprite_idx.y = min(sprite_idx.y, 6)
 		} else {
 			sprite_idx.y = 5
 		}
@@ -124,9 +126,9 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 		sprite_sheet = .ride
 	case .landing:
 		sprite_sheet = .land
-		sprite_idx.y = math.round(
-			(-6 * skater.timer[.landing]) / (skater.timer[.airborne] * 0.2) + 6,
-		)
+		x := skater.timer[.airborne] * 0.4
+		sprite_idx.y = math.round(-6 * skater.timer[.landing] / x + 6)
+		sprite_idx.y = min(sprite_idx.y, 5)
 	}
 
 	sprite_pos := sprite_idx * 75

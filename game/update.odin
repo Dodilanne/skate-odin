@@ -155,7 +155,11 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 }
 
 physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
-	skater.vel -= rl.Vector3{0, 0, 10 * dt}
+	if skater.vel.z < 0 {
+		skater.vel -= rl.Vector3{0, 0, 20 * dt}
+	} else {
+		skater.vel -= rl.Vector3{0, 0, 10 * dt}
+	}
 
 	if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
 		friction_coeff: f32 = 0.5
@@ -311,6 +315,6 @@ transition_state :: proc(skater: ^Skater, state: Skater_State) {
 		skater.trick_committed = ""
 		skater.trick_caught = false
 	case .landing:
-		skater.timer[.landing] = skater.timer[.airborne] * 0.2
+		skater.timer[.landing] = skater.timer[.airborne] * 0.4
 	}
 }
