@@ -82,29 +82,32 @@ PRO_MATRIX :: matrix[2, 3]f32{
 	0.5, 0.5, -1,
 }
 
-
-draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	text_pos := rl.Vector2{0, 0}
+skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
 	look_angle := rl.Vector2Angle({1, 0}, skater.look_dir.xy)
 	if skater.look_dir.y < 0 {look_angle = 2 * math.PI - look_angle}
-	{
-		str := fmt.ctprintf("%d", int(math.round(look_angle * rl.RAD2DEG)))
-		measure := rl.MeasureText(str, 20)
-		rl.DrawText(
-			str,
-			(rl.GetScreenWidth() - 50) / 2 - measure,
-			(rl.GetScreenHeight() - 20) / 2,
-			20,
-			rl.WHITE,
-		)
+	return math.round((look_angle * 32) / (2 * math.PI))
+}
+
+
+draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
+	sprite_idx: rl.Vector2
+	sprite_sheet: Sprite_Sheet
+	#partial switch skater.state {
+	case .crouched:
+		sprite_sheet = .duck
+		sprite_idx.x = skater_rot_to_sprite_idx(skater)
+		sprite_idx.y = min(2, math.round(skater.state_timer * 3))
+	case:
+		sprite_sheet = .ride
+		sprite_idx.x = skater_rot_to_sprite_idx(skater)
 	}
-	text_idx := math.round((look_angle * 32) / (2 * math.PI))
-	text_pos.x = text_idx * 75
+
+	sprite_pos := sprite_idx * 75
 
 	target_pos := project(offset, state) - 75 / 2
 	rl.DrawTexturePro(
-		state.textures.anim_ride,
-		{text_pos.x, text_pos.y, 75, 75},
+		state.sprite_sheets[sprite_sheet],
+		{sprite_pos.x, sprite_pos.y, 75, 75},
 		{target_pos.x, target_pos.y, 75, 75},
 		{0, 0},
 		0,

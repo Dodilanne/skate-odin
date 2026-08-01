@@ -83,7 +83,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			height = math.max(height, 3)
 			skater.vel.z += height
 		} else {
-			skater.state_timer = math.min(skater.state_timer + dt * 1.5, 1)
+			skater.state_timer = math.min(skater.state_timer + dt * 1.8, 1)
 		}
 	case .airborne:
 		skater.state_timer += dt

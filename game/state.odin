@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import "input"
@@ -74,7 +75,10 @@ init :: proc(state: ^State) {
 		surface.v = v
 	}
 
-	state.textures.anim_ride = rl.LoadTexture("assets/data/anim/anim_ride.png")
+	for sprite_sheet in Sprite_Sheet {
+		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
+		state.sprite_sheets[sprite_sheet] = rl.LoadTexture(path)
+	}
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -140,8 +144,10 @@ Color_Mode :: enum {
 	light,
 }
 
-Textures :: struct {
-	anim_ride: rl.Texture2D,
+
+Sprite_Sheet :: enum u8 {
+	ride,
+	duck,
 }
 
 State :: struct {
@@ -152,5 +158,5 @@ State :: struct {
 	color_mode:        Color_Mode,
 	offset:            rl.Vector2,
 	show_normals:      bool,
-	textures:          Textures,
+	sprite_sheets:     [Sprite_Sheet]rl.Texture2D,
 }
