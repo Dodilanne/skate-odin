@@ -79,15 +79,15 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 
 		if skater.trick_buffer_len >= 3 ||
 		   check(state, inputs, skater_idx, skater.trick_buffer[0], .Released) {
-			height := 6 * skater.state_timer
+			height := 6 * skater.timer[.crouched]
 			height = math.max(height, 3)
 			skater.vel.z += height
 			skater.jump_height = skater.vel.z
 		} else {
-			skater.state_timer = math.min(skater.state_timer + dt * 1.8, 1)
+			skater.timer[.crouched] = math.min(skater.timer[.crouched] + dt * 1.8, 1)
 		}
 	case .airborne:
-		skater.state_timer += dt
+		skater.timer[.airborne] += dt
 
 		if skater.trick_committed != "" {
 			if check(state, inputs, skater_idx, .Trick_O, .Pressed) {
@@ -138,7 +138,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			}
 		}
 
-		if skater.trick_committed == "" && skater.state_timer > 0.3 {
+		if skater.trick_committed == "" && skater.timer[.airborne] > 0.3 {
 			#partial switch skater.trick_buffer[0] {
 			case .Trick_WN, .Trick_N, .Trick_NE:
 				skater.trick_committed = "Nollie"
@@ -211,10 +211,7 @@ transition :: proc(
 	touching_a_surface: bool,
 ) -> bool {
 	if !touching_a_surface {
-		if skater.state != .airborne {
-			skater.state_timer = 0
-		}
-		skater.state = .airborne
+		transition_state(skater, .airborne)
 	} else if skater.state == .airborne {
 		transition_state(skater, .idle)
 	}
@@ -269,7 +266,7 @@ read_debug_inputs :: proc(state: ^State, inputs: input.State) {
 reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
 	skater.state = .idle
-	skater.state_timer = 0
+	skater.timer = {}
 	skater.jump_height = 0
 	skater.trick_buffer_len = 0
 	skater.trick_committed = ""
@@ -298,13 +295,15 @@ check :: proc(
 }
 
 transition_state :: proc(skater: ^Skater, state: Skater_State) {
+	if skater.state == state {return}
 	skater.state = state
-	skater.state_timer = 0
-	skater.trick_buffer_len = 0
-	skater.trick_buffer = {.None, .None, .None}
-	skater.trick_committed = ""
-	skater.trick_caught = false
-	if state == .idle {
+	skater.timer[state] = 0
+	#partial switch state {
+	case .idle:
 		skater.jump_height = 0
+		skater.trick_buffer_len = 0
+		skater.trick_buffer = {.None, .None, .None}
+		skater.trick_committed = ""
+		skater.trick_caught = false
 	}
 }

@@ -115,7 +115,7 @@ Skater :: struct {
 	angle:            f32,
 	color:            rl.Color,
 	state:            Skater_State,
-	state_timer:      f32,
+	timer:            [Skater_State]f32,
 	jump_height:      f32,
 	trick_buffer:     [3]input.Action,
 	trick_buffer_len: u8,
@@ -150,6 +150,7 @@ Sprite_Sheet :: enum u8 {
 	ride,
 	duck,
 	air,
+	land,
 }
 
 State :: struct {

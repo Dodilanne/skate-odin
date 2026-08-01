@@ -46,7 +46,7 @@ render :: proc(state: ^State) {
 
 	font_size: i32 = 20
 	rl.DrawText(
-		fmt.ctprintf("%f", target.state_timer),
+		fmt.ctprintf("%v", target.timer),
 		rl.GetScreenWidth() / 2 + 30,
 		(rl.GetScreenHeight() - font_size) / 2,
 		font_size,
@@ -96,7 +96,7 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	case .crouched:
 		sprite_sheet = .duck
 		sprite_idx.x = skater_rot_to_sprite_idx(skater)
-		sprite_idx.y = min(2, math.round(skater.state_timer * 3))
+		sprite_idx.y = min(2, math.round(skater.timer[.crouched] * 3))
 		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
 			sprite_idx.y += 3
 		}
