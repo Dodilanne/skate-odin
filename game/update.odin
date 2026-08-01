@@ -82,6 +82,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			height := 6 * skater.state_timer
 			height = math.max(height, 3)
 			skater.vel.z += height
+			skater.jump_height = skater.vel.z
 		} else {
 			skater.state_timer = math.min(skater.state_timer + dt * 1.8, 1)
 		}
@@ -269,6 +270,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
 	skater.state = .idle
 	skater.state_timer = 0
+	skater.jump_height = 0
 	skater.trick_buffer_len = 0
 	skater.trick_committed = ""
 	skater.skate_angles = {}
@@ -302,4 +304,7 @@ transition_state :: proc(skater: ^Skater, state: Skater_State) {
 	skater.trick_buffer = {.None, .None, .None}
 	skater.trick_committed = ""
 	skater.trick_caught = false
+	if state == .idle {
+		skater.jump_height = 0
+	}
 }

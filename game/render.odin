@@ -97,6 +97,21 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 		sprite_sheet = .duck
 		sprite_idx.x = skater_rot_to_sprite_idx(skater)
 		sprite_idx.y = min(2, math.round(skater.state_timer * 3))
+		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
+			sprite_idx.y += 3
+		}
+	case .airborne:
+		sprite_sheet = .air
+		sprite_idx.x = skater_rot_to_sprite_idx(skater)
+		height := skater.jump_height
+		if skater.jump_height > 0 {
+			sprite_idx.y = math.round(3 * -skater.vel.z / skater.jump_height + 3)
+		} else {
+			sprite_idx.y = 5
+		}
+		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
+			sprite_idx.y += 7
+		}
 	case:
 		sprite_sheet = .ride
 		sprite_idx.x = skater_rot_to_sprite_idx(skater)
