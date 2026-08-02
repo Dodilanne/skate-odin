@@ -3,7 +3,6 @@ package game
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
-import "input"
 import rl "vendor:raylib"
 
 MAX_SKATERS :: 20
@@ -123,7 +122,7 @@ Skater :: struct {
 	state:            Skater_State,
 	timer:            [Skater_State]f32,
 	jump_height:      f32,
-	trick_buffer:     [3]input.Action,
+	trick_buffer:     [3]Input_Action,
 	trick_buffer_len: u8,
 	trick_committed:  Trick,
 	trick_caught:     bool,

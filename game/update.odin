@@ -2,12 +2,11 @@ package game
 
 import "core:math"
 import "core:math/linalg"
-import "input"
 import rl "vendor:raylib"
 
 SKATER_RADIUS: f32 : 0.5
 
-update :: proc(state: ^State, inputs: input.State, dt: f32) {
+update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 	when ODIN_DEBUG {read_debug_inputs(state, inputs)}
 	for &skater, skater_idx in state.skaters {
 		steer(state, inputs, &skater, skater_idx, dt)
@@ -19,7 +18,7 @@ update :: proc(state: ^State, inputs: input.State, dt: f32) {
 	}
 }
 
-steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
+steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
 	steer_dir: f32
 	if check(state, inputs, skater_idx, .Left, .Down) {steer_dir = -1}
 	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
@@ -54,14 +53,14 @@ steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: i
 
 }
 
-move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
+move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
 	switch skater.state {
 	case .Idle:
 		if check(state, inputs, skater_idx, .Push, .Pressed) {
 			skater.vel += skater.move_dir
 			break
 		}
-		for action in input.Action.Trick_WN ..= input.Action.Trick_SW {
+		for action in Input_Action.Trick_WN ..= Input_Action.Trick_SW {
 			if check(state, inputs, skater_idx, action, .Pressed) {
 				transition_state(skater, .Crouched)
 				skater.trick_buffer[0] = action
@@ -69,7 +68,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			}
 		}
 	case .Crouched:
-		for action in input.Action.Trick_W ..= input.Action.Trick_SW {
+		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater_idx, action, .Pressed) {
 				skater.trick_buffer[skater.trick_buffer_len] = action
@@ -96,7 +95,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 			break
 		}
 
-		for action in input.Action.Trick_W ..= input.Action.Trick_SW {
+		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater_idx, action, .Pressed) {
 				skater.trick_buffer[skater.trick_buffer_len] = action
@@ -154,7 +153,7 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 	}
 }
 
-physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
+physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
 	if skater.vel.z < 0 {
 		skater.vel -= rl.Vector3{0, 0, 20 * dt}
 	} else {
@@ -213,7 +212,7 @@ collisions :: proc(state: ^State, skater: ^Skater, skater_idx: int) -> bool {
 
 transition :: proc(
 	state: ^State,
-	inputs: input.State,
+	inputs: Input_State,
 	skater: ^Skater,
 	skater_idx: int,
 	dt: f32,
@@ -257,7 +256,7 @@ transition :: proc(
 	return skater.pos.z < -10 || check(state, inputs, skater_idx, .Reset, .Pressed)
 }
 
-read_debug_inputs :: proc(state: ^State, inputs: input.State) {
+read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
 		state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
 	}
@@ -293,10 +292,10 @@ reset_skater :: proc(skater: ^Skater) {
 
 check :: proc(
 	state: ^State,
-	inputs: input.State,
+	inputs: Input_State,
 	skater_idx: int,
-	action: input.Action,
-	flag: input.Flag,
+	action: Input_Action,
+	flag: Input_Flag,
 ) -> bool {
 	if state.target_skater_idx != skater_idx {
 		return false

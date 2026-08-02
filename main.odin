@@ -5,7 +5,6 @@ package main
 import "core:log"
 import "core:mem"
 import "game"
-import "game/input"
 import rl "vendor:raylib"
 
 UPDATE_FREQ :: 60
@@ -27,7 +26,7 @@ main :: proc() {
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})
 
-	input_state: input.State
+	input_state: game.Input_State
 	game_state: game.State
 	game.init(&game_state)
 
@@ -37,9 +36,9 @@ main :: proc() {
 		frame_time := rl.GetFrameTime()
 		accumulator += frame_time
 
-		frame_input_state: input.State
-		input.gather(&frame_input_state)
-		input.add(&input_state, frame_input_state)
+		frame_input_state: game.Input_State
+		game.gather_input(&frame_input_state)
+		game.add_input(&input_state, frame_input_state)
 
 		update_did_run := accumulator >= FIXED_DT
 		defer if update_did_run {
@@ -49,7 +48,7 @@ main :: proc() {
 		for ; accumulator >= FIXED_DT; accumulator -= FIXED_DT {
 			game.update(&game_state, input_state, FIXED_DT)
 			// Pressed and released should only be consumed by one game update
-			input.clear_flags(&input_state, {.Pressed, .Released})
+			game.clear_input_flags(&input_state, {.Pressed, .Released})
 		}
 
 
