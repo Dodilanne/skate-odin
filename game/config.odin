@@ -1,7 +1,9 @@
 package game
 
 import "core:encoding/json"
+import "core:log"
 import "core:os"
+import "core:time"
 
 Movement_Config :: struct {
 	push_impulse:         f32,
@@ -51,13 +53,14 @@ UI_Config :: struct {
 }
 
 Config :: struct {
-	movement: Movement_Config,
-	physics:  Physics_Config,
-	tricks:   Trick_Config,
-	landing:  Landing_Config,
-	camera:   Camera_Config,
-	sprite:   Sprite_Config,
-	ui:       UI_Config,
+	last_updated_at: time.Time,
+	movement:        Movement_Config,
+	physics:         Physics_Config,
+	tricks:          Trick_Config,
+	landing:         Landing_Config,
+	camera:          Camera_Config,
+	sprite:          Sprite_Config,
+	ui:              UI_Config,
 }
 
 init_config_with_defaults :: proc(config: ^Config) {
@@ -115,6 +118,8 @@ load_config_from_file :: proc(
 ) -> Load_Config_Error {
 	init_config_with_defaults(config)
 
+	config.last_updated_at = time.now()
+
 	if os.exists(path) {
 		data := os.read_entire_file(path, context.temp_allocator) or_return
 		return json.unmarshal(data, config)
@@ -123,5 +128,19 @@ load_config_from_file :: proc(
 	data := json.marshal(config) or_return
 	return os.write_entire_file(path, data)
 }
+
+check_and_update :: proc(
+	config: ^Config,
+	path: string = DEFAULT_CONFIG_PATH,
+) -> (
+	err: Load_Config_Error,
+) {
+	info := os.stat(path, context.temp_allocator) or_return
+	if time.diff(info.modification_time, config.last_updated_at) < 0 {
+		return load_config_from_file(config, path)
+	}
+	return
+}
+
 
 DEFAULT_CONFIG_PATH :: "config.json"
