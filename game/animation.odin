@@ -91,3 +91,9 @@ animation_get_value :: proc(skater: ^Skater, state: ^State) -> f32 {
 	}
 	return 0
 }
+
+skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
+	look_angle := rl.Vector2Angle({1, 0}, skater.look_dir.xy)
+	if skater.look_dir.y < 0 {look_angle = 2 * math.PI - look_angle}
+	return math.round((look_angle * 32) / (2 * math.PI))
+}

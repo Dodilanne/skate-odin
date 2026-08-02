@@ -69,7 +69,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 	}
 	config.physics = {
 		gravity_rising          = 10,
-		gravity_falling         = 20,
+		gravity_falling         = 40,
 		friction                = 0.5,
 		braking_multiplier      = 10,
 		friction_stop_threshold = 0.1,

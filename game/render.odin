@@ -77,13 +77,6 @@ PRO_MATRIX :: matrix[2, 3]f32{
 	0.5, 0.5, -1,
 }
 
-skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
-	look_angle := rl.Vector2Angle({1, 0}, skater.look_dir.xy)
-	if skater.look_dir.y < 0 {look_angle = 2 * math.PI - look_angle}
-	return math.round((look_angle * 32) / (2 * math.PI))
-}
-
-
 draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	frame_size := state.config.sprite.frame_size
 	sprite_pos := skater.animation.progress.idx * frame_size
@@ -101,17 +94,36 @@ draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 }
 
 draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	if skater.skate_angles.z != 0 {
-		ax := skater.skate_angles.z + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-		rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
-		rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
-	}
+	if skater.state != .Airborne {return}
 
-	if skater.skate_angles.w != 0 {
-		ay := skater.skate_angles.w
-		ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
-		rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
-	}
+	rad := skater.skate_angles.zw
+	rad.x += linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+	deg := rad * rl.RAD2DEG
+	sign := linalg.sign(deg)
+	orientation := linalg.mod(deg * sign, 360)
+	if sign.x < 0 {orientation.x = 360 - orientation.x}
+	if sign.y < 0 {orientation.y = 360 - orientation.y}
+	asset_idx := math.round(orientation.x * BOARD_ASSET_COUNT / 360)
+	asset_idx = math.clamp(asset_idx, 0, BOARD_ASSET_COUNT - 1)
+
+	frame_size: f32 = 50
+	target_pos := project(offset, state) - frame_size / 2
+
+	sprite_idx: rl.Vector2
+	sprite_idx.x = math.round(orientation.y * 21 / 360)
+	sprite_idx.x = math.clamp(sprite_idx.x, 0, 20)
+	sprite_idx.y = math.round(orientation.x * 5 / 360)
+	sprite_idx.y = math.clamp(sprite_idx.y, 0, 4)
+	sprite_pos := sprite_idx * 50
+
+	rl.DrawTexturePro(
+		state.board_assets[int(asset_idx)],
+		{sprite_pos.x, sprite_pos.y, frame_size, frame_size},
+		{target_pos.x, target_pos.y, frame_size, frame_size},
+		{0, 0},
+		0,
+		rl.WHITE,
+	)
 }
 
 draw_surface :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {

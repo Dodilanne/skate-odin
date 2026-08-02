@@ -23,7 +23,7 @@
   },
   "landing": {
     "facing_alignment_min_dot": 0.85,
-    "board_angle_snap_deg": 20.0,
+    "board_angle_snap_deg": 40.0,
     "landing_duration_scale": 0.4,
     "death_plane_z": -10.0
   },

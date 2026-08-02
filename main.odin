@@ -8,7 +8,7 @@ import "game"
 import rl "vendor:raylib"
 
 UPDATE_FREQ :: 60
-FIXED_DT :: 1. / UPDATE_FREQ
+FIXED_DT: f32 : 1. / UPDATE_FREQ
 
 main :: proc() {
 	context.logger = log.create_console_logger()
@@ -36,6 +36,8 @@ main :: proc() {
 		time_since_last_config_reload: f32 = 0
 	}
 
+	dt := FIXED_DT
+
 	for !rl.WindowShouldClose() {
 		frame_time := rl.GetFrameTime()
 		accumulator += frame_time
@@ -44,13 +46,13 @@ main :: proc() {
 		game.gather_input(&frame_input_state)
 		game.add_input(&input_state, frame_input_state)
 
-		update_did_run := accumulator >= FIXED_DT
+		update_did_run := accumulator >= dt
 		defer if update_did_run {
 			input_state = {}
 		}
 
-		for ; accumulator >= FIXED_DT; accumulator -= FIXED_DT {
-			game.update(&game_state, input_state, FIXED_DT)
+		for ; accumulator >= dt; accumulator -= dt {
+			game.update(&game_state, input_state, dt)
 			// Pressed and released should only be consumed by one game update
 			game.clear_input_flags(&input_state, {.Pressed, .Released})
 		}
