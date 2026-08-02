@@ -22,8 +22,8 @@ init :: proc(state: ^State) {
 	// state.skaters[2].color = rl.BLUE
 
 	state.show_normals = false
-	state.color_mode = .dark
-	state.drawing_mode = .dimetric
+	state.color_mode = .Dark
+	state.drawing_mode = .Dimetric
 	state.surfaces = {
 		{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
 		{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
@@ -98,9 +98,23 @@ Shape :: struct {
 }
 
 Drawing_Mode :: enum {
-	dimetric = 0,
-	top_down,
-	side,
+	Dimetric = 0,
+	Top_Down,
+	Side,
+}
+
+Trick :: enum u8 {
+	None,
+	Ollie,
+	Nollie,
+	Kickflip,
+	Heelflip,
+	Nollie_Flip,
+	Nollie_Heel,
+	Varial_Flip,
+	Shuv_It,
+	Tre_Flip,
+	Tre_Shuv,
 }
 
 Skater :: struct {
@@ -119,16 +133,16 @@ Skater :: struct {
 	jump_height:      f32,
 	trick_buffer:     [3]input.Action,
 	trick_buffer_len: u8,
-	trick_committed:  string,
+	trick_committed:  Trick,
 	trick_caught:     bool,
 	skate_angles:     rl.Vector4,
 }
 
 Skater_State :: enum {
-	idle,
-	crouched,
-	airborne,
-	landing,
+	Idle,
+	Crouched,
+	Airborne,
+	Landing,
 }
 
 Surface :: struct {
@@ -142,16 +156,16 @@ Surface :: struct {
 }
 
 Color_Mode :: enum {
-	dark,
-	light,
+	Dark,
+	Light,
 }
 
 
 Sprite_Sheet :: enum u8 {
-	ride,
-	duck,
-	air,
-	land,
+	Ride,
+	Duck,
+	Air,
+	Land,
 }
 
 State :: struct {

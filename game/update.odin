@@ -24,7 +24,7 @@ steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: i
 	if check(state, inputs, skater_idx, .Left, .Down) {steer_dir = -1}
 	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
 
-	if skater.state == .airborne {
+	if skater.state == .Airborne {
 		speed: f32 = 6
 		angle_change := steer_dir * dt * speed
 		skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
@@ -56,19 +56,19 @@ steer :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: i
 
 move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: int, dt: f32) {
 	switch skater.state {
-	case .idle:
+	case .Idle:
 		if check(state, inputs, skater_idx, .Push, .Pressed) {
 			skater.vel += skater.move_dir
 			break
 		}
 		for action in input.Action.Trick_WN ..= input.Action.Trick_SW {
 			if check(state, inputs, skater_idx, action, .Pressed) {
-				transition_state(skater, .crouched)
+				transition_state(skater, .Crouched)
 				skater.trick_buffer[0] = action
 				skater.trick_buffer_len = 1
 			}
 		}
-	case .crouched:
+	case .Crouched:
 		for action in input.Action.Trick_W ..= input.Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater_idx, action, .Pressed) {
@@ -79,17 +79,17 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 
 		if skater.trick_buffer_len >= 3 ||
 		   check(state, inputs, skater_idx, skater.trick_buffer[0], .Released) {
-			height := 6 * skater.timer[.crouched]
+			height := 6 * skater.timer[.Crouched]
 			height = math.max(height, 3)
 			skater.vel.z += height
 			skater.jump_height = skater.vel.z
 		} else {
-			skater.timer[.crouched] = math.min(skater.timer[.crouched] + dt * 1.8, 1)
+			skater.timer[.Crouched] = math.min(skater.timer[.Crouched] + dt * 1.8, 1)
 		}
-	case .airborne:
-		skater.timer[.airborne] += dt
+	case .Airborne:
+		skater.timer[.Airborne] += dt
 
-		if skater.trick_committed != "" {
+		if skater.trick_committed != .None {
 			if check(state, inputs, skater_idx, .Trick_O, .Pressed) {
 				skater.trick_caught = true
 			}
@@ -112,44 +112,44 @@ move :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx: in
 		if skater.trick_buffer_len >= 2 {
 			switch skater.trick_buffer {
 			case {.Trick_S, .Trick_W, .None}:
-				skater.trick_committed = "Kickflip"
+				skater.trick_committed = .Kickflip
 				skater.skate_angles.xy = {0, +board_speed}
 			case {.Trick_S, .Trick_E, .None}:
-				skater.trick_committed = "Heelflip"
+				skater.trick_committed = .Heelflip
 				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_N, .Trick_W, .None}:
-				skater.trick_committed = "Nollie Flip"
+				skater.trick_committed = .Nollie_Flip
 				skater.skate_angles.xy = {0, +board_speed}
 			case {.Trick_N, .Trick_E, .None}:
-				skater.trick_committed = "Nollie Heel"
+				skater.trick_committed = .Nollie_Heel
 				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_ES, .Trick_W, .None}:
-				skater.trick_committed = "Varial Flip"
+				skater.trick_committed = .Varial_Flip
 				skater.skate_angles.xy = {board_speed / 2, board_speed}
 			case {.Trick_ES, .Trick_SW, .None}:
-				skater.trick_committed = "Shuv It"
+				skater.trick_committed = .Shuv_It
 				skater.skate_angles.xy = {board_speed / 2, 0}
 			case {.Trick_ES, .Trick_S, .Trick_W}:
-				skater.trick_committed = "Tre Flip"
+				skater.trick_committed = .Tre_Flip
 				skater.skate_angles.xy = {board_speed, board_speed}
 			case {.Trick_ES, .Trick_S, .Trick_SW}:
-				skater.trick_committed = "Tre Shuv"
+				skater.trick_committed = .Tre_Shuv
 				skater.skate_angles.xy = {board_speed, 0}
 			}
 		}
 
-		if skater.trick_committed == "" && skater.timer[.airborne] > 0.3 {
+		if skater.trick_committed == .None && skater.timer[.Airborne] > 0.3 {
 			#partial switch skater.trick_buffer[0] {
 			case .Trick_WN, .Trick_N, .Trick_NE:
-				skater.trick_committed = "Nollie"
+				skater.trick_committed = .Nollie
 			case .Trick_ES, .Trick_S, .Trick_SW:
-				skater.trick_committed = "Ollie"
+				skater.trick_committed = .Ollie
 			}
 		}
-	case .landing:
-		skater.timer[.landing] -= dt
-		if skater.timer[.landing] <= 0 {
-			transition_state(skater, .idle)
+	case .Landing:
+		skater.timer[.Landing] -= dt
+		if skater.timer[.Landing] <= 0 {
+			transition_state(skater, .Idle)
 		}
 	}
 }
@@ -175,9 +175,9 @@ physics :: proc(state: ^State, inputs: input.State, skater: ^Skater, skater_idx:
 
 	skater.pos += skater.vel * dt
 
-	if skater.state != .airborne || skater.trick_caught {
+	if skater.state != .Airborne || skater.trick_caught {
 		skater.skate_angles.xy = {}
-	} else {
+	} else if skater.skate_angles.xy != {} {
 		skater.skate_angles.zw += dt * skater.skate_angles.xy
 	}
 }
@@ -220,12 +220,12 @@ transition :: proc(
 	touching_a_surface: bool,
 ) -> bool {
 	if !touching_a_surface {
-		transition_state(skater, .airborne)
-	} else if skater.state == .airborne {
-		transition_state(skater, .landing)
+		transition_state(skater, .Airborne)
+	} else if skater.state == .Airborne {
+		transition_state(skater, .Landing)
 	}
 
-	if skater.state != .airborne {
+	if skater.state != .Airborne {
 		{ 	// player position
 			diff := linalg.dot(skater.move_dir, skater.look_dir)
 			abs := math.abs(diff)
@@ -274,11 +274,12 @@ read_debug_inputs :: proc(state: ^State, inputs: input.State) {
 
 reset_skater :: proc(skater: ^Skater) {
 	skater.vel = rl.Vector3{}
-	skater.state = .idle
+	skater.state = .Idle
 	skater.timer = {}
 	skater.jump_height = 0
 	skater.trick_buffer_len = 0
-	skater.trick_committed = ""
+	skater.trick_committed = .None
+	skater.trick_caught = false
 	skater.skate_angles = {}
 	skater.angle = 0
 	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
@@ -308,13 +309,13 @@ transition_state :: proc(skater: ^Skater, state: Skater_State) {
 	skater.state = state
 	skater.timer[state] = 0
 	#partial switch state {
-	case .idle:
+	case .Idle:
 		skater.jump_height = 0
 		skater.trick_buffer_len = 0
 		skater.trick_buffer = {.None, .None, .None}
-		skater.trick_committed = ""
+		skater.trick_committed = .None
 		skater.trick_caught = false
-	case .landing:
-		skater.timer[.landing] = skater.timer[.airborne] * 0.4
+	case .Landing:
+		skater.timer[.Landing] = skater.timer[.Airborne] * 0.4
 	}
 }
