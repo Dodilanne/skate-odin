@@ -28,7 +28,6 @@ render :: proc(state: ^State) {
 	for &skater in state.skaters {
 		offset := skater.pos - target.pos
 
-		// draw_skater_wireframe(state, &skater, offset)
 		draw_skater_sprite(state, &skater, offset)
 
 		if skater.skate_angles.z != 0 {
