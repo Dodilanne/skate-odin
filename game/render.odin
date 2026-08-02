@@ -99,7 +99,7 @@ skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
 draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	sprite_idx: rl.Vector2
 	sprite_idx.x = skater_rot_to_sprite_idx(skater)
-	sprite_sheet: Sprite_Sheet
+	sprite_sheet: Asset
 	switch skater.state {
 	case .Crouched:
 		frame_count := f32(state.config.sprite.crouch_frame_count)
@@ -138,7 +138,7 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 
 	target_pos := project(offset, state) - frame_size / 2
 	rl.DrawTexturePro(
-		state.sprite_sheets[sprite_sheet],
+		state.assets[sprite_sheet],
 		{sprite_pos.x, sprite_pos.y, frame_size, frame_size},
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},

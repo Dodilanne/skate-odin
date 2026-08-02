@@ -66,9 +66,9 @@ init :: proc(state: ^State) {
 		surface.v = v
 	}
 
-	for sprite_sheet in Sprite_Sheet {
+	for sprite_sheet in Asset {
 		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
-		state.sprite_sheets[sprite_sheet] = rl.LoadTexture(path)
+		state.assets[sprite_sheet] = rl.LoadTexture(path)
 	}
 
 	load_config_from_file(&state.config)
@@ -151,8 +151,7 @@ Color_Mode :: enum {
 	Light,
 }
 
-
-Sprite_Sheet :: enum u8 {
+Asset :: enum u8 {
 	Ride,
 	Duck,
 	Air,
@@ -168,5 +167,5 @@ State :: struct {
 	color_mode:        Color_Mode,
 	offset:            rl.Vector2,
 	show_normals:      bool,
-	sprite_sheets:     [Sprite_Sheet]rl.Texture2D,
+	assets:            [Asset]rl.Texture2D,
 }
