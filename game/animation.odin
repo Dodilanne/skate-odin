@@ -8,14 +8,16 @@ Animation_State :: enum u8 {
 	Crouched,
 	Falling,
 	Jumping,
+	Tricking,
 	Landing,
 }
 
 animation_configs := [Animation_State]Animation_Config {
 	.Idle = {asset = .Ride, frame_count = 1},
 	.Crouched = {asset = .Duck, frame_count = 3},
-	.Falling = {asset = .Air, frame_count = 1, initial_idx = {0, 14}},
-	.Jumping = {asset = .Air, frame_count = 7, initial_idx = {0, 14}},
+	.Falling = {asset = .Air, frame_count = 1},
+	.Jumping = {asset = .Air, frame_count = 7},
+	.Tricking = {asset = .Air, frame_count = 7, initial_idx = {0, 14}},
 	.Landing = {asset = .Land, frame_count = 6},
 }
 
@@ -42,10 +44,12 @@ animation_update_state :: proc(skater: ^Skater, animation: ^Animation) {
 	case .Crouched:
 		state = .Crouched
 	case .Airborne:
-		if skater.jump_height > 0 {
+		if skater.jump_height <= 0 {
+			state = .Falling
+		} else if skater.skate_angles.zw == {} {
 			state = .Jumping
 		} else {
-			state = .Falling
+			state = .Tricking
 		}
 	case .Landing:
 		state = .Landing
@@ -83,7 +87,7 @@ animation_get_value :: proc(skater: ^Skater, state: ^State) -> f32 {
 		return skater.timer[.Crouched]
 	case .Falling:
 		return 5
-	case .Jumping:
+	case .Jumping, .Tricking:
 		return 1 - ((skater.vel.z + skater.jump_height) / (2 * skater.jump_height))
 	case .Landing:
 		x := skater.timer[.Airborne] * state.config.landing.landing_duration_scale

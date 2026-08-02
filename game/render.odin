@@ -27,8 +27,8 @@ render :: proc(state: ^State) {
 	for &skater in state.skaters {
 		offset := skater.pos - target.pos
 
-		draw_skater(state, &skater, offset)
 		draw_board(state, &skater, offset)
+		draw_skater(state, &skater, offset)
 	}
 
 	font_size := state.config.ui.font_size
@@ -95,6 +95,7 @@ draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 
 draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	if skater.state != .Airborne {return}
+	if skater.skate_angles.zw == {} {return}
 
 	rad := skater.skate_angles.zw
 	rad.x += linalg.atan2(skater.look_dir.y, skater.look_dir.x)
@@ -108,11 +109,12 @@ draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 
 	frame_size: f32 = 50
 	target_pos := project(offset, state) - frame_size / 2
+	target_pos.y += state.config.sprite.board_y_offset
 
 	sprite_idx: rl.Vector2
 	sprite_idx.x = math.round(orientation.y * 21 / 360)
 	sprite_idx.x = math.clamp(sprite_idx.x, 0, 20)
-	sprite_idx.y = math.round(orientation.x * 5 / 360)
+	sprite_idx.y = math.ceil(orientation.x * 5 / 360)
 	sprite_idx.y = math.clamp(sprite_idx.y, 0, 4)
 	sprite_pos := sprite_idx * 50
 

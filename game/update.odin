@@ -117,27 +117,81 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 			case {.Trick_S, .Trick_W, .None}:
 				skater.trick_committed = .Kickflip
 				skater.skate_angles.xy = {0, +board_speed}
-			case {.Trick_S, .Trick_E, .None}:
-				skater.trick_committed = .Heelflip
-				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_N, .Trick_W, .None}:
 				skater.trick_committed = .Nollie_Flip
 				skater.skate_angles.xy = {0, +board_speed}
+			case {.Trick_S, .Trick_E, .None}:
+				skater.trick_committed = .Heelflip
+				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_N, .Trick_E, .None}:
 				skater.trick_committed = .Nollie_Heel
 				skater.skate_angles.xy = {0, -board_speed}
 			case {.Trick_ES, .Trick_W, .None}:
 				skater.trick_committed = .Varial_Flip
 				skater.skate_angles.xy = {board_speed / half_spin_divisor, board_speed}
+			case {.Trick_NE, .Trick_W, .None}:
+				skater.trick_committed = .Nollie_Varial_Flip
+				skater.skate_angles.xy = {board_speed / -half_spin_divisor, board_speed}
+			case {.Trick_SW, .Trick_E, .None}:
+				skater.trick_committed = .Varial_Heel
+				skater.skate_angles.xy = {board_speed / -half_spin_divisor, -board_speed}
+			case {.Trick_WN, .Trick_E, .None}:
+				skater.trick_committed = .Nollie_Varial_Heel
+				skater.skate_angles.xy = {board_speed / half_spin_divisor, -board_speed}
+			case {.Trick_SW, .Trick_W, .None}:
+				skater.trick_committed = .Hard_Flip
+				skater.skate_angles.xy = {board_speed / -half_spin_divisor, board_speed}
+			case {.Trick_WN, .Trick_W, .None}:
+				skater.trick_committed = .Nollie_Hard_Flip
+				skater.skate_angles.xy = {board_speed / half_spin_divisor, board_speed}
+			case {.Trick_ES, .Trick_E, .None}:
+				skater.trick_committed = .Inward_Heel
+				skater.skate_angles.xy = {board_speed / half_spin_divisor, -board_speed}
+			case {.Trick_NE, .Trick_E, .None}:
+				skater.trick_committed = .Nollie_Inward_Heel
+				skater.skate_angles.xy = {board_speed / -half_spin_divisor, -board_speed}
 			case {.Trick_ES, .Trick_SW, .None}:
 				skater.trick_committed = .Shuv_It
+				skater.skate_angles.xy = {board_speed / half_spin_divisor, 0}
+			case {.Trick_NE, .Trick_WN, .None}:
+				skater.trick_committed = .Nollie_Shuv_It
+				skater.skate_angles.xy = {board_speed / -half_spin_divisor, 0}
+			case {.Trick_SW, .Trick_ES, .None}:
+				skater.trick_committed = .Front_Shuv
+				skater.skate_angles.xy = {board_speed / -half_spin_divisor, 0}
+			case {.Trick_WN, .Trick_NE, .None}:
+				skater.trick_committed = .Nollie_Front_Shuv
 				skater.skate_angles.xy = {board_speed / half_spin_divisor, 0}
 			case {.Trick_ES, .Trick_S, .Trick_W}:
 				skater.trick_committed = .Tre_Flip
 				skater.skate_angles.xy = {board_speed, board_speed}
+			case {.Trick_NE, .Trick_N, .Trick_W}:
+				skater.trick_committed = .Nollie_Tre_Flip
+				skater.skate_angles.xy = {-board_speed, board_speed}
 			case {.Trick_ES, .Trick_S, .Trick_SW}:
 				skater.trick_committed = .Tre_Shuv
 				skater.skate_angles.xy = {board_speed, 0}
+			case {.Trick_NE, .Trick_N, .Trick_WN}:
+				skater.trick_committed = .Nollie_Tre_Shuv
+				skater.skate_angles.xy = {-board_speed, 0}
+			case {.Trick_SW, .Trick_S, .Trick_E}:
+				skater.trick_committed = .Lazer_Flip
+				skater.skate_angles.xy = {-board_speed, -board_speed}
+			case {.Trick_WN, .Trick_N, .Trick_E}:
+				skater.trick_committed = .Nollie_Lazer_Flip
+				skater.skate_angles.xy = {board_speed, -board_speed}
+			case {.Trick_ES, .Trick_S, .Trick_E}:
+				skater.trick_committed = .Tre_Inward_Heel
+				skater.skate_angles.xy = {board_speed, -board_speed}
+			case {.Trick_NE, .Trick_N, .Trick_E}:
+				skater.trick_committed = .Nollie_Tre_Inward_Heel
+				skater.skate_angles.xy = {-board_speed, -board_speed}
+			case {.Trick_SW, .Trick_S, .Trick_W}:
+				skater.trick_committed = .Tre_Hard_Flip
+				skater.skate_angles.xy = {-board_speed, board_speed}
+			case {.Trick_WN, .Trick_N, .Trick_W}:
+				skater.trick_committed = .Nollie_Tre_Hard_Flip
+				skater.skate_angles.xy = {board_speed, board_speed}
 			}
 		}
 

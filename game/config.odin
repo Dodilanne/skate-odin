@@ -41,7 +41,8 @@ Camera_Config :: struct {
 }
 
 Sprite_Config :: struct {
-	frame_size: f32,
+	frame_size:     f32,
+	board_y_offset: f32,
 }
 
 UI_Config :: struct {
@@ -92,7 +93,8 @@ init_config_with_defaults :: proc(config: ^Config) {
 		cell_size = 32,
 	}
 	config.sprite = {
-		frame_size = 75,
+		frame_size     = 75,
+		board_y_offset = 50,
 	}
 	config.ui = {
 		font_size = 20,
