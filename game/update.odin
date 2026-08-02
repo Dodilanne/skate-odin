@@ -295,10 +295,8 @@ transition :: proc(
 			deg := linalg.floor(linalg.abs(rl.RAD2DEG * skater.skate_angles.zw))
 			delta := state.config.landing.board_angle_snap_deg
 			switch int(deg.x) % 360 {
-			case 360 - delta ..= 360, 0 ..= delta:
+			case 360 - delta ..= 360, 0 ..= delta, 180 - delta ..= 180 + delta:
 				skater.skate_angles.z = 0
-			case 180 - delta ..= 180 + delta:
-				skater.skate_angles.z = math.PI
 			case:
 				return true
 			}
