@@ -116,8 +116,6 @@ Skater :: struct {
 	norm:             rl.Vector3,
 	pos:              rl.Vector3,
 	vel:              rl.Vector3,
-	steer_rate:       f32,
-	max_speed:        f32,
 	radius:           f32,
 	angle:            f32,
 	color:            rl.Color,

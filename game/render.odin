@@ -43,7 +43,7 @@ render :: proc(state: ^State) {
 		}
 	}
 
-	font_size: i32 = 20
+	font_size := state.config.ui.font_size
 	rl.DrawText(
 		fmt.ctprintf("%v", target.timer),
 		rl.GetScreenWidth() / 2 + 30,
@@ -56,7 +56,7 @@ render :: proc(state: ^State) {
 	rl.DrawText(
 		str,
 		(rl.GetScreenWidth() - measure) / 2,
-		(rl.GetScreenHeight() + font_size + 100) / 2,
+		(rl.GetScreenHeight() + font_size) / 2 + i32(state.config.sprite.frame_size),
 		font_size,
 		rl.WHITE,
 	)
@@ -66,7 +66,7 @@ render :: proc(state: ^State) {
 		rl.DrawText(
 			str,
 			(rl.GetScreenWidth() - measure) / 2,
-			(rl.GetScreenHeight() - font_size - 100) / 2,
+			(rl.GetScreenHeight() - font_size) / 2 - i32(state.config.sprite.frame_size),
 			font_size,
 			rl.YELLOW,
 		)
@@ -74,16 +74,15 @@ render :: proc(state: ^State) {
 }
 
 project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
+	cell_size := state.config.camera.cell_size
 	if state.drawing_mode == .Top_Down {
-		return point.xy * CELL_SIZE + state.offset
+		return point.xy * cell_size + state.offset
 	}
 	if state.drawing_mode == .Side {
-		return rl.Vector2{-point.y, -point.z} * CELL_SIZE + state.offset
+		return rl.Vector2{-point.y, -point.z} * cell_size + state.offset
 	}
-	return PRO_MATRIX * point * CELL_SIZE + state.offset
+	return PRO_MATRIX * point * cell_size + state.offset
 }
-
-CELL_SIZE: f32 : 32
 
 PRO_MATRIX :: matrix[2, 3]f32{
 	1, -1, 0,
@@ -103,40 +102,45 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	sprite_sheet: Sprite_Sheet
 	switch skater.state {
 	case .Crouched:
+		frame_count := f32(state.config.sprite.crouch_frame_count)
 		sprite_sheet = .Duck
-		sprite_idx.y = math.round(skater.timer[.Crouched] * 3)
-		sprite_idx.y = min(sprite_idx.y, 2)
+		sprite_idx.y = math.round(skater.timer[.Crouched] * frame_count)
+		sprite_idx.y = min(sprite_idx.y, frame_count - 1)
 		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
-			sprite_idx.y += 3
+			sprite_idx.y += frame_count
 		}
 	case .Airborne:
+		frame_count := f32(state.config.sprite.airborne_frame_count)
 		sprite_sheet = .Air
 		height := skater.jump_height
 		if skater.jump_height > 0 {
-			sprite_idx.y = math.round(3 * -skater.vel.z / skater.jump_height + 3)
-			sprite_idx.y = min(sprite_idx.y, 6)
+			mid := (frame_count - 1) / 2
+			sprite_idx.y = math.round(mid * -skater.vel.z / skater.jump_height + mid)
+			sprite_idx.y = min(sprite_idx.y, frame_count - 1)
 		} else {
-			sprite_idx.y = 5
+			sprite_idx.y = frame_count - 2
 		}
 		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
-			sprite_idx.y += 7
+			sprite_idx.y += frame_count
 		}
 	case .Idle:
 		sprite_sheet = .Ride
 	case .Landing:
+		frame_count := f32(state.config.sprite.landing_frame_count)
 		sprite_sheet = .Land
-		x := skater.timer[.Airborne] * 0.4
-		sprite_idx.y = math.round(-6 * skater.timer[.Landing] / x + 6)
-		sprite_idx.y = min(sprite_idx.y, 5)
+		x := skater.timer[.Airborne] * state.config.landing.landing_duration_scale
+		sprite_idx.y = math.round(-frame_count * skater.timer[.Landing] / x + frame_count)
+		sprite_idx.y = min(sprite_idx.y, frame_count - 1)
 	}
 
-	sprite_pos := sprite_idx * 75
+	frame_size := state.config.sprite.frame_size
+	sprite_pos := sprite_idx * frame_size
 
-	target_pos := project(offset, state) - 75 / 2
+	target_pos := project(offset, state) - frame_size / 2
 	rl.DrawTexturePro(
 		state.sprite_sheets[sprite_sheet],
-		{sprite_pos.x, sprite_pos.y, 75, 75},
-		{target_pos.x, target_pos.y, 75, 75},
+		{sprite_pos.x, sprite_pos.y, frame_size, frame_size},
+		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},
 		0,
 		rl.WHITE,

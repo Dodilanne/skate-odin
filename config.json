@@ -1,8 +1,8 @@
 {
   "movement": {
     "push_impulse": 1.0,
-    "ground_steer_rate": 0.2,
-    "ground_steer_min_speed": 2.0,
+    "riding_steer_rate": 0.2,
+    "stopped_steer_speed": 2.0,
     "airborne_steer_speed": 6.0,
     "max_speed": 8.0
   },
@@ -37,8 +37,6 @@
     "landing_frame_count": 6
   },
   "ui": {
-    "font_size": 20,
-    "trick_label_offset_y": 100,
-    "state_label_offset_y": 100
+    "font_size": 20
   }
 }

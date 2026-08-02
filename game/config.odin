@@ -4,11 +4,11 @@ import "core:encoding/json"
 import "core:os"
 
 Movement_Config :: struct {
-	push_impulse:           f32,
-	ground_steer_rate:      f32,
-	ground_steer_min_speed: f32,
-	airborne_steer_speed:   f32,
-	max_speed:              f32,
+	push_impulse:         f32,
+	riding_steer_rate:    f32,
+	stopped_steer_speed:  f32,
+	airborne_steer_speed: f32,
+	max_speed:            f32,
 }
 
 Physics_Config :: struct {
@@ -30,7 +30,7 @@ Trick_Config :: struct {
 
 Landing_Config :: struct {
 	facing_alignment_min_dot: f32,
-	board_angle_snap_deg:     f32,
+	board_angle_snap_deg:     int,
 	landing_duration_scale:   f32,
 	death_plane_z:            f32,
 }
@@ -47,9 +47,7 @@ Sprite_Config :: struct {
 }
 
 UI_Config :: struct {
-	font_size:            i32,
-	trick_label_offset_y: i32,
-	state_label_offset_y: i32,
+	font_size: i32,
 }
 
 Config :: struct {
@@ -64,11 +62,11 @@ Config :: struct {
 
 init_config_with_defaults :: proc(config: ^Config) {
 	config.movement = {
-		push_impulse           = 1,
-		ground_steer_rate      = 0.2,
-		ground_steer_min_speed = 2,
-		airborne_steer_speed   = 6,
-		max_speed              = 8,
+		push_impulse         = 1,
+		riding_steer_rate    = 0.2,
+		stopped_steer_speed  = 2,
+		airborne_steer_speed = 6,
+		max_speed            = 8,
 	}
 	config.physics = {
 		gravity_rising          = 10,
@@ -101,9 +99,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 		landing_frame_count  = 6,
 	}
 	config.ui = {
-		font_size            = 20,
-		trick_label_offset_y = 100,
-		state_label_offset_y = 100,
+		font_size = 20,
 	}
 }
 
