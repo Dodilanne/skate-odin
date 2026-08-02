@@ -12,6 +12,7 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 		steer(state, inputs, &skater, skater_idx, dt)
 		move(state, inputs, &skater, skater_idx, dt)
 		physics(state, inputs, &skater, skater_idx, dt)
+		animation_tick(&skater, animation_get_value(&skater, state))
 		touching_a_surface := collisions(state, &skater, skater_idx)
 		should_reset := transition(state, inputs, &skater, skater_idx, dt, touching_a_surface)
 		if should_reset {reset_skater(&skater)}

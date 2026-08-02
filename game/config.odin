@@ -1,7 +1,6 @@
 package game
 
 import "core:encoding/json"
-import "core:log"
 import "core:os"
 import "core:time"
 
@@ -42,10 +41,7 @@ Camera_Config :: struct {
 }
 
 Sprite_Config :: struct {
-	frame_size:           f32,
-	crouch_frame_count:   int,
-	airborne_frame_count: int,
-	landing_frame_count:  int,
+	frame_size: f32,
 }
 
 UI_Config :: struct {
@@ -96,10 +92,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 		cell_size = 32,
 	}
 	config.sprite = {
-		frame_size           = 75,
-		crouch_frame_count   = 3,
-		airborne_frame_count = 7,
-		landing_frame_count  = 6,
+		frame_size = 75,
 	}
 	config.ui = {
 		font_size = 20,

@@ -31,10 +31,7 @@
     "cell_size": 32.0
   },
   "sprite": {
-    "frame_size": 75.0,
-    "crouch_frame_count": 3,
-    "airborne_frame_count": 7,
-    "landing_frame_count": 6
+    "frame_size": 75.0
   },
   "ui": {
     "font_size": 20

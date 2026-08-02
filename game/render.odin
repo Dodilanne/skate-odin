@@ -97,48 +97,13 @@ skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
 
 
 draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	sprite_idx: rl.Vector2
-	sprite_idx.x = skater_rot_to_sprite_idx(skater)
-	sprite_sheet: Asset
-	switch skater.state {
-	case .Crouched:
-		frame_count := f32(state.config.sprite.crouch_frame_count)
-		sprite_sheet = .Duck
-		sprite_idx.y = math.round(skater.timer[.Crouched] * frame_count)
-		sprite_idx.y = min(sprite_idx.y, frame_count - 1)
-		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
-			sprite_idx.y += frame_count
-		}
-	case .Airborne:
-		frame_count := f32(state.config.sprite.airborne_frame_count)
-		sprite_sheet = .Air
-		height := skater.jump_height
-		if skater.jump_height > 0 {
-			mid := (frame_count - 1) / 2
-			sprite_idx.y = math.round(mid * -skater.vel.z / skater.jump_height + mid)
-			sprite_idx.y = min(sprite_idx.y, frame_count - 1)
-		} else {
-			sprite_idx.y = frame_count - 2
-		}
-		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
-			sprite_idx.y += frame_count
-		}
-	case .Idle:
-		sprite_sheet = .Ride
-	case .Landing:
-		frame_count := f32(state.config.sprite.landing_frame_count)
-		sprite_sheet = .Land
-		x := skater.timer[.Airborne] * state.config.landing.landing_duration_scale
-		sprite_idx.y = math.round(-frame_count * skater.timer[.Landing] / x + frame_count)
-		sprite_idx.y = min(sprite_idx.y, frame_count - 1)
-	}
-
 	frame_size := state.config.sprite.frame_size
-	sprite_pos := sprite_idx * frame_size
-
+	sprite_pos := skater.animation.progress.idx * frame_size
+	config := animation_configs[skater.animation.state]
 	target_pos := project(offset, state) - frame_size / 2
+
 	rl.DrawTexturePro(
-		state.assets[sprite_sheet],
+		state.assets[config.asset],
 		{sprite_pos.x, sprite_pos.y, frame_size, frame_size},
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},

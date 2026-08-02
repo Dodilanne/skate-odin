@@ -127,6 +127,7 @@ Skater :: struct {
 	trick_committed:  Trick,
 	trick_caught:     bool,
 	skate_angles:     rl.Vector4,
+	animation:        Animation,
 }
 
 Skater_State :: enum {
