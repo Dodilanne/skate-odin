@@ -56,7 +56,7 @@ render :: proc(state: ^State) {
 	rl.DrawText(
 		str,
 		(rl.GetScreenWidth() - measure) / 2,
-		(rl.GetScreenHeight() + font_size) / 2 + i32(state.config.sprite.frame_size),
+		(rl.GetScreenHeight() + font_size + i32(state.config.sprite.frame_size)) / 2,
 		font_size,
 		rl.WHITE,
 	)

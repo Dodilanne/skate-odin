@@ -14,17 +14,17 @@
     "friction_stop_threshold": 0.1
   },
   "tricks": {
-    "crouch_charge_rate": 1.79999995,
+    "crouch_charge_rate": 1.8,
     "min_jump_height": 3.0,
     "jump_height_scale": 6.0,
     "board_spin_speed": 12.0,
     "half_spin_divisor": 2.0,
-    "trick_commit_delay": 0.30000001
+    "trick_commit_delay": 0.3
   },
   "landing": {
-    "facing_alignment_min_dot": 0.85000002,
+    "facing_alignment_min_dot": 0.85,
     "board_angle_snap_deg": 20.0,
-    "landing_duration_scale": 0.40000001,
+    "landing_duration_scale": 0.4,
     "death_plane_z": -10.0
   },
   "camera": {
