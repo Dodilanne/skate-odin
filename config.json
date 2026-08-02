@@ -1,0 +1,44 @@
+{
+  "movement": {
+    "push_impulse": 1.0,
+    "ground_steer_rate": 0.2,
+    "ground_steer_min_speed": 2.0,
+    "airborne_steer_speed": 6.0,
+    "max_speed": 8.0
+  },
+  "physics": {
+    "gravity_rising": 10.0,
+    "gravity_falling": 20.0,
+    "friction": 0.5,
+    "braking_multiplier": 10.0,
+    "friction_stop_threshold": 0.1
+  },
+  "tricks": {
+    "crouch_charge_rate": 1.79999995,
+    "min_jump_height": 3.0,
+    "jump_height_scale": 6.0,
+    "board_spin_speed": 12.0,
+    "half_spin_divisor": 2.0,
+    "trick_commit_delay": 0.30000001
+  },
+  "landing": {
+    "facing_alignment_min_dot": 0.85000002,
+    "board_angle_snap_deg": 20.0,
+    "landing_duration_scale": 0.40000001,
+    "death_plane_z": -10.0
+  },
+  "camera": {
+    "cell_size": 32.0
+  },
+  "sprite": {
+    "frame_size": 75.0,
+    "crouch_frame_count": 3,
+    "airborne_frame_count": 7,
+    "landing_frame_count": 6
+  },
+  "ui": {
+    "font_size": 20,
+    "trick_label_offset_y": 100,
+    "state_label_offset_y": 100
+  }
+}

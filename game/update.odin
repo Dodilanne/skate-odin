@@ -154,11 +154,9 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 }
 
 physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
-	if skater.vel.z < 0 {
-		skater.vel -= rl.Vector3{0, 0, 20 * dt}
-	} else {
-		skater.vel -= rl.Vector3{0, 0, 10 * dt}
-	}
+	gravity := state.config.physics.gravity_falling
+	if skater.vel.z >= 0 {gravity = state.config.physics.gravity_rising}
+	skater.vel -= rl.Vector3{0, 0, gravity * dt}
 
 	if math.abs(linalg.length(skater.vel.xy)) > 0.1 {
 		friction_coeff: f32 = 0.5

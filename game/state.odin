@@ -70,6 +70,8 @@ init :: proc(state: ^State) {
 		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
 		state.sprite_sheets[sprite_sheet] = rl.LoadTexture(path)
 	}
+
+	load_config_from_file(&state.config)
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -160,6 +162,7 @@ Sprite_Sheet :: enum u8 {
 }
 
 State :: struct {
+	config:            Config,
 	target_skater_idx: int,
 	skaters:           [dynamic; MAX_SKATERS]Skater,
 	surfaces:          [dynamic; 20]Surface,
