@@ -1,5 +1,4 @@
 package game
-
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
@@ -22,25 +21,14 @@ render :: proc(state: ^State) {
 
 	for &surface in state.surfaces {
 		offset := surface.o - target.pos
-		draw_surface_wireframe(state, &surface, offset)
+		draw_surface(state, &surface, offset)
 	}
 
 	for &skater in state.skaters {
 		offset := skater.pos - target.pos
 
-		draw_skater_sprite(state, &skater, offset)
-
-		if skater.skate_angles.z != 0 {
-			ax := skater.skate_angles.z + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-			rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
-			rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
-		}
-
-		if skater.skate_angles.w != 0 {
-			ay := skater.skate_angles.w
-			ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
-			rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
-		}
+		draw_skater(state, &skater, offset)
+		draw_board(state, &skater, offset)
 	}
 
 	font_size := state.config.ui.font_size
@@ -96,14 +84,14 @@ skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
 }
 
 
-draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
+draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	frame_size := state.config.sprite.frame_size
 	sprite_pos := skater.animation.progress.idx * frame_size
 	config := animation_configs[skater.animation.state]
 	target_pos := project(offset, state) - frame_size / 2
 
 	rl.DrawTexturePro(
-		state.assets[config.asset],
+		state.skater_assets[config.asset],
 		{sprite_pos.x, sprite_pos.y, frame_size, frame_size},
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},
@@ -112,7 +100,21 @@ draw_skater_sprite :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	)
 }
 
-draw_surface_wireframe :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
+draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
+	if skater.skate_angles.z != 0 {
+		ax := skater.skate_angles.z + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+		rx := rl.Vector3RotateByAxisAngle({1, 0, 0}, {0, 0, 1}, ax)
+		rl.DrawLineEx(project(offset, state), project(rx + offset, state), 4, rl.BLUE)
+	}
+
+	if skater.skate_angles.w != 0 {
+		ay := skater.skate_angles.w
+		ry := rl.Vector3RotateByAxisAngle({0, 0, 1}, skater.look_dir, ay)
+		rl.DrawLineEx(project(offset, state), project(ry + offset, state), 4, rl.YELLOW)
+	}
+}
+
+draw_surface :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
 	if state.show_normals {
 		rl.DrawCircleV(project(offset, state), 4, rl.BLUE)
 		rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
@@ -130,5 +132,4 @@ draw_surface_wireframe :: proc(state: ^State, surface: ^Surface, offset: rl.Vect
 		end := start + surface.u * surface.w
 		rl.DrawLineEx(project(start, state), project(end, state), 1.1, rl.Fade(rl.LIGHTGRAY, 0.5))
 	}
-
 }

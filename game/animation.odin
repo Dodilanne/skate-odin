@@ -14,14 +14,15 @@ Animation_State :: enum u8 {
 animation_configs := [Animation_State]Animation_Config {
 	.Idle = {asset = .Ride, frame_count = 1},
 	.Crouched = {asset = .Duck, frame_count = 3},
-	.Falling = {asset = .Air, frame_count = 1},
-	.Jumping = {asset = .Air, frame_count = 7},
+	.Falling = {asset = .Air, frame_count = 1, initial_idx = {0, 14}},
+	.Jumping = {asset = .Air, frame_count = 7, initial_idx = {0, 14}},
 	.Landing = {asset = .Land, frame_count = 6},
 }
 
 Animation_Config :: struct {
-	asset:       Asset,
+	asset:       Skater_Asset,
 	frame_count: f32,
+	initial_idx: rl.Vector2,
 }
 
 Animation_Progress :: struct {
@@ -70,6 +71,8 @@ animation_tick :: proc(skater: ^Skater, value: f32) {
 	if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
 		animation.progress.idx.y += config.frame_count
 	}
+
+	animation.progress.idx += config.initial_idx
 }
 
 animation_get_value :: proc(skater: ^Skater, state: ^State) -> f32 {

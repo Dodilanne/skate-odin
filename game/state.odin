@@ -6,6 +6,8 @@ import "core:math/linalg"
 import rl "vendor:raylib"
 
 MAX_SKATERS :: 20
+MAX_SURFACES :: 20
+BOARD_ASSET_COUNT :: 32
 
 init :: proc(state: ^State) {
 	append(&state.skaters, Skater{})
@@ -66,12 +68,18 @@ init :: proc(state: ^State) {
 		surface.v = v
 	}
 
-	for sprite_sheet in Asset {
+	for sprite_sheet in Skater_Asset {
 		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
-		state.assets[sprite_sheet] = rl.LoadTexture(path)
+		state.skater_assets[sprite_sheet] = rl.LoadTexture(path)
+	}
+
+	for i in 0 ..< BOARD_ASSET_COUNT {
+		path := fmt.ctprintf("assets/data/board/board_Dir%v.png", i)
+		state.board_assets[i] = rl.LoadTexture(path)
 	}
 
 	load_config_from_file(&state.config)
+
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -152,7 +160,7 @@ Color_Mode :: enum {
 	Light,
 }
 
-Asset :: enum u8 {
+Skater_Asset :: enum u8 {
 	Ride,
 	Duck,
 	Air,
@@ -163,10 +171,11 @@ State :: struct {
 	config:            Config,
 	target_skater_idx: int,
 	skaters:           [dynamic; MAX_SKATERS]Skater,
-	surfaces:          [dynamic; 20]Surface,
+	surfaces:          [dynamic; MAX_SURFACES]Surface,
 	drawing_mode:      Drawing_Mode,
 	color_mode:        Color_Mode,
 	offset:            rl.Vector2,
 	show_normals:      bool,
-	assets:            [Asset]rl.Texture2D,
+	skater_assets:     [Skater_Asset]rl.Texture2D,
+	board_assets:      [BOARD_ASSET_COUNT]rl.Texture2D,
 }
