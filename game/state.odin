@@ -1,6 +1,5 @@
 package game
 
-import "core:c"
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
@@ -86,8 +85,7 @@ init :: proc(state: ^State) {
 		state.shaders[name] = rl.LoadShader(nil, fs_path)
 	}
 
-	load_config_from_file(&state.config)
-	state.shader_uniforms[.Customize] = rl.GetShaderLocation(state.shaders[.Customize], "palette")
+	load_config_from_file(state)
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -210,5 +208,4 @@ State :: struct {
 	skater_assets:     [Skater_Asset]rl.Texture2D,
 	board_assets:      [BOARD_ASSET_COUNT]rl.Texture2D,
 	shaders:           [Shader]rl.Shader,
-	shader_uniforms:   [Shader]c.int,
 }

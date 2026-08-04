@@ -6,6 +6,9 @@ import "core:math/linalg"
 import rl "vendor:raylib"
 
 render :: proc(state: ^State) {
+	rl.BeginShaderMode(state.shaders[.Customize])
+	defer rl.EndShaderMode()
+
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 	state.offset = screen / 2
 
@@ -54,23 +57,10 @@ render :: proc(state: ^State) {
 		)
 	}
 
-	{
-		rl.BeginShaderMode(state.shaders[.Customize])
-		defer rl.EndShaderMode()
-
-		rl.SetShaderValueV(
-			state.shaders[.Customize],
-			state.shader_uniforms[.Customize],
-			&state.config.data.customization.skater_colors,
-			.IVEC3,
-			c.int(6),
-		)
-
-		for &skater in state.skaters {
-			offset := skater.pos - target.pos
-			draw_board(state, &skater, offset)
-			draw_skater(state, &skater, offset)
-		}
+	for &skater in state.skaters {
+		offset := skater.pos - target.pos
+		draw_board(state, &skater, offset)
+		draw_skater(state, &skater, offset)
 	}
 }
 
