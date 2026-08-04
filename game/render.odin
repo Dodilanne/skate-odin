@@ -9,6 +9,14 @@ render :: proc(state: ^State) {
 	rl.BeginShaderMode(state.shaders[.Customize])
 	defer rl.EndShaderMode()
 
+	rl.SetShaderValueV(
+		state.shaders[.Customize],
+		rl.GetShaderLocation(state.shaders[.Customize], "palette"),
+		&state.config.data.customization.skater_colors,
+		.IVEC3,
+		c.int(6),
+	)
+
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 	state.offset = screen / 2
 

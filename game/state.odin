@@ -85,7 +85,7 @@ init :: proc(state: ^State) {
 		state.shaders[name] = rl.LoadShader(nil, fs_path)
 	}
 
-	load_config_from_file(state)
+	load_config_from_file(&state.config)
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {

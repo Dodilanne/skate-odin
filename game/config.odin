@@ -1,11 +1,9 @@
 package game
 
-import "core:c"
 import "core:encoding/json"
 import "core:fmt"
 import "core:os"
 import "core:time"
-import rl "vendor:raylib"
 
 Movement_Config :: struct {
 	push_impulse:         f32,
@@ -125,27 +123,19 @@ Load_Config_Error :: union {
 }
 
 load_config_from_file :: proc(
-	state: ^State,
+	config: ^Config,
 	path: string = DEFAULT_CONFIG_PATH,
 ) -> Load_Config_Error {
-	defer rl.SetShaderValueV(
-		state.shaders[.Customize],
-		rl.GetShaderLocation(state.shaders[.Customize], "palette"),
-		&state.config.data.customization.skater_colors,
-		.IVEC3,
-		c.int(6),
-	)
+	init_config_with_defaults(config)
 
-	init_config_with_defaults(&state.config)
-
-	state.config.last_updated_at = time.now()
+	config.last_updated_at = time.now()
 
 	if os.exists(path) {
 		data := os.read_entire_file(path, context.temp_allocator) or_return
-		return json.unmarshal(data, &state.config.data)
+		return json.unmarshal(data, &config.data)
 	}
 
-	data, err := json.marshal(state.config.data)
+	data, err := json.marshal(config.data)
 	if err != nil {
 		fmt.eprintln(err)
 		return err
@@ -154,14 +144,14 @@ load_config_from_file :: proc(
 }
 
 check_and_update :: proc(
-	state: ^State,
+	config: ^Config,
 	path: string = DEFAULT_CONFIG_PATH,
 ) -> (
 	err: Load_Config_Error,
 ) {
 	info := os.stat(path, context.temp_allocator) or_return
-	if time.diff(info.modification_time, state.config.last_updated_at) < 0 {
-		return load_config_from_file(state, path)
+	if time.diff(info.modification_time, config.last_updated_at) < 0 {
+		return load_config_from_file(config, path)
 	}
 	return
 }
