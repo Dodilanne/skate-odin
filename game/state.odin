@@ -14,6 +14,7 @@ init :: proc(state: ^State) {
 	for i in 0 ..< MAX_SKATERS {
 		append(&state.skaters, Skater{})
 		reset_skater(&state.skaters[i])
+		state.skaters[i].pos = rl.Vector3{f32(i % 25), f32(i % 4), 5} + rl.Vector3(SKATER_RADIUS)
 	}
 
 	state.show_normals = false
