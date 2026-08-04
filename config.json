@@ -31,10 +31,20 @@
     "cell_size": 32.0
   },
   "sprite": {
-    "frame_size": 75.0
+    "frame_size": 75.0,
     "board_y_offset": 27.0
   },
   "ui": {
     "font_size": 20
+  },
+  "customization": {
+    "skater_colors": [
+      [225, 230, 227],
+      [107, 164, 230],
+      [88, 56, 6],
+      [225, 169, 137],
+      [37, 37, 37],
+      [1,1,1],
+    ]
   }
 }

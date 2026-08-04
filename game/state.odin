@@ -1,8 +1,10 @@
 package game
 
+import "core:c"
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
+import "core:strings"
 import rl "vendor:raylib"
 
 MAX_SKATERS :: 20
@@ -78,8 +80,14 @@ init :: proc(state: ^State) {
 		state.board_assets[i] = rl.LoadTexture(path)
 	}
 
-	load_config_from_file(&state.config)
+	for name in Shader {
+		lower := strings.to_lower(string(fmt.tprintf("%v", name)), context.temp_allocator)
+		fs_path := fmt.ctprintf("assets/shaders/%v.fs", lower)
+		state.shaders[name] = rl.LoadShader(nil, fs_path)
+	}
 
+	load_config_from_file(&state.config)
+	state.shader_uniforms[.Customize] = rl.GetShaderLocation(state.shaders[.Customize], "palette")
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -185,6 +193,11 @@ Skater_Asset :: enum u8 {
 	Land,
 }
 
+Shader :: enum u8 {
+	Customize,
+}
+
+
 State :: struct {
 	config:            Config,
 	target_skater_idx: int,
@@ -196,4 +209,6 @@ State :: struct {
 	show_normals:      bool,
 	skater_assets:     [Skater_Asset]rl.Texture2D,
 	board_assets:      [BOARD_ASSET_COUNT]rl.Texture2D,
+	shaders:           [Shader]rl.Shader,
+	shader_uniforms:   [Shader]c.int,
 }

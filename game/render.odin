@@ -1,4 +1,5 @@
 package game
+import "core:c"
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
@@ -24,14 +25,7 @@ render :: proc(state: ^State) {
 		draw_surface(state, &surface, offset)
 	}
 
-	for &skater in state.skaters {
-		offset := skater.pos - target.pos
-
-		draw_board(state, &skater, offset)
-		draw_skater(state, &skater, offset)
-	}
-
-	font_size := state.config.ui.font_size
+	font_size := state.config.data.ui.font_size
 	rl.DrawText(
 		fmt.ctprintf("%v", target.timer),
 		rl.GetScreenWidth() / 2 + 30,
@@ -44,7 +38,7 @@ render :: proc(state: ^State) {
 	rl.DrawText(
 		str,
 		(rl.GetScreenWidth() - measure) / 2,
-		(rl.GetScreenHeight() + font_size + i32(state.config.sprite.frame_size)) / 2,
+		(rl.GetScreenHeight() + font_size + i32(state.config.data.sprite.frame_size)) / 2,
 		font_size,
 		rl.WHITE,
 	)
@@ -54,15 +48,34 @@ render :: proc(state: ^State) {
 		rl.DrawText(
 			str,
 			(rl.GetScreenWidth() - measure) / 2,
-			(rl.GetScreenHeight() - font_size) / 2 - i32(state.config.sprite.frame_size),
+			(rl.GetScreenHeight() - font_size) / 2 - i32(state.config.data.sprite.frame_size),
 			font_size,
 			rl.YELLOW,
 		)
 	}
+
+	{
+		rl.BeginShaderMode(state.shaders[.Customize])
+		defer rl.EndShaderMode()
+
+		rl.SetShaderValueV(
+			state.shaders[.Customize],
+			state.shader_uniforms[.Customize],
+			&state.config.data.customization.skater_colors,
+			.IVEC3,
+			c.int(6),
+		)
+
+		for &skater in state.skaters {
+			offset := skater.pos - target.pos
+			draw_board(state, &skater, offset)
+			draw_skater(state, &skater, offset)
+		}
+	}
 }
 
 project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
-	cell_size := state.config.camera.cell_size
+	cell_size := state.config.data.camera.cell_size
 	if state.drawing_mode == .Top_Down {
 		return point.xy * cell_size + state.offset
 	}
@@ -78,7 +91,7 @@ PRO_MATRIX :: matrix[2, 3]f32{
 }
 
 draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	frame_size := state.config.sprite.frame_size
+	frame_size := state.config.data.sprite.frame_size
 	sprite_pos := skater.animation.progress.idx * frame_size
 	config := animation_configs[skater.animation.state]
 	target_pos := project(offset, state) - frame_size / 2
@@ -109,7 +122,7 @@ draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 
 	frame_size: f32 = 50
 	target_pos := project(offset, state) - frame_size / 2
-	target_pos.y += state.config.sprite.board_y_offset
+	target_pos.y += state.config.data.sprite.board_y_offset
 
 	sprite_idx: rl.Vector2
 	sprite_idx.x = math.round(orientation.y * 21 / 360)

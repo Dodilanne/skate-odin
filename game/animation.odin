@@ -90,7 +90,7 @@ animation_get_value :: proc(skater: ^Skater, state: ^State) -> f32 {
 	case .Jumping, .Tricking:
 		return 1 - ((skater.vel.z + skater.jump_height) / (2 * skater.jump_height))
 	case .Landing:
-		x := skater.timer[.Airborne] * state.config.landing.landing_duration_scale
+		x := skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
 		return -skater.timer[.Landing] / x + 1
 	}
 	return 0

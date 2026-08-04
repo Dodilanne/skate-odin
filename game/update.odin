@@ -25,7 +25,7 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: i
 	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
 
 	if skater.state == .Airborne {
-		angle_change := steer_dir * dt * state.config.movement.airborne_steer_speed
+		angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
 		skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 		if skater.angle < 0 {skater.angle += 2 * math.PI}
 		skater.look_dir = rl.Vector3RotateByAxisAngle(
@@ -35,8 +35,8 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: i
 		)
 		skater.look_dir = linalg.normalize(skater.look_dir)
 	} else if steer_dir != 0 {
-		speed := linalg.length(skater.vel) * state.config.movement.riding_steer_rate
-		if speed == 0 {speed = state.config.movement.stopped_steer_speed}
+		speed := linalg.length(skater.vel) * state.config.data.movement.riding_steer_rate
+		if speed == 0 {speed = state.config.data.movement.stopped_steer_speed}
 
 		angle_change := steer_dir * dt * speed
 
@@ -57,7 +57,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 	switch skater.state {
 	case .Idle:
 		if check(state, inputs, skater_idx, .Push, .Pressed) {
-			skater.vel += skater.move_dir * state.config.movement.push_impulse
+			skater.vel += skater.move_dir * state.config.data.movement.push_impulse
 			break
 		}
 		for action in Input_Action.Trick_WN ..= Input_Action.Trick_SW {
@@ -78,13 +78,13 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 
 		if skater.trick_buffer_len >= 3 ||
 		   check(state, inputs, skater_idx, skater.trick_buffer[0], .Released) {
-			height := skater.timer[.Crouched] * state.config.tricks.jump_height_scale
-			height = math.max(height, state.config.tricks.min_jump_height)
+			height := skater.timer[.Crouched] * state.config.data.tricks.jump_height_scale
+			height = math.max(height, state.config.data.tricks.min_jump_height)
 			skater.vel.z += height
 			skater.jump_height = skater.vel.z
 		} else {
 			skater.timer[.Crouched] = math.min(
-				skater.timer[.Crouched] + dt * state.config.tricks.crouch_charge_rate,
+				skater.timer[.Crouched] + dt * state.config.data.tricks.crouch_charge_rate,
 				1,
 			)
 		}
@@ -110,8 +110,8 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 			break
 		}
 
-		board_speed := state.config.tricks.board_spin_speed
-		half_spin_divisor := state.config.tricks.half_spin_divisor
+		board_speed := state.config.data.tricks.board_spin_speed
+		half_spin_divisor := state.config.data.tricks.half_spin_divisor
 		if skater.trick_buffer_len >= 2 {
 			switch skater.trick_buffer {
 			case {.Trick_S, .Trick_W, .None}:
@@ -196,7 +196,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 		}
 
 		if skater.trick_committed == .None &&
-		   skater.timer[.Airborne] > state.config.tricks.trick_commit_delay {
+		   skater.timer[.Airborne] > state.config.data.tricks.trick_commit_delay {
 			#partial switch skater.trick_buffer[0] {
 			case .Trick_WN, .Trick_N, .Trick_NE:
 				skater.trick_committed = .Nollie
@@ -213,21 +213,21 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 }
 
 physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
-	gravity := state.config.physics.gravity_falling
-	if skater.vel.z >= 0 {gravity = state.config.physics.gravity_rising}
+	gravity := state.config.data.physics.gravity_falling
+	if skater.vel.z >= 0 {gravity = state.config.data.physics.gravity_rising}
 	skater.vel -= rl.Vector3{0, 0, gravity * dt}
 
-	if math.abs(linalg.length(skater.vel.xy)) > state.config.physics.friction_stop_threshold {
-		friction_coeff := state.config.physics.friction
+	if math.abs(linalg.length(skater.vel.xy)) > state.config.data.physics.friction_stop_threshold {
+		friction_coeff := state.config.data.physics.friction
 		if check(state, inputs, skater_idx, .Break, .Down) {
-			friction_coeff *= state.config.physics.braking_multiplier
+			friction_coeff *= state.config.data.physics.braking_multiplier
 		}
 		skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
 	} else {
 		skater.vel.xy = {0, 0}
 	}
 
-	skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, state.config.movement.max_speed)
+	skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, state.config.data.movement.max_speed)
 
 	skater.pos += skater.vel * dt
 
@@ -285,7 +285,7 @@ transition :: proc(
 		{ 	// player position
 			diff := linalg.dot(skater.move_dir, skater.look_dir)
 			abs := math.abs(diff)
-			if abs < state.config.landing.facing_alignment_min_dot {
+			if abs < state.config.data.landing.facing_alignment_min_dot {
 				return true
 			}
 			skater.look_dir = skater.move_dir * math.sign(diff)
@@ -293,7 +293,7 @@ transition :: proc(
 
 		{ 	// board position
 			deg := linalg.floor(linalg.abs(rl.RAD2DEG * skater.skate_angles.zw))
-			delta := state.config.landing.board_angle_snap_deg
+			delta := state.config.data.landing.board_angle_snap_deg
 			switch int(deg.x) % 360 {
 			case 360 - delta ..= 360, 0 ..= delta, 180 - delta ..= 180 + delta:
 				skater.skate_angles.z = 0
@@ -310,7 +310,7 @@ transition :: proc(
 	}
 
 	return(
-		skater.pos.z < state.config.landing.death_plane_z ||
+		skater.pos.z < state.config.data.landing.death_plane_z ||
 		check(state, inputs, skater_idx, .Reset, .Pressed) \
 	)
 }
@@ -373,6 +373,6 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 		skater.trick_caught = false
 	case .Landing:
 		skater.timer[.Landing] =
-			skater.timer[.Airborne] * state.config.landing.landing_duration_scale
+			skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
 	}
 }
