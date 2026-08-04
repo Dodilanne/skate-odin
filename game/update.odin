@@ -7,6 +7,13 @@ import rl "vendor:raylib"
 SKATER_RADIUS: f32 : 0.5
 
 update :: proc(state: ^State, inputs: Input_State, dt: f32) {
+	for c in 0 ..< len(state.config.data.customization.skater_colors) {
+		for i in 0 ..< 3 {
+			state.config.data.customization.skater_colors[c][i] =
+				(state.config.data.customization.skater_colors[c][i] + 2) % 255
+		}
+	}
+
 	when ODIN_DEBUG {read_debug_inputs(state, inputs)}
 	for &skater, skater_idx in state.skaters {
 		steer(state, inputs, &skater, skater_idx, dt)
