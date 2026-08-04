@@ -6,14 +6,15 @@ import "core:math/linalg"
 import "core:strings"
 import rl "vendor:raylib"
 
-MAX_SKATERS :: 20
-MAX_SURFACES :: 20
+MAX_SKATERS :: 100
+MAX_SURFACES :: 100
 BOARD_ASSET_COUNT :: 32
 
 init :: proc(state: ^State) {
-	append(&state.skaters, Skater{})
-	reset_skater(&state.skaters[0])
-	state.skaters[0].color = rl.ORANGE
+	for i in 0 ..< MAX_SKATERS {
+		append(&state.skaters, Skater{})
+		reset_skater(&state.skaters[i])
+	}
 
 	state.show_normals = false
 	state.color_mode = .Dark
