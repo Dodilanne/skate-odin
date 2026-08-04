@@ -1,5 +1,6 @@
 package game
 
+import "core:c"
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
@@ -9,6 +10,7 @@ import rl "vendor:raylib"
 MAX_SKATERS :: 100
 MAX_SURFACES :: 100
 BOARD_ASSET_COUNT :: 32
+COLORS_PER_PALETTE :: 6
 
 init :: proc(state: ^State) {
 	for i in 0 ..< MAX_SKATERS {
@@ -87,7 +89,32 @@ init :: proc(state: ^State) {
 		state.shaders[name] = rl.LoadShader(nil, fs_path)
 	}
 
+	state.palette.loc = rl.GetShaderLocation(state.shaders[.Customize], "palettes")
+	state.palette.img = rl.GenImageColor(MAX_SKATERS * COLORS_PER_PALETTE, 1, rl.BLANK)
+	state.palette.tex = rl.LoadTextureFromImage(state.palette.img)
+
 	load_config_from_file(&state.config)
+	update_state_after_config_update(state)
+}
+
+vec_to_color :: proc(vec: rl.Vector3) -> rl.Color {
+	return rl.Color{u8(vec.x), u8(vec.y), u8(vec.z), 1}
+}
+
+update_state_after_config_update :: proc(state: ^State) {
+	pixels := [(1 + MAX_SKATERS) * COLORS_PER_PALETTE]rl.Color{}
+	// Reference palette is storerd in the first slot
+	src := src_palette()
+	for j in 0 ..< COLORS_PER_PALETTE {
+		pixels[j] = vec_to_color(src[j])
+	}
+	// Following slots are for skaters
+	for palette, i in state.config.data.customization.palettes {
+		for j in 0 ..< COLORS_PER_PALETTE {
+			pixels[(i + 1) * COLORS_PER_PALETTE + j] = vec_to_color(palette[j])
+		}
+	}
+	rl.UpdateTexture(state.palette.tex, &pixels)
 }
 
 largest_abs_component :: proc(v: rl.Vector3) -> rl.Vector3 {
@@ -197,6 +224,11 @@ Shader :: enum u8 {
 	Customize,
 }
 
+Palette :: struct {
+	loc: c.int,
+	img: rl.Image,
+	tex: rl.Texture2D,
+}
 
 State :: struct {
 	config:            Config,
@@ -210,4 +242,5 @@ State :: struct {
 	skater_assets:     [Skater_Asset]rl.Texture2D,
 	board_assets:      [BOARD_ASSET_COUNT]rl.Texture2D,
 	shaders:           [Shader]rl.Shader,
+	palette:           Palette,
 }

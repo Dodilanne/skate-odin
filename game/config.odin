@@ -51,7 +51,7 @@ UI_Config :: struct {
 }
 
 Customization_Config :: struct {
-	skater_colors: [6][3]i32,
+	palettes: [dynamic; MAX_SKATERS][COLORS_PER_PALETTE][3]f32,
 }
 
 Config_Data :: struct {
@@ -103,20 +103,24 @@ init_config_with_defaults :: proc(config: ^Config) {
 		camera = {cell_size = 32},
 		sprite = {frame_size = 75, board_y_offset = 27},
 		ui = {font_size = 20},
-		customization = {
-			skater_colors = [6][3]i32 {
-				{230, 41, 55},
-				{0, 228, 48},
-				{0, 121, 241},
-				{253, 249, 0},
-				{255, 161, 0},
-				{200, 122, 255},
-			},
-		},
+		customization = {palettes = {src_palette()}},
+	}
+
+}
+
+// Palette of the source sprite sheets
+src_palette :: proc() -> [COLORS_PER_PALETTE][3]f32 {
+	return {
+		{225, 230, 227},
+		{107, 164, 230},
+		{88, 56, 6},
+		{225, 169, 137},
+		{37, 37, 37},
+		{1, 1, 1},
 	}
 }
 
-Load_Config_Error :: union {
+Load_Config_Error :: union #shared_nil {
 	os.Error,
 	json.Marshal_Error,
 	json.Unmarshal_Error,
@@ -147,11 +151,15 @@ check_and_update :: proc(
 	config: ^Config,
 	path: string = DEFAULT_CONFIG_PATH,
 ) -> (
+	reloaded: bool,
 	err: Load_Config_Error,
 ) {
 	info := os.stat(path, context.temp_allocator) or_return
 	if time.diff(info.modification_time, config.last_updated_at) < 0 {
-		return load_config_from_file(config, path)
+		if err := load_config_from_file(config, path); err != nil {
+			return false, err
+		}
+		return true, nil
 	}
 	return
 }

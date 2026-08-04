@@ -14,17 +14,17 @@
     "friction_stop_threshold": 0.1
   },
   "tricks": {
-    "crouch_charge_rate": 1.8,
+    "crouch_charge_rate": 1.79999995,
     "min_jump_height": 3.0,
     "jump_height_scale": 6.0,
     "board_spin_speed": 12.0,
     "half_spin_divisor": 2.0,
-    "trick_commit_delay": 0.3
+    "trick_commit_delay": 0.30000001
   },
   "landing": {
-    "facing_alignment_min_dot": 0.85,
-    "board_angle_snap_deg": 40.0,
-    "landing_duration_scale": 0.4,
+    "facing_alignment_min_dot": 0.85000002,
+    "board_angle_snap_deg": 40,
+    "landing_duration_scale": 0.40000001,
     "death_plane_z": -10.0
   },
   "camera": {
@@ -38,13 +38,23 @@
     "font_size": 20
   },
   "customization": {
-    "skater_colors": [
-      [225, 230, 227],
-      [107, 164, 230],
-      [88, 56, 6],
-      [225, 169, 137],
-      [37, 37, 37],
-      [1,1,1],
+    "palettes": [
+      [
+        [225, 230, 100],
+        [0,0,0],
+        [88, 56, 6],
+        [225, 169, 137],
+        [255,0,0],
+        [1, 1, 1],
+      ],
+      [
+        [ 10, 0, 255 ],
+        [ 107, 10, 230 ],
+        [ 255, 0, 0 ],
+        [ 100, 255, 137 ],
+        [ 37, 37, 37 ],
+        [ 1, 1, 1 ]
+      ]
     ]
   }
 }

@@ -69,7 +69,11 @@ main :: proc() {
 			time_since_last_config_reload += frame_time
 			if time_since_last_config_reload >= 1 {
 				time_since_last_config_reload = 0
-				if err := game.check_and_update(&game_state.config); err != nil {
+				if reloaded, err := game.check_and_update(&game_state.config);
+				   reloaded && err == nil {
+					log.info("Config reloaded")
+					game.update_state_after_config_update(&game_state)
+				} else if err != nil {
 					log.errorf("Failed to reload config: %v", err)
 				}
 			}

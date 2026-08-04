@@ -4,31 +4,35 @@ in vec2 fragTexCoord;
 in vec4 fragColor;
 
 uniform sampler2D texture0;
-uniform ivec3 palette[6];
+uniform sampler2D palettes;
 
 out vec4 finalColor;
 
 void main() {
-    vec4 texelColor = texture(texture0, fragTexCoord)*fragColor;
-    if (texelColor.a == 0.0) {
-        finalColor = vec4(0.0);
+    vec4 texel = texture(texture0, fragTexCoord);
+
+    if (fragColor.a != 0) {
+        finalColor = texel*fragColor;
         return;
     }
 
-    vec3 color = texelColor.rgb*255.0;
-    if (color.rgb == vec3(225.0, 230.0, 227.0)) { // shirt
-        finalColor = vec4(palette[0]/255.0, 1.0);
-    } else if (color.rgb == vec3(107.0, 164.0, 230.0)) { // pants
-        finalColor = vec4(palette[1]/255.0, 1.0);
-    } else if (color.rgb == vec3(88.0, 56.0, 6.0)) { // hair
-        finalColor = vec4(palette[2]/255.0, 1.0);
-    } else if (color.rgb == vec3(225.0, 169.0, 137.0)) { // skin
-        finalColor = vec4(palette[3]/255.0, 1.0);
-    } else if (color.rgb == vec3(37.0, 37.0, 37.0)) { // shoes
-        finalColor = vec4(palette[4]/255.0, 1.0);
-    } else if (color.rgb == vec3(1.0, 1.0, 1.0)) { // sole
-        finalColor = vec4(palette[5]/255.0, 1.0);
-    } else {
-        finalColor = texelColor;
+    int skaterId = int(fragColor.r * 255.0 + 0.5);
+
+    vec4 first = texelFetch(palettes, ivec2(skaterId*6, 0), 0);
+    if (first.a == 0.0) {
+        finalColor = texel;
+        return;
     }
+
+    for (int i = 0; i < 5; i++) {
+        vec3 orig = texelFetch(palettes, ivec2(i, 0), 0).rgb;
+        if (texel.rgb == orig) {
+            vec3 color = texelFetch(palettes, ivec2((skaterId * 6) + i, 0), 0).rgb;
+            finalColor = vec4(color, 1.0);
+            return;
+        }
+    }
+
+    finalColor = texel;
+    return;
 }

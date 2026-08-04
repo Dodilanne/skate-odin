@@ -9,13 +9,7 @@ render :: proc(state: ^State) {
 	rl.BeginShaderMode(state.shaders[.Customize])
 	defer rl.EndShaderMode()
 
-	rl.SetShaderValueV(
-		state.shaders[.Customize],
-		rl.GetShaderLocation(state.shaders[.Customize], "palette"),
-		&state.config.data.customization.skater_colors,
-		.IVEC3,
-		c.int(6),
-	)
+	rl.SetShaderValueTexture(state.shaders[.Customize], state.palette.loc, state.palette.tex)
 
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 	state.offset = screen / 2
@@ -49,10 +43,10 @@ render :: proc(state: ^State) {
 		)
 	}
 
-	for &skater in state.skaters {
+	for &skater, skater_idx in state.skaters {
 		offset := skater.pos - target.pos
 		draw_board(state, &skater, offset)
-		draw_skater(state, &skater, offset)
+		draw_skater(state, &skater, skater_idx, offset)
 	}
 }
 
@@ -72,7 +66,7 @@ PRO_MATRIX :: matrix[2, 3]f32{
 	0.5, 0.5, -1,
 }
 
-draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
+draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.Vector3) {
 	frame_size := state.config.data.sprite.frame_size
 	sprite_pos := skater.animation.progress.idx * frame_size
 	config := animation_configs[skater.animation.state]
@@ -84,7 +78,7 @@ draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},
 		0,
-		rl.WHITE,
+		rl.Color{u8(skater_idx+1), 0, 0, 0},
 	)
 }
 
