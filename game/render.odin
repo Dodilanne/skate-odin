@@ -37,22 +37,6 @@ render :: proc(state: ^State) {
 	}
 
 	font_size := state.config.data.ui.font_size
-	rl.DrawText(
-		fmt.ctprintf("%v", target.timer),
-		rl.GetScreenWidth() / 2 + 30,
-		(rl.GetScreenHeight() - font_size) / 2,
-		font_size,
-		rl.WHITE,
-	)
-	str := fmt.ctprintf("%v", target.state)
-	measure := rl.MeasureText(str, font_size)
-	rl.DrawText(
-		str,
-		(rl.GetScreenWidth() - measure) / 2,
-		(rl.GetScreenHeight() + font_size + i32(state.config.data.sprite.frame_size)) / 2,
-		font_size,
-		rl.WHITE,
-	)
 	if target.trick_committed != .None {
 		str := fmt.ctprintf("%s", target.trick_committed)
 		measure := rl.MeasureText(str, font_size)
@@ -61,7 +45,7 @@ render :: proc(state: ^State) {
 			(rl.GetScreenWidth() - measure) / 2,
 			(rl.GetScreenHeight() - font_size) / 2 - i32(state.config.data.sprite.frame_size),
 			font_size,
-			rl.YELLOW,
+			rl.ORANGE,
 		)
 	}
 
