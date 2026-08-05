@@ -133,7 +133,7 @@ Object :: struct {
 }
 
 vec_to_color :: proc(vec: rl.Vector3) -> rl.Color {
-	return rl.Color{u8(vec.x), u8(vec.y), u8(vec.z), 1}
+	return rl.Color{u8(vec.x), u8(vec.y), u8(vec.z), 255}
 }
 
 update_state_after_config_update :: proc(state: ^State) {

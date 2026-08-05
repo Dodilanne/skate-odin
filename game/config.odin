@@ -54,6 +54,13 @@ Customization_Config :: struct {
 	palettes: [dynamic; MAX_SKATERS][COLORS_PER_PALETTE][3]f32,
 }
 
+Objects_Config :: struct {
+	colors: [Object_Material]struct {
+		bg:      [3]f32,
+		outline: [3]f32,
+	},
+}
+
 Config_Data :: struct {
 	movement:      Movement_Config,
 	physics:       Physics_Config,
@@ -62,6 +69,7 @@ Config_Data :: struct {
 	camera:        Camera_Config,
 	sprite:        Sprite_Config,
 	ui:            UI_Config,
+	objects:       Objects_Config,
 	customization: Customization_Config,
 }
 
@@ -103,6 +111,13 @@ init_config_with_defaults :: proc(config: ^Config) {
 		camera = {cell_size = 32},
 		sprite = {frame_size = 75, board_y_offset = 27},
 		ui = {font_size = 20},
+		objects = {
+			colors = {
+				.Concrete = {bg = {124, 122, 115}, outline = {84, 82, 76}},
+				.Wood = {bg = {150, 111, 74}, outline = {107, 79, 53}},
+				.Brick = {bg = {178, 89, 68}, outline = {130, 63, 48}},
+			},
+		},
 		customization = {palettes = {src_palette()}},
 	}
 

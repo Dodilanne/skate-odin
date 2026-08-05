@@ -57,56 +57,38 @@ render :: proc(state: ^State) {
 }
 
 draw_object :: proc(state: ^State, object: ^Object, offset: rl.Vector3) {
+	colors := state.config.data.objects.colors[object.mat]
+	bg, outline := vec_to_color(colors.bg), vec_to_color(colors.outline)
+
 	switch object.kind {
 	case .Box:
-		bg, outline: rl.Color
-		switch object.mat {
-		case .Concrete:
-			bg = {124, 122, 115, 255}
-			outline = {84, 82, 76, 255}
-		case .Wood:
-			bg = {150, 111, 74, 255}
-			outline = {107, 79, 53, 255}
-		case .Brick:
-			bg = {178, 89, 68, 255}
-			outline = {130, 63, 48, 255}
+		points: [8]rl.Vector3
+		slice.fill(points[:], offset)
+		points[1].yy += object.size.yy
+		points[2].xy += object.size.xy
+		points[3].xx += object.size.xx
+		points[4].zzz += object.size.zzz
+		points[5].yyz += object.size.yyz
+		points[6].xyz += object.size.xyz
+		points[7].xxz += object.size.xxz
+
+		proj: [len(points)]rl.Vector2
+		for p, i in points {proj[i] = project(p, state)}
+
+		shape := [?]rl.Vector2{proj[4], proj[5], proj[1], proj[2], proj[3], proj[7]}
+		rl.DrawTriangleFan(&shape[0], len(shape), bg)
+
+		for i in 1 ..< 3 {
+			rl.DrawLineEx(proj[i], proj[(i + 1)], 2, outline)
+		}
+		for i in 1 ..< 4 {
+			rl.DrawLineEx(proj[i], proj[(i + 4)], 2, outline)
+		}
+		for i in 0 ..< 4 {
+			idx := 4 + [2]int{i, (i + 1) % 4}
+			rl.DrawLineEx(proj[idx[0]], proj[idx[1]], 2, outline)
 		}
 
-		points: [4]rl.Vector3
-		projected: [4]rl.Vector2
-		{ 	// top face
-			slice.fill(points[:], offset)
-			points[0].z += object.size.z
-			points[1].yz += object.size.yz
-			points[2] += object.size
-			points[3].xz += object.size.xz
-			for p, i in points {projected[i] = project(p, state)}
-			// for p in projected {rl.DrawCircleV(p, 2, rl.RED)}
-			rl.DrawTriangleFan(&projected[0], 4, bg)
-			for i in 0 ..< 4 {rl.DrawLineEx(projected[i], projected[(i + 1) % 4], 2, outline)}
-		}
-		{ 	// side left
-			slice.fill(points[:], offset)
-			points[0].yz += object.size.yz
-			points[1].y += object.size.y
-			points[2].xy += object.size.xy
-			points[3] += object.size
-			for p, i in points {projected[i] = project(p, state)}
-			// for p in projected {rl.DrawCircleV(p, 2, rl.PINK)}
-			rl.DrawTriangleFan(&projected[0], 4, bg)
-			for i in 0 ..< 4 {rl.DrawLineEx(projected[i], projected[(i + 1) % 4], 2, outline)}
-		}
-		{ 	// side right
-			slice.fill(points[:], offset)
-			points[0] += object.size
-			points[1].xy += object.size.xy
-			points[2].x += object.size.x
-			points[3].xz += object.size.xz
-			for p, i in points {projected[i] = project(p, state)}
-			// for p in projected {rl.DrawCircleV(p, 2, rl.GREEN)}
-			rl.DrawTriangleFan(&projected[0], 4, bg)
-			for i in 0 ..< 4 {rl.DrawLineEx(projected[i], projected[(i + 1) % 4], 2, outline)}
-		}
 	case .Ramp:
 		panic("not implemented")
 	}
