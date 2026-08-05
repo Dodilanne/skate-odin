@@ -62,28 +62,28 @@ draw_object :: proc(state: ^State, object: ^Object, offset: rl.Vector3) {
 
 	switch object.kind {
 	case .Box:
-		points: [8]rl.Vector3
-		slice.fill(points[:], offset)
-		points[1].yy += object.size.yy
-		points[2].xy += object.size.xy
-		points[3].xx += object.size.xx
-		points[4].zzz += object.size.zzz
-		points[5].yyz += object.size.yyz
-		points[6].xyz += object.size.xyz
-		points[7].xxz += object.size.xxz
+		verts: [8]rl.Vector3
+		slice.fill(verts[:], offset)
+		verts[1].yy += object.size.yy
+		verts[2].xy += object.size.xy
+		verts[3].xx += object.size.xx
+		verts[4].zzz += object.size.zzz
+		verts[5].yyz += object.size.yyz
+		verts[6].xyz += object.size.xyz
+		verts[7].xxz += object.size.xxz
 
-		proj: [len(points)]rl.Vector2
-		for p, i in points {proj[i] = project(p, state)}
+		proj: [len(verts)]rl.Vector2
+		for p, i in verts {proj[i] = project(p, state)}
 
+		// fill
 		shape := [?]rl.Vector2{proj[4], proj[5], proj[1], proj[2], proj[3], proj[7]}
 		rl.DrawTriangleFan(&shape[0], len(shape), bg)
 
-		for i in 1 ..< 3 {
-			rl.DrawLineEx(proj[i], proj[(i + 1)], 2, outline)
-		}
-		for i in 1 ..< 4 {
-			rl.DrawLineEx(proj[i], proj[(i + 4)], 2, outline)
-		}
+		// bottom outline
+		for i in 1 ..< 3 {rl.DrawLineEx(proj[i], proj[(i + 1)], 2, outline)}
+		// top outline
+		for i in 1 ..< 4 {rl.DrawLineEx(proj[i], proj[(i + 4)], 2, outline)}
+		// vertical outlines
 		for i in 0 ..< 4 {
 			idx := 4 + [2]int{i, (i + 1) % 4}
 			rl.DrawLineEx(proj[idx[0]], proj[idx[1]], 2, outline)
