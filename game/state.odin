@@ -104,7 +104,7 @@ init_surfaces :: proc(state: ^State) {
 
 init_objects :: proc(state: ^State) {
 	state.objects = {
-		{kind = .Box, mat = .Concrete, pos = {0, 0, 1}, size = {50, 50, 1}},
+		{kind = .Box, mat = .Concrete, pos = {0, 0, -40}, size = {50, 50, 42}},
 		{kind = .Box, mat = .Concrete, pos = {0, 0, 2}, size = {16, 26, 1}},
 		{kind = .Box, mat = .Brick, pos = {0, 0, 3}, size = {13, 1, 2}},
 		{kind = .Box, mat = .Brick, pos = {0, 1, 3}, size = {1, 12, 2}},
