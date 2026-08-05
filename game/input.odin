@@ -60,7 +60,7 @@ gather_input :: proc(state: ^Input_State) {
 	state.actions[.Toggle_Color_Mode] = input_flags(.C)
 	state.actions[.Toggle_Drawing_Mode] = input_flags(.D)
 	state.actions[.Toggle_Normals] = input_flags(.X)
-	state.actions[.Push] = input_flags(.ENTER)
+	state.actions[.Push] = input_flags(.N) | input_flags(.ENTER)
 	state.actions[.Break] = input_flags(.SPACE)
 	state.actions[.Reset] = input_flags(.ZERO)
 	state.actions[.Cycle_Target] = input_flags(.Z)
