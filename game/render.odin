@@ -3,6 +3,7 @@ import "core:c"
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
+import "core:slice"
 import rl "vendor:raylib"
 
 render :: proc(state: ^State) {
@@ -25,9 +26,14 @@ render :: proc(state: ^State) {
 
 	target := &state.skaters[state.target_skater_idx]
 
-	for &surface in state.surfaces {
-		offset := surface.o - target.pos
-		draw_surface(state, &surface, offset)
+	// for &surface in state.surfaces {
+	// 	offset := surface.o - target.pos
+	// 	draw_surface(state, &surface, offset)
+	// }
+
+	for &object in state.objects {
+		offset := object.pos - target.pos
+		draw_object(state, &object, offset)
 	}
 
 	font_size := state.config.data.ui.font_size
@@ -47,6 +53,62 @@ render :: proc(state: ^State) {
 		offset := skater.pos - target.pos
 		draw_board(state, &skater, offset)
 		draw_skater(state, &skater, skater_idx, offset)
+	}
+}
+
+draw_object :: proc(state: ^State, object: ^Object, offset: rl.Vector3) {
+	switch object.kind {
+	case .Box:
+		bg, outline: rl.Color
+		switch object.mat {
+		case .Concrete:
+			bg = {124, 122, 115, 255}
+			outline = {84, 82, 76, 255}
+		case .Wood:
+			bg = {150, 111, 74, 255}
+			outline = {107, 79, 53, 255}
+		case .Brick:
+			bg = {178, 89, 68, 255}
+			outline = {130, 63, 48, 255}
+		}
+
+		points: [4]rl.Vector3
+		projected: [4]rl.Vector2
+		{ 	// top face
+			slice.fill(points[:], offset)
+			points[0].z += object.size.z
+			points[1].yz += object.size.yz
+			points[2] += object.size
+			points[3].xz += object.size.xz
+			for p, i in points {projected[i] = project(p, state)}
+			// for p in projected {rl.DrawCircleV(p, 2, rl.RED)}
+			rl.DrawTriangleFan(&projected[0], 4, bg)
+			for i in 0 ..< 4 {rl.DrawLineEx(projected[i], projected[(i + 1) % 4], 2, outline)}
+		}
+		{ 	// side left
+			slice.fill(points[:], offset)
+			points[0].yz += object.size.yz
+			points[1].y += object.size.y
+			points[2].xy += object.size.xy
+			points[3] += object.size
+			for p, i in points {projected[i] = project(p, state)}
+			// for p in projected {rl.DrawCircleV(p, 2, rl.PINK)}
+			rl.DrawTriangleFan(&projected[0], 4, bg)
+			for i in 0 ..< 4 {rl.DrawLineEx(projected[i], projected[(i + 1) % 4], 2, outline)}
+		}
+		{ 	// side right
+			slice.fill(points[:], offset)
+			points[0] += object.size
+			points[1].xy += object.size.xy
+			points[2].x += object.size.x
+			points[3].xz += object.size.xz
+			for p, i in points {projected[i] = project(p, state)}
+			// for p in projected {rl.DrawCircleV(p, 2, rl.GREEN)}
+			rl.DrawTriangleFan(&projected[0], 4, bg)
+			for i in 0 ..< 4 {rl.DrawLineEx(projected[i], projected[(i + 1) % 4], 2, outline)}
+		}
+	case .Ramp:
+		panic("not implemented")
 	}
 }
 
@@ -78,7 +140,7 @@ draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},
 		0,
-		rl.Color{u8(skater_idx+1), 0, 0, 0},
+		rl.Color{u8(skater_idx + 1), 0, 0, 0},
 	)
 }
 

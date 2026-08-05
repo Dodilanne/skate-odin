@@ -16,12 +16,40 @@ init :: proc(state: ^State) {
 	for i in 0 ..< MAX_SKATERS {
 		append(&state.skaters, Skater{})
 		reset_skater(&state.skaters[i])
-		state.skaters[i].pos = rl.Vector3{f32(i % 25), f32(i % 4), 5} + rl.Vector3(SKATER_RADIUS)
 	}
 
 	state.show_normals = false
 	state.color_mode = .Dark
 	state.drawing_mode = .Dimetric
+
+	init_surfaces(state)
+	init_objects(state)
+
+	for sprite_sheet in Skater_Asset {
+		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
+		state.skater_assets[sprite_sheet] = rl.LoadTexture(path)
+	}
+
+	for i in 0 ..< BOARD_ASSET_COUNT {
+		path := fmt.ctprintf("assets/data/board/board_Dir%v.png", i)
+		state.board_assets[i] = rl.LoadTexture(path)
+	}
+
+	for name in Shader {
+		lower := strings.to_lower(string(fmt.tprintf("%v", name)), context.temp_allocator)
+		fs_path := fmt.ctprintf("assets/shaders/%v.fs", lower)
+		state.shaders[name] = rl.LoadShader(nil, fs_path)
+	}
+
+	state.palette.loc = rl.GetShaderLocation(state.shaders[.Customize], "palettes")
+	state.palette.img = rl.GenImageColor(MAX_SKATERS * COLORS_PER_PALETTE, 1, rl.BLANK)
+	state.palette.tex = rl.LoadTextureFromImage(state.palette.img)
+
+	load_config_from_file(&state.config)
+	update_state_after_config_update(state)
+}
+
+init_surfaces :: proc(state: ^State) {
 	state.surfaces = {
 		{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
 		{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
@@ -72,29 +100,36 @@ init :: proc(state: ^State) {
 		}
 		surface.v = v
 	}
+}
 
-	for sprite_sheet in Skater_Asset {
-		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
-		state.skater_assets[sprite_sheet] = rl.LoadTexture(path)
+init_objects :: proc(state: ^State) {
+	state.objects = {
+		{kind = .Box, mat = .Concrete, pos = {0, 0, 1}, size = {50, 50, 1}, angle = 0},
+		{kind = .Box, mat = .Concrete, pos = {0, 0, 2}, size = {16, 26, 1}, angle = 0},
+		{kind = .Box, mat = .Brick, pos = {0, 0, 3}, size = {13, 1, 2}, angle = 0},
+		{kind = .Box, mat = .Brick, pos = {0, 1, 3}, size = {1, 12, 2}, angle = 0},
+		{kind = .Box, mat = .Wood, pos = {1, 1, 3}, size = {11, 9, 1}, angle = 0},
+		{kind = .Box, mat = .Brick, pos = {12, 1, 3}, size = {1, 12, 2}, angle = 0},
 	}
+}
 
-	for i in 0 ..< BOARD_ASSET_COUNT {
-		path := fmt.ctprintf("assets/data/board/board_Dir%v.png", i)
-		state.board_assets[i] = rl.LoadTexture(path)
-	}
+Object_Material :: enum u8 {
+	Concrete,
+	Wood,
+	Brick,
+}
 
-	for name in Shader {
-		lower := strings.to_lower(string(fmt.tprintf("%v", name)), context.temp_allocator)
-		fs_path := fmt.ctprintf("assets/shaders/%v.fs", lower)
-		state.shaders[name] = rl.LoadShader(nil, fs_path)
-	}
+Object_Kind :: enum u8 {
+	Box,
+	Ramp,
+}
 
-	state.palette.loc = rl.GetShaderLocation(state.shaders[.Customize], "palettes")
-	state.palette.img = rl.GenImageColor(MAX_SKATERS * COLORS_PER_PALETTE, 1, rl.BLANK)
-	state.palette.tex = rl.LoadTextureFromImage(state.palette.img)
-
-	load_config_from_file(&state.config)
-	update_state_after_config_update(state)
+Object :: struct {
+	kind:  Object_Kind,
+	mat:   Object_Material,
+	pos:   rl.Vector3,
+	size:  rl.Vector3,
+	angle: f32,
 }
 
 vec_to_color :: proc(vec: rl.Vector3) -> rl.Color {
@@ -235,6 +270,7 @@ State :: struct {
 	target_skater_idx: int,
 	skaters:           [dynamic; MAX_SKATERS]Skater,
 	surfaces:          [dynamic; MAX_SURFACES]Surface,
+	objects:           [dynamic; MAX_SURFACES]Object,
 	drawing_mode:      Drawing_Mode,
 	color_mode:        Color_Mode,
 	offset:            rl.Vector2,
