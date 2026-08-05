@@ -1,7 +1,7 @@
 package game
 
 import "core:encoding/json"
-import "core:fmt"
+import "core:log"
 import "core:os"
 import "core:time"
 
@@ -154,13 +154,10 @@ load_config_from_file :: proc(
 		return json.unmarshal(data, &config.data)
 	}
 
-	data, err := json.marshal(config.data)
-	if err != nil {
-		fmt.eprintln(err)
-		return err
-	}
+	data := json.marshal(config.data, {}, context.temp_allocator) or_return
 	return os.write_entire_file(path, data)
 }
+
 
 check_and_update :: proc(
 	config: ^Config,
@@ -169,14 +166,18 @@ check_and_update :: proc(
 	reloaded: bool,
 	err: Load_Config_Error,
 ) {
+	if !os.exists(path) {
+		log.errorf("Config file doesn't exist, writing current config to file")
+		data := json.marshal(config.data, {}, context.temp_allocator) or_return
+		return false, os.write_entire_file(path, data)
+	}
+
 	info := os.stat(path, context.temp_allocator) or_return
 	if time.diff(info.modification_time, config.last_updated_at) < 0 {
-		if err := load_config_from_file(config, path); err != nil {
-			return false, err
-		}
-		return true, nil
+		return true, load_config_from_file(config, path)
 	}
-	return
+
+	return false, nil
 }
 
 
