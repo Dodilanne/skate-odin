@@ -178,8 +178,9 @@ Shape :: struct {
 
 Drawing_Mode :: enum {
 	Dimetric = 0,
-	Top_Down,
-	Side,
+	Top,
+	South,
+	East,
 }
 
 Trick :: enum u8 {

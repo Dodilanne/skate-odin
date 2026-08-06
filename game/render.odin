@@ -131,15 +131,21 @@ draw_object :: proc(state: ^State, object: ^Object, offset: rl.Vector3) {
 	}
 }
 
-project :: proc(point: rl.Vector3, state: ^State) -> rl.Vector2 {
+project :: proc(point_3d: rl.Vector3, state: ^State) -> rl.Vector2 {
 	cell_size := state.config.data.camera.cell_size
-	if state.drawing_mode == .Top_Down {
-		return point.xy * cell_size + state.offset
+	point_2d: rl.Vector2
+	#partial switch state.drawing_mode {
+	case .Dimetric:
+		point_2d = PRO_MATRIX * point_3d
+	case .Top:
+		point_2d = {point_3d.x, point_3d.y}
+	case .South:
+		point_2d = {point_3d.x, -point_3d.z}
+	case .East:
+		point_2d = {-point_3d.y, -point_3d.z}
 	}
-	if state.drawing_mode == .Side {
-		return rl.Vector2{-point.y, -point.z} * cell_size + state.offset
-	}
-	return PRO_MATRIX * point * cell_size + state.offset
+
+	return point_2d * cell_size + state.offset
 }
 
 PRO_MATRIX :: matrix[2, 3]f32{
