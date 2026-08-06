@@ -4,7 +4,7 @@ import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
 
-SKATER_RADIUS: f32 : 0.5
+SKATER_RADIUS: f32 : 0.3
 
 update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 	when ODIN_DEBUG {read_debug_inputs(state, inputs)}

@@ -151,7 +151,9 @@ draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.
 	frame_size := state.config.data.sprite.frame_size
 	sprite_pos := skater.animation.progress.idx * frame_size
 	config := animation_configs[skater.animation.state]
-	target_pos := project(offset, state) - frame_size / 2
+	target_pos := project(offset, state)
+	target_pos.x -= frame_size * 0.5
+	target_pos.y -= frame_size * 0.8
 
 	rl.DrawTexturePro(
 		state.skater_assets[config.asset],
