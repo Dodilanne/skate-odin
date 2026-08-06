@@ -285,7 +285,8 @@ transition :: proc(
 		{ 	// player position
 			diff := linalg.dot(skater.move_dir, skater.look_dir)
 			abs := math.abs(diff)
-			if abs < state.config.data.landing.facing_alignment_min_dot {
+			if skater.state == .Landing &&
+			   abs < state.config.data.landing.facing_alignment_min_dot {
 				return true
 			}
 			skater.look_dir = skater.move_dir * math.sign(diff)

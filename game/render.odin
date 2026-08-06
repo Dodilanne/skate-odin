@@ -167,7 +167,7 @@ draw_skater_collisions :: proc(
 	skater_idx: int,
 	offset: rl.Vector3,
 ) {
-	num_circles := 6
+	num_circles := 4
 	base_points: [100]rl.Vector3
 	points_per_circle := len(base_points) / num_circles
 
