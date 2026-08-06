@@ -91,6 +91,10 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 	case .Airborne:
 		skater.timer[.Airborne] += dt
 
+		if skater.jump_height == 0 {
+			break
+		}
+
 		if skater.trick_committed != .None {
 			if check(state, inputs, skater_idx, .Trick_O, .Pressed) {
 				skater.trick_caught = true
@@ -283,7 +287,10 @@ transition :: proc(
 
 	if skater.state != .Airborne {
 		{ 	// player position
-			diff := linalg.dot(skater.move_dir, skater.look_dir)
+			diff := linalg.dot(
+				linalg.normalize(skater.move_dir.xy),
+				linalg.normalize(skater.look_dir.xy),
+			)
 			abs := math.abs(diff)
 			if skater.state == .Landing &&
 			   abs < state.config.data.landing.facing_alignment_min_dot {
