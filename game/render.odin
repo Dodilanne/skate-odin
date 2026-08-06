@@ -22,14 +22,7 @@ render :: proc(state: ^State) {
 	tint := sky_color / 255
 	rl.SetShaderValue(state.shaders[.Customize], loc, &tint, .VEC4)
 
-	rl.DrawFPS(0, 0)
-
 	target := &state.skaters[state.target_skater_idx]
-
-	// for &surface in state.surfaces {
-	// 	offset := surface.o - target.pos
-	// 	draw_surface(state, &surface, offset)
-	// }
 
 	for &object in state.objects {
 		offset := object.pos - target.pos
@@ -57,11 +50,14 @@ render :: proc(state: ^State) {
 			draw_skater(state, &skater, skater_idx, offset)
 		}
 
-		if state.show_normals || state.drawing_mode != .Dimetric {
+		if state.target_skater_idx == skater_idx &&
+		   (state.show_normals || state.drawing_mode != .Dimetric) {
 			draw_skater_collisions(state, &skater, skater_idx, offset)
 			rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
 		}
 	}
+
+	rl.DrawFPS(0, 0)
 }
 
 draw_object :: proc(state: ^State, object: ^Object, offset: rl.Vector3) {
