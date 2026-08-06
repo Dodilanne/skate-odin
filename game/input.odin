@@ -13,7 +13,6 @@ Input_Action :: enum u8 {
 	Right,
 	Down,
 	Left,
-	Toggle_Color_Mode,
 	Toggle_Drawing_Mode,
 	Toggle_Normals,
 	Push,
@@ -57,7 +56,6 @@ gather_input :: proc(state: ^Input_State) {
 	state.actions[.Right] = input_flags(.T)
 	state.actions[.Down] = input_flags(.S)
 	state.actions[.Left] = input_flags(.R)
-	state.actions[.Toggle_Color_Mode] = input_flags(.C)
 	state.actions[.Toggle_Drawing_Mode] = input_flags(.D)
 	state.actions[.Toggle_Normals] = input_flags(.X)
 	state.actions[.Push] = input_flags(.N) | input_flags(.ENTER)

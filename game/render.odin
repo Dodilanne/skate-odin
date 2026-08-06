@@ -15,12 +15,12 @@ render :: proc(state: ^State) {
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 	state.offset = screen / 2
 
-	bg := rl.DARKGRAY
-	if state.color_mode == .Light {
-		bg = rl.WHITE
-	}
+	sky_color := state.config.data.customization.sky_color
+	rl.ClearBackground(vec_to_color(sky_color.rgb))
 
-	rl.ClearBackground(bg)
+	loc := rl.GetShaderLocation(state.shaders[.Customize], "skyColor")
+	tint := sky_color / 255
+	rl.SetShaderValue(state.shaders[.Customize], loc, &tint, .VEC4)
 
 	rl.DrawFPS(0, 0)
 

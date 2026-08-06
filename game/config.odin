@@ -51,7 +51,8 @@ UI_Config :: struct {
 }
 
 Customization_Config :: struct {
-	palettes: [dynamic; MAX_SKATERS][COLORS_PER_PALETTE][3]f32,
+	palettes:  [dynamic; MAX_SKATERS][COLORS_PER_PALETTE][3]f32,
+	sky_color: [4]f32,
 }
 
 Objects_Config :: struct {
@@ -118,7 +119,10 @@ init_config_with_defaults :: proc(config: ^Config) {
 				.Brick = {bg = {178, 89, 68}, outline = {130, 63, 48}},
 			},
 		},
-		customization = {palettes = {src_palette()}},
+		customization = {
+			palettes = {src_palette()},
+			sky_color = {66.0, 70.0, 86.0, 80},
+		},
 	}
 
 }

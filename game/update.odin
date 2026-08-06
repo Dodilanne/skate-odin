@@ -319,9 +319,6 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
 		state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
 	}
-	if .Pressed in inputs.actions[.Toggle_Color_Mode] {
-		state.color_mode = Color_Mode((int(state.color_mode) + 1) % len(Color_Mode))
-	}
 	if .Pressed in inputs.actions[.Toggle_Normals] {
 		state.show_normals = !state.show_normals
 	}

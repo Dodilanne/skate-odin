@@ -19,7 +19,6 @@ init :: proc(state: ^State) {
 	}
 
 	state.show_normals = false
-	state.color_mode = .Dark
 	state.drawing_mode = .Dimetric
 
 	init_surfaces(state)
@@ -252,11 +251,6 @@ Surface :: struct {
 	v:    rl.Vector3,
 }
 
-Color_Mode :: enum {
-	Dark,
-	Light,
-}
-
 Skater_Asset :: enum u8 {
 	Ride,
 	Duck,
@@ -281,7 +275,6 @@ State :: struct {
 	surfaces:          [dynamic; MAX_SURFACES]Surface,
 	objects:           [dynamic; MAX_SURFACES]Object,
 	drawing_mode:      Drawing_Mode,
-	color_mode:        Color_Mode,
 	offset:            rl.Vector2,
 	show_normals:      bool,
 	skater_assets:     [Skater_Asset]rl.Texture2D,
