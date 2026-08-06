@@ -51,8 +51,16 @@ render :: proc(state: ^State) {
 
 	for &skater, skater_idx in state.skaters {
 		offset := skater.pos - target.pos
-		draw_board(state, &skater, offset)
-		draw_skater(state, &skater, skater_idx, offset)
+
+		if state.drawing_mode == .Dimetric {
+			draw_board(state, &skater, offset)
+			draw_skater(state, &skater, skater_idx, offset)
+		}
+
+		if state.show_normals || state.drawing_mode != .Dimetric {
+			draw_skater_collisions(state, &skater, skater_idx, offset)
+			rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
+		}
 	}
 }
 
@@ -151,6 +159,54 @@ project :: proc(point_3d: rl.Vector3, state: ^State) -> rl.Vector2 {
 PRO_MATRIX :: matrix[2, 3]f32{
 	1, -1, 0,
 	0.5, 0.5, -1,
+}
+
+draw_skater_collisions :: proc(
+	state: ^State,
+	skater: ^Skater,
+	skater_idx: int,
+	offset: rl.Vector3,
+) {
+	num_circles := 6
+	base_points: [100]rl.Vector3
+	points_per_circle := len(base_points) / num_circles
+
+	for c in 0 ..< num_circles {
+		for p in 0 ..< points_per_circle {
+			y_angle := math.PI * 2 / f32(points_per_circle) * f32(p)
+			y_rot := matrix[3, 3]f32{
+				math.cos(y_angle), 0, math.sin(y_angle),
+				0, 1, 0,
+				-math.sin(y_angle), 0, math.cos(y_angle),
+			}
+
+			z_angle := math.PI / f32(num_circles) * f32(c)
+			z_angle += skater.angle
+			z_rot := matrix[3, 3]f32{
+				math.cos(z_angle), -math.sin(z_angle), 0,
+				math.sin(z_angle), math.cos(z_angle), 0,
+				0, 0, 1,
+			}
+
+			base_points[c * points_per_circle + p] =
+				z_rot * y_rot * rl.Vector3{1, 0, 0} * skater.radius
+		}
+	}
+
+	for c in 0 ..< num_circles {
+		for p in 0 ..< points_per_circle {
+			start := base_points[c * points_per_circle + p] + offset
+			end := base_points[c * points_per_circle + (p + 1) % points_per_circle] + offset
+
+			color := skater.color
+			if skater.state == .Airborne {
+				color = rl.ColorBrightness(color, 0.5)
+			}
+
+			rl.DrawLineEx(project(start, state), project(end, state), 2, color)
+		}
+	}
+
 }
 
 draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.Vector3) {

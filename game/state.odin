@@ -13,7 +13,7 @@ BOARD_ASSET_COUNT :: 32
 COLORS_PER_PALETTE :: 6
 
 init :: proc(state: ^State) {
-	for i in 0 ..< MAX_SKATERS {
+	for i in 0 ..< 1 {
 		append(&state.skaters, Skater{})
 		reset_skater(&state.skaters[i])
 	}
