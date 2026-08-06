@@ -50,9 +50,15 @@ UI_Config :: struct {
 	font_size: i32,
 }
 
+Time_Of_Day :: enum u8 {
+	Day,
+	Night,
+}
+
 Customization_Config :: struct {
-	palettes:  [dynamic; MAX_SKATERS][COLORS_PER_PALETTE][3]f32,
-	sky_color: [4]f32,
+	palettes:    [dynamic; MAX_SKATERS][COLORS_PER_PALETTE][3]f32,
+	sky_color:   [Time_Of_Day][4]f32,
+	time_of_day: Time_Of_Day,
 }
 
 Objects_Config :: struct {
@@ -110,7 +116,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 			death_plane_z = -10,
 		},
 		camera = {cell_size = 32},
-		sprite = {frame_size = 75, board_y_offset = 27},
+		sprite = {frame_size = 75, board_y_offset = 5},
 		ui = {font_size = 20},
 		objects = {
 			colors = {
@@ -120,8 +126,18 @@ init_config_with_defaults :: proc(config: ^Config) {
 			},
 		},
 		customization = {
-			palettes = {src_palette()},
-			sky_color = {66.0, 70.0, 86.0, 80},
+			palettes = {
+				{
+					{23.0, 23.0, 23.0},
+					{68.0, 135.0, 28.0},
+					{88.0, 56.0, 6.0},
+					{225.0, 169.0, 137.0},
+					{220.0, 220.0, 220.0},
+					{1.0, 1.0, 1.0},
+				},
+			},
+			sky_color = {.Day = {107, 164, 230, 20}, .Night = {66.0, 70.0, 86.0, 100}},
+			time_of_day = .Day,
 		},
 	}
 

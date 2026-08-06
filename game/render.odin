@@ -15,7 +15,8 @@ render :: proc(state: ^State) {
 	screen := rl.Vector2{f32(rl.GetScreenWidth()), f32(rl.GetScreenHeight())}
 	state.offset = screen / 2
 
-	sky_color := state.config.data.customization.sky_color
+	time_of_day := state.config.data.customization.time_of_day
+	sky_color := state.config.data.customization.sky_color[time_of_day]
 	rl.ClearBackground(vec_to_color(sky_color.rgb))
 
 	loc := rl.GetShaderLocation(state.shaders[.Customize], "skyColor")

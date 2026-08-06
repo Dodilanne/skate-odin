@@ -37,6 +37,4 @@ vec4 getColor() {
 void main() {
     finalColor = getColor();
     finalColor.rgb *= mix(vec3(1.0), skyColor.rgb, skyColor.a);
-    // vec3 tinted = mix(finalColor.rgb, finalColor.rgb * skyColor.rgb, skyColor.a);
-    // finalColor = vec4(tinted, finalColor.a);
 }
