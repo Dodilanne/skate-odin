@@ -10,6 +10,7 @@ Animation_State :: enum u8 {
 	Jumping,
 	Tricking,
 	Landing,
+	Ghost,
 }
 
 animation_configs := [Animation_State]Animation_Config {
@@ -19,6 +20,7 @@ animation_configs := [Animation_State]Animation_Config {
 	.Jumping = {asset = .Air, frame_count = 7},
 	.Tricking = {asset = .Air, frame_count = 7, initial_idx = {0, 14}},
 	.Landing = {asset = .Land, frame_count = 6},
+	.Ghost = {asset = .Onspot, frame_count = 1, initial_idx = {0, 8}},
 }
 
 Animation_Config :: struct {
@@ -36,34 +38,43 @@ Animation :: struct {
 	progress: Animation_Progress,
 }
 
-animation_update_state :: proc(skater: ^Skater, animation: ^Animation) {
-	state: Animation_State
-	switch skater.state {
-	case .Idle:
-		state = .Idle
-	case .Crouched:
-		state = .Crouched
-	case .Airborne:
-		if skater.jump_height <= 0 {
-			state = .Falling
-		} else if skater.skate_angles.zw == {} {
-			state = .Jumping
-		} else {
-			state = .Tricking
+animation_update_state :: proc(
+	state: ^State,
+	skater: ^Skater,
+	skater_idx: int,
+	animation: ^Animation,
+) {
+	anim_state: Animation_State
+	if state.target_skater_idx == skater_idx && state.play_mode == .Ghost {
+		anim_state = .Ghost
+	} else {
+		switch skater.state {
+		case .Idle:
+			anim_state = .Idle
+		case .Crouched:
+			anim_state = .Crouched
+		case .Airborne:
+			if skater.jump_height <= 0 {
+				anim_state = .Falling
+			} else if skater.skate_angles.zw == {} {
+				anim_state = .Jumping
+			} else {
+				anim_state = .Tricking
+			}
+		case .Landing:
+			anim_state = .Landing
 		}
-	case .Landing:
-		state = .Landing
 	}
-	if state != animation.state {
-		animation.state = state
+	if anim_state != animation.state {
+		animation.state = anim_state
 		animation.progress = {}
 	}
 }
 
 // value needs to be normalized between 0 and 1
-animation_tick :: proc(skater: ^Skater, value: f32) {
+animation_tick :: proc(state: ^State, skater: ^Skater, skater_idx: int, value: f32) {
 	animation := &skater.animation
-	animation_update_state(skater, animation)
+	animation_update_state(state, skater, skater_idx, animation)
 	config := animation_configs[animation.state]
 
 	animation.progress.idx.x = skater_rot_to_sprite_idx(skater)
@@ -81,7 +92,7 @@ animation_tick :: proc(skater: ^Skater, value: f32) {
 
 animation_get_value :: proc(skater: ^Skater, state: ^State) -> f32 {
 	switch skater.animation.state {
-	case .Idle:
+	case .Idle, .Ghost:
 		return 0
 	case .Crouched:
 		return skater.timer[.Crouched]

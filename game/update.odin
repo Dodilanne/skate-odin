@@ -9,13 +9,54 @@ SKATER_RADIUS: f32 : 0.5
 update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 	when ODIN_DEBUG {read_debug_inputs(state, inputs)}
 	for &skater, skater_idx in state.skaters {
-		steer(state, inputs, &skater, skater_idx, dt)
-		move(state, inputs, &skater, skater_idx, dt)
-		physics(state, inputs, &skater, skater_idx, dt)
-		animation_tick(&skater, animation_get_value(&skater, state))
-		touching_a_surface := collisions(state, &skater, skater_idx)
-		should_reset := transition(state, inputs, &skater, skater_idx, dt, touching_a_surface)
+		should_reset := check(state, inputs, skater_idx, .Reset, .Pressed)
+
+		if !should_reset {
+			if skater_idx == state.target_skater_idx && state.play_mode == .Ghost {
+				ghost_move(state, inputs, &skater, skater_idx, dt)
+				animation_tick(state, &skater, skater_idx, animation_get_value(&skater, state))
+			} else {
+				steer(state, inputs, &skater, skater_idx, dt)
+				move(state, inputs, &skater, skater_idx, dt)
+				physics(state, inputs, &skater, skater_idx, dt)
+				animation_tick(state, &skater, skater_idx, animation_get_value(&skater, state))
+				touching_a_surface := collisions(state, &skater, skater_idx)
+				should_reset = transition(
+					state,
+					inputs,
+					&skater,
+					skater_idx,
+					dt,
+					touching_a_surface,
+				)
+			}
+		}
+
 		if should_reset {reset_skater(&skater)}
+	}
+}
+
+ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
+	z_dir: f32
+	if check(state, inputs, skater_idx, .Up, .Down) {z_dir = +1}
+	if check(state, inputs, skater_idx, .Down, .Down) {z_dir = -1}
+	if z_dir != 0 {
+		skater.pos.z += z_dir * 5 * dt
+	}
+	steer_dir: f32
+	if check(state, inputs, skater_idx, .Left, .Down) {steer_dir = -1}
+	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
+	angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
+	skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+	if skater.angle < 0 {skater.angle += 2 * math.PI}
+	skater.look_dir = rl.Vector3RotateByAxisAngle(
+		rl.Vector3{1, 0, 0},
+		rl.Vector3{0, 0, 1},
+		skater.angle,
+	)
+	skater.look_dir = linalg.normalize(skater.look_dir)
+	if check(state, inputs, skater_idx, .Push, .Down) {
+		skater.pos += skater.look_dir * 5 * dt
 	}
 }
 
@@ -317,10 +358,7 @@ transition :: proc(
 		}
 	}
 
-	return(
-		skater.pos.z < state.config.data.landing.death_plane_z ||
-		check(state, inputs, skater_idx, .Reset, .Pressed) \
-	)
+	return skater.pos.z < state.config.data.landing.death_plane_z
 }
 
 read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
@@ -332,6 +370,13 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	}
 	if .Pressed in inputs.actions[.Cycle_Target] {
 		state.target_skater_idx = (state.target_skater_idx + 1) % len(state.skaters)
+	}
+	if .Pressed in inputs.actions[.Cycle_Play_Mode] {
+		state.play_mode = Play_Mode((int(state.play_mode) + 1) % len(Play_Mode))
+		skater := &state.skaters[state.target_skater_idx]
+		pos := skater.pos
+		reset_skater(skater)
+		skater.pos = pos
 	}
 }
 

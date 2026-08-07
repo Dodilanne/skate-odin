@@ -19,6 +19,7 @@ Input_Action :: enum u8 {
 	Break,
 	Reset,
 	Cycle_Target,
+	Cycle_Play_Mode,
 	Trick_W,
 	Trick_O, // origin
 	Trick_E,
@@ -62,6 +63,7 @@ gather_input :: proc(state: ^Input_State) {
 	state.actions[.Break] = input_flags(.SPACE)
 	state.actions[.Reset] = input_flags(.ZERO)
 	state.actions[.Cycle_Target] = input_flags(.Z)
+	state.actions[.Cycle_Play_Mode] = input_flags(.G)
 	state.actions[.Trick_O] = input_flags(.E)
 	state.actions[.Trick_N] = input_flags(.U)
 	state.actions[.Trick_NE] = input_flags(.Y)

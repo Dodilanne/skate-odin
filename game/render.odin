@@ -6,7 +6,21 @@ import "core:math/linalg"
 import "core:slice"
 import rl "vendor:raylib"
 
+Entity_Kind :: enum u8 {
+	Object,
+	Skater,
+}
+
+Entity :: struct {
+	min:         rl.Vector3,
+	max:         rl.Vector3,
+	idx:         u16,
+	entity_kind: Entity_Kind,
+	object_kind: Object_Kind,
+}
+
 render :: proc(state: ^State) {
+
 	rl.BeginShaderMode(state.shaders[.Customize])
 	defer rl.EndShaderMode()
 
@@ -25,9 +39,39 @@ render :: proc(state: ^State) {
 
 	target := &state.skaters[state.target_skater_idx]
 
-	for &object in state.objects {
-		offset := object.pos - target.pos
-		draw_object(state, &object, offset)
+	entities: [dynamic; MAX_SKATERS + MAX_OBJECTS]Entity
+	for &object, idx in state.objects {
+		max := object.pos + object.size
+		if object.kind == .Ramp {max.z = object.pos.z}
+		append(&entities, Entity{object.pos, max, u16(idx), .Object, object.kind})
+	}
+	for &skater, idx in state.skaters {
+		append(&entities, Entity{skater.pos, skater.pos, u16(idx), .Skater, .Box})
+	}
+	slice.stable_sort_by(entities[:], proc(a, b: Entity) -> bool {
+		return a.max.x <= b.min.x || a.max.y <= b.min.y || a.max.z <= b.min.z
+	})
+
+	for entity in entities {
+		switch entity.entity_kind {
+		case .Object:
+			object := state.objects[entity.idx]
+			offset := object.pos - target.pos
+			draw_object(state, &object, offset)
+		case .Skater:
+			skater := state.skaters[entity.idx]
+			skater_idx := int(entity.idx)
+			offset := skater.pos - target.pos
+			if state.drawing_mode == .Dimetric {
+				draw_board(state, &skater, offset)
+				draw_skater(state, &skater, skater_idx, offset)
+			}
+			if state.target_skater_idx == skater_idx &&
+			   (state.show_normals || state.drawing_mode != .Dimetric) {
+				draw_skater_collisions(state, &skater, skater_idx, offset)
+				rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
+			}
+		}
 	}
 
 	font_size := state.config.data.ui.font_size
@@ -41,21 +85,6 @@ render :: proc(state: ^State) {
 			font_size,
 			rl.ORANGE,
 		)
-	}
-
-	for &skater, skater_idx in state.skaters {
-		offset := skater.pos - target.pos
-
-		if state.drawing_mode == .Dimetric {
-			draw_board(state, &skater, offset)
-			draw_skater(state, &skater, skater_idx, offset)
-		}
-
-		if state.target_skater_idx == skater_idx &&
-		   (state.show_normals || state.drawing_mode != .Dimetric) {
-			draw_skater_collisions(state, &skater, skater_idx, offset)
-			rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
-		}
 	}
 
 	rl.DrawFPS(0, 0)
