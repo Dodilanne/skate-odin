@@ -20,7 +20,6 @@ Entity :: struct {
 }
 
 render :: proc(state: ^State) {
-
 	rl.BeginShaderMode(state.shaders[.Customize])
 	defer rl.EndShaderMode()
 
