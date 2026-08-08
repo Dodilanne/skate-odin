@@ -391,7 +391,7 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	}
 }
 
-reset_skater :: proc(skater: ^Skater) {
+reset_skater :: proc(skater: ^Skater, angle: f32 = 0, pos: rl.Vector3 = {1, 1, 4}) {
 	skater.vel = rl.Vector3{}
 	skater.state = .Idle
 	skater.timer = {}
@@ -400,10 +400,13 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.trick_committed = .None
 	skater.trick_caught = false
 	skater.skate_angles = {}
-	skater.angle = 0
-	skater.pos = rl.Vector3{1, 1, 4} + rl.Vector3(SKATER_RADIUS)
+	skater.angle = angle
+	skater.pos = pos + rl.Vector3(SKATER_RADIUS)
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
-	skater.look_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
+	if angle != 0 {
+		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, angle)
+	}
+	skater.look_dir = skater.move_dir
 	skater.norm = {0, 0, 1}
 	skater.radius = SKATER_RADIUS
 }

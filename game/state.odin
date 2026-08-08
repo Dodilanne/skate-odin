@@ -16,7 +16,11 @@ COLORS_PER_PALETTE :: 6
 init :: proc(state: ^State) {
 	for i in 0 ..< MAX_SKATERS {
 		append(&state.skaters, Skater{})
-		reset_skater(&state.skaters[i])
+		if i == 0 {
+			reset_skater(&state.skaters[i], angle = math.PI / 2, pos = {4, 2, 4})
+		} else {
+			reset_skater(&state.skaters[i])
+		}
 	}
 
 	state.show_normals = false
