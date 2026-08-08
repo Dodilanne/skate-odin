@@ -276,6 +276,7 @@ Skater :: struct {
 	trick_caught:     bool,
 	skate_angles:     rl.Vector4,
 	animation:        Animation,
+	grind_target_idx: int,
 }
 
 Skater_State :: enum {
@@ -283,6 +284,7 @@ Skater_State :: enum {
 	Crouched,
 	Airborne,
 	Landing,
+	Grinding,
 }
 
 Surface :: struct {

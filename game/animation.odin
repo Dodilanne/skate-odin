@@ -11,6 +11,7 @@ Animation_State :: enum u8 {
 	Tricking,
 	Landing,
 	Ghost,
+	Grinding,
 }
 
 animation_configs := [Animation_State]Animation_Config {
@@ -20,7 +21,8 @@ animation_configs := [Animation_State]Animation_Config {
 	.Jumping = {asset = .Air, frame_count = 7},
 	.Tricking = {asset = .Air, frame_count = 7, initial_idx = {0, 14}},
 	.Landing = {asset = .Land, frame_count = 6},
-	.Ghost = {asset = .Onspot, frame_count = 1, initial_idx = {0, 8}},
+	.Ghost = {asset = .Onspot, frame_count = 1, initial_idx = {0, 9}},
+	.Grinding = {asset = .Ride, frame_count = 1},
 }
 
 Animation_Config :: struct {
@@ -63,6 +65,8 @@ animation_update_state :: proc(
 			}
 		case .Landing:
 			anim_state = .Landing
+		case .Grinding:
+			anim_state = .Grinding
 		}
 	}
 	if anim_state != animation.state {
@@ -92,7 +96,7 @@ animation_tick :: proc(state: ^State, skater: ^Skater, value: f32) {
 
 animation_get_value :: proc(skater: ^Skater, state: ^State) -> f32 {
 	switch skater.animation.state {
-	case .Idle, .Ghost:
+	case .Idle, .Ghost, .Grinding:
 		return 0
 	case .Crouched:
 		return skater.timer[.Crouched]

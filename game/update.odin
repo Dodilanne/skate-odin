@@ -26,16 +26,23 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 		if !should_reset {
 			if skater.idx == state.target_skater_idx && state.play_mode == .Ghost {
 				ghost_move(state, inputs, &skater, dt)
-				animation_tick(state, &skater, animation_get_value(&skater, state))
+			} else if skater.state == .Grinding {
+				move(state, inputs, &skater, dt)
+				apply_velocity(state, inputs, &skater, dt)
+				stop_grinding(state, &skater)
 			} else {
 				steer(state, inputs, &skater, dt)
 				move(state, inputs, &skater, dt)
+				apply_gravity(state, inputs, &skater, dt)
 				physics(state, inputs, &skater, dt)
-				anim := animation_get_value(&skater, state)
-				animation_tick(state, &skater, anim)
-				touching_a_surface := collisions(state, &skater)
-				should_reset = transition(state, inputs, &skater, dt, touching_a_surface)
+				apply_velocity(state, inputs, &skater, dt)
+				stuck := start_grinding(state, &skater)
+				if !stuck {
+					touching_a_surface := collisions(state, &skater)
+					should_reset = transition(state, inputs, &skater, dt, touching_a_surface)
+				}
 			}
+			animation_tick(state, &skater, animation_get_value(&skater, state))
 		}
 
 		if should_reset {reset_skater(&skater)}
@@ -260,14 +267,23 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		if skater.timer[.Landing] <= 0 {
 			transition_state(state, skater, .Idle)
 		}
+	case .Grinding:
+		skater.timer[.Grinding] += dt
 	}
 }
 
-physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
+apply_gravity :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	gravity := state.config.data.physics.gravity_falling
 	if skater.vel.z >= 0 {gravity = state.config.data.physics.gravity_rising}
 	skater.vel -= rl.Vector3{0, 0, gravity * dt}
+}
 
+apply_velocity :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
+	skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, state.config.data.movement.max_speed)
+	skater.pos += skater.vel * dt
+}
+
+physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	if math.abs(linalg.length(skater.vel.xy)) > state.config.data.physics.friction_stop_threshold {
 		friction_coeff := state.config.data.physics.friction
 		if check(state, inputs, skater.idx, .Break, .Down) {
@@ -278,15 +294,76 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		skater.vel.xy = {0, 0}
 	}
 
-	skater.vel.xy = rl.Vector2ClampValue(skater.vel.xy, 0, state.config.data.movement.max_speed)
-
-	skater.pos += skater.vel * dt
-
 	if skater.state != .Airborne || skater.trick_caught {
 		skater.skate_angles.xy = {}
 	} else if skater.skate_angles.xy != {} {
 		skater.skate_angles.zw += dt * skater.skate_angles.xy
 	}
+}
+
+start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
+	if skater.state != .Airborne {return false}
+
+	for object, object_idx in state.objects {
+		if object.kind == .Ramp {continue}
+
+		offset := skater.radius
+
+		in_bounds: [3]bool
+		at_edge: [3]bit_set[enum u8 {
+			lo,
+			hi,
+		}]
+		for i in 0 ..< len(in_bounds) {
+			{
+				min := object.pos[i]
+				max := object.pos[i] + object.size[i]
+				in_bounds[i] = skater.pos[i] >= min && skater.pos[i] <= max
+			}
+			{
+				min := object.pos[i] - offset
+				max := object.pos[i] + offset
+				if skater.pos[i] >= min && skater.pos[i] <= max {at_edge[i] |= {.lo}}
+			}
+			{
+				min := object.pos[i] + object.size[i] - offset
+				max := object.pos[i] + object.size[i] + offset
+				if skater.pos[i] >= min && skater.pos[i] <= max {at_edge[i] |= {.hi}}
+			}
+		}
+
+		if .hi not_in at_edge.z {continue}
+
+		if at_edge.x != {} {
+			if in_bounds.y {
+				fmt.printfln("Grinding on edge %v along y axis!", at_edge.x)
+				transition_state(state, skater, .Grinding)
+				skater.pos.z = object.pos.z + object.size.z
+				skater.pos.x = object.pos.x
+				if .hi in at_edge.x {skater.pos.x += object.size.x}
+				skater.vel.xz = 0
+				skater.grind_target_idx = object_idx
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+stop_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
+	if skater.state != .Grinding {return false}
+	i := skater.vel.x > 0 ? 0 : 1
+	object := state.objects[skater.grind_target_idx]
+	offset := skater.radius
+	min := object.pos[i] - offset
+	max := object.pos[i] + object.size[i] + offset
+	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max
+	if in_bounds {
+		return false
+	}
+	transition_state(state, skater, .Airborne)
+	return true
 }
 
 collisions :: proc(state: ^State, skater: ^Skater) -> bool {
@@ -397,7 +474,7 @@ reset_skater :: proc(skater: ^Skater) {
 		skater.angle = 0
 		skater.pos = {1, 1, 4}
 	}
-		skater.pos += rl.Vector3(skater.radius)
+	skater.pos += rl.Vector3(skater.radius)
 
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
 	if skater.angle != 0 {
@@ -424,6 +501,7 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 	if skater.state == new_state {return}
 	skater.state = new_state
 	skater.timer[new_state] = 0
+	skater.grind_target_idx = 0
 	#partial switch new_state {
 	case .Idle:
 		skater.jump_height = 0
