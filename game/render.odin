@@ -117,8 +117,36 @@ draw_object :: proc(state: ^State, object: ^Object, offset: rl.Vector3) {
 			rl.DrawLineEx(proj[3], proj[5], 2, outline)
 			rl.DrawLineEx(proj[4], proj[1], 2, outline)
 			rl.DrawLineEx(proj[5], proj[2], 2, outline)
-		case .East, .South:
-			panic("not implemented")
+		case .East:
+			verts[4].xxz += object.size.xxz
+			verts[5].xyz += object.size.xyz
+
+			for p, i in verts {proj[i] = project(p, state)}
+
+			shape := [?]rl.Vector2{proj[0], proj[1], proj[2], proj[3], proj[4]}
+			rl.DrawTriangleFan(&shape[0], len(shape), bg)
+
+			rl.DrawLineEx(proj[4], proj[5], 2, outline)
+			rl.DrawLineEx(proj[3], proj[4], 2, outline)
+			rl.DrawLineEx(proj[2], proj[5], 2, outline)
+			rl.DrawLineEx(proj[0], proj[4], 2, outline)
+			rl.DrawLineEx(proj[1], proj[5], 2, outline)
+			rl.DrawLineEx(proj[0], proj[1], 2, outline)
+		case .South:
+			verts[4].yyz += object.size.yyz
+			verts[5].xyz += object.size.xyz
+
+			for p, i in verts {proj[i] = project(p, state)}
+
+			shape := [?]rl.Vector2{proj[0], proj[4], proj[1], proj[2], proj[3]}
+			rl.DrawTriangleFan(&shape[0], len(shape), bg)
+
+			rl.DrawLineEx(proj[4], proj[5], 2, outline)
+			rl.DrawLineEx(proj[1], proj[4], 2, outline)
+			rl.DrawLineEx(proj[2], proj[5], 2, outline)
+			rl.DrawLineEx(proj[0], proj[4], 2, outline)
+			rl.DrawLineEx(proj[3], proj[5], 2, outline)
+			rl.DrawLineEx(proj[0], proj[3], 2, outline)
 		case .West:
 			verts[4].zzz += object.size.zzz
 			verts[5].yyz += object.size.yyz

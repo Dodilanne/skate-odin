@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
@@ -30,7 +31,8 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 				steer(state, inputs, &skater, skater_idx, dt)
 				move(state, inputs, &skater, skater_idx, dt)
 				physics(state, inputs, &skater, skater_idx, dt)
-				animation_tick(state, &skater, skater_idx, animation_get_value(&skater, state))
+				anim := animation_get_value(&skater, state)
+				animation_tick(state, &skater, skater_idx, anim)
 				touching_a_surface := collisions(state, &skater, skater_idx)
 				should_reset = transition(
 					state,
@@ -299,7 +301,7 @@ collisions :: proc(state: ^State, skater: ^Skater, skater_idx: int) -> bool {
 	for &surface in state.surfaces {
 		p := skater.pos - surface.o
 		d := linalg.dot(p, surface.n)
-		if math.abs(d) > skater.radius {continue}
+		if math.abs(d) >= skater.radius {continue}
 		pp := p - d * surface.n
 		px := linalg.dot(pp, surface.u)
 		if px < 0 || px > surface.w {continue}

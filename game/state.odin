@@ -14,10 +14,10 @@ BOARD_ASSET_COUNT :: 32
 COLORS_PER_PALETTE :: 6
 
 init :: proc(state: ^State) {
-	for i in 0 ..< MAX_SKATERS {
+	for i in 0 ..< 1 {
 		append(&state.skaters, Skater{})
 		if i == 0 {
-			reset_skater(&state.skaters[i], angle = math.PI / 2, pos = {4, 2, 4})
+			reset_skater(&state.skaters[i], angle = math.PI / 4, pos = {7, 33, 2})
 		} else {
 			reset_skater(&state.skaters[i])
 		}
@@ -26,8 +26,8 @@ init :: proc(state: ^State) {
 	state.show_normals = false
 	state.drawing_mode = .Dimetric
 
-	init_surfaces(state)
 	init_objects(state)
+	init_surfaces(state)
 	init_entities(state)
 
 	for sprite_sheet in Skater_Asset {
@@ -54,59 +54,6 @@ init :: proc(state: ^State) {
 	update_state_after_config_update(state)
 }
 
-init_surfaces :: proc(state: ^State) {
-	state.surfaces = {
-		{name = "floor_1", o = {1, 1, 4}, w = 11, h = 9, n = {0, 0, 1}},
-		{name = "ledge_1_top", o = {0, 0, 5}, w = 1, h = 13, n = {0, 0, 1}},
-		{name = "ledge_1_side_long", o = {1, 1, 4}, w = 9, h = 1, n = {1, 0, 0}},
-		{name = "ledge_1_side_tall", o = {1, 10, 3}, w = 3, h = 2, n = {1, 0, 0}},
-		{name = "ledge_1_front_tall", o = {0, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
-		{name = "ledge_2_top", o = {1, 0, 5}, w = 12, h = 1, n = {0, 0, 1}},
-		{name = "ledge_2_side", o = {1, 1, 4}, w = 11, h = 1, n = {0, 1, 0}},
-		{name = "ledge_3_side", o = {12, 1, 5}, w = 1, h = 12, n = {0, 0, 1}},
-		{name = "ledge_3_side_tall", o = {13, 0, 3}, w = 13, h = 2, n = {1, 0, 0}},
-		{name = "ledge_3_back_tall", o = {12, 0, 3}, w = 13, h = 2, n = {-1, 0, 0}},
-		{name = "ledge_3_front_tall", o = {12, 13, 3}, w = 1, h = 2, n = {0, 1, 0}},
-		{name = "floor_2", o = {0, 0, 3}, w = 16, h = 26, n = {0, 0, 1}},
-		{name = "floor_3", o = {0, 0, 2}, w = 50, h = 50, n = {0, 0, 1}},
-		{
-			name = "jump_1",
-			o = {1, 10, 4},
-			w = 11,
-			h = math.sqrt(f32(2 * 2 + 1 * 1)),
-			n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {1, 0, 0}, -math.atan2_f32(1, 2)),
-		},
-		{
-			name = "jump_2",
-			o = {16, 0, 3},
-			w = 36,
-			h = math.sqrt(f32(2 * 2 + 1 * 1)),
-			n = rl.Vector3RotateByAxisAngle({0, 0, 1}, {0, 1, 0}, math.atan2_f32(1, 2)),
-		},
-	}
-
-	for &surface in state.surfaces {
-		surface.n = linalg.normalize(surface.n)
-
-		a := rl.Vector3{0, 0, 1} // arbitrary
-		if surface.n == a {
-			a = rl.Vector3{0, 1, 0} // cross product will give 0, need to use another ref vector
-		}
-
-		u := linalg.normalize(linalg.cross(surface.n, a))
-		if linalg.dot(u, largest_abs_component(u)) < 0.01 {
-			u *= -1
-		}
-		surface.u = u
-
-		v := linalg.normalize(linalg.cross(surface.n, u))
-		if linalg.dot(v, largest_abs_component(v)) < 0.01 {
-			v *= -1
-		}
-		surface.v = v
-	}
-}
-
 init_objects :: proc(state: ^State) {
 	state.objects = {
 		{kind = .Ramp, mat = .Concrete, pos = {16, 0, 2}, size = {2, 36, 1}, orientation = .West},
@@ -114,9 +61,181 @@ init_objects :: proc(state: ^State) {
 		{kind = .Box, mat = .Brick, pos = {0, 1, 3}, size = {1, 12, 2}},
 		{kind = .Box, mat = .Brick, pos = {0, 0, 3}, size = {13, 1, 2}},
 		{kind = .Box, mat = .Brick, pos = {12, 1, 3}, size = {1, 12, 2}},
+		{kind = .Ramp, mat = .Brick, pos = {5, 40, 2}, size = {5, 5, 2}, orientation = .East},
 		{kind = .Box, mat = .Concrete, pos = {0, 0, 2}, size = {16, 26, 1}},
 		{kind = .Box, mat = .Wood, pos = {1, 1, 3}, size = {11, 9, 1}},
 		{kind = .Box, mat = .Concrete, pos = {0, 0, -40}, size = {50, 50, 42}},
+	}
+}
+
+init_surfaces :: proc(state: ^State) {
+	for object in state.objects {
+		switch object.kind {
+		case .Box:
+			append(
+				&state.surfaces,
+				Surface {
+					o = object.pos + {0, 0, object.size.z},
+					w = object.size.x,
+					h = object.size.y,
+					n = {0, 0, 1},
+					u = {1, 0, 0},
+					v = {0, 1, 0},
+				},
+				Surface {
+					o = object.pos,
+					w = object.size.x,
+					h = object.size.z,
+					n = {0, -1, 0},
+					u = {1, 0, 0},
+					v = {0, 0, 1},
+				},
+				Surface {
+					o = object.pos + {object.size.x, 0, 0},
+					w = object.size.y,
+					h = object.size.z,
+					n = {1, 0, 0},
+					u = {0, 1, 0},
+					v = {0, 0, 1},
+				},
+				Surface {
+					o = object.pos + {0, object.size.y, 0},
+					w = object.size.x,
+					h = object.size.z,
+					n = {0, 1, 0},
+					u = {1, 0, 0},
+					v = {0, 0, 1},
+				},
+				Surface {
+					o = object.pos,
+					w = object.size.y,
+					h = object.size.z,
+					n = {-1, 0, 0},
+					u = {0, 1, 0},
+					v = {0, 0, 1},
+				},
+			)
+		case .Ramp:
+			squared_size := object.size * object.size
+			switch object.orientation {
+			case .North:
+				v := linalg.normalize(
+					rl.Vector3RotateByAxisAngle(
+						{0, -1, 0},
+						{1, 0, 0},
+						-math.atan2_f32(object.size.z, object.size.y),
+					),
+				)
+				u := rl.Vector3{1, 0, 0}
+				n := linalg.normalize(linalg.cross(v, u))
+				append(
+					&state.surfaces,
+					Surface {
+						o = object.pos + {0, object.size.y, 0},
+						w = object.size.x,
+						h = math.sqrt(squared_size.y + squared_size.z),
+						n = n,
+						u = u,
+						v = v,
+					},
+					Surface {
+						o = object.pos,
+						w = object.size.x,
+						h = object.size.z,
+						n = {0, -1, 0},
+						u = {1, 0, 0},
+						v = {0, 0, 1},
+					},
+				)
+			case .East:
+				v := linalg.normalize(
+					rl.Vector3RotateByAxisAngle(
+						{1, 0, 0},
+						{0, 1, 0},
+						-math.atan2_f32(object.size.z, object.size.x),
+					),
+				)
+				u := rl.Vector3{0, 1, 0}
+				n := linalg.normalize(linalg.cross(v, u))
+				append(
+					&state.surfaces,
+					Surface {
+						o = object.pos,
+						w = object.size.y,
+						h = math.sqrt(squared_size.x + squared_size.z),
+						n = n,
+						u = u,
+						v = v,
+					},
+					Surface {
+						o = object.pos + {object.size.x, 0, 0},
+						w = object.size.y,
+						h = object.size.z,
+						n = {1, 0, 0},
+						u = {0, 1, 0},
+						v = {0, 0, 1},
+					},
+				)
+			case .South:
+				v := linalg.normalize(
+					rl.Vector3RotateByAxisAngle(
+						{0, 1, 0},
+						{1, 0, 0},
+						math.atan2_f32(object.size.z, object.size.y),
+					),
+				)
+				u := rl.Vector3{1, 0, 0}
+				n := linalg.normalize(linalg.cross(u, v))
+				append(
+					&state.surfaces,
+					Surface {
+						o = object.pos,
+						w = object.size.x,
+						h = math.sqrt(squared_size.y + squared_size.z),
+						n = n,
+						u = u,
+						v = v,
+					},
+					Surface {
+						o = object.pos + {0, object.size.y, 0},
+						w = object.size.x,
+						h = object.size.z,
+						n = {0, 1, 0},
+						u = {1, 0, 0},
+						v = {0, 0, 1},
+					},
+				)
+			case .West:
+				v := linalg.normalize(
+					rl.Vector3RotateByAxisAngle(
+						{-1, 0, 0},
+						{0, 1, 0},
+						math.atan2_f32(object.size.z, object.size.x),
+					),
+				)
+				u := rl.Vector3{0, 1, 0}
+				n := linalg.normalize(linalg.cross(u, v))
+				append(
+					&state.surfaces,
+					Surface {
+						o = object.pos + {object.size.x, 0, 0},
+						w = object.size.y,
+						h = math.sqrt(squared_size.x + squared_size.z),
+						n = n,
+						u = u,
+						v = v,
+					},
+					Surface {
+						o = object.pos,
+						w = object.size.y,
+						h = object.size.z,
+						n = {-1, 0, 0},
+						u = {0, 1, 0},
+						v = {0, 0, 1},
+					},
+				)
+			}
+		}
 	}
 }
 
@@ -266,13 +385,12 @@ Skater_State :: enum {
 }
 
 Surface :: struct {
-	name: string,
-	o:    rl.Vector3,
-	w:    f32,
-	h:    f32,
-	n:    rl.Vector3,
-	u:    rl.Vector3,
-	v:    rl.Vector3,
+	o: rl.Vector3,
+	w: f32,
+	h: f32,
+	n: rl.Vector3,
+	u: rl.Vector3,
+	v: rl.Vector3,
 }
 
 Skater_Asset :: enum u8 {
@@ -315,7 +433,7 @@ State :: struct {
 	config:            Config,
 	target_skater_idx: int,
 	skaters:           [dynamic; MAX_SKATERS]Skater,
-	surfaces:          [dynamic; MAX_OBJECTS]Surface,
+	surfaces:          [dynamic; MAX_OBJECTS * 5]Surface,
 	objects:           [dynamic; MAX_OBJECTS]Object,
 	drawing_mode:      Drawing_Mode,
 	offset:            rl.Vector2,
