@@ -42,8 +42,9 @@ Camera_Config :: struct {
 }
 
 Sprite_Config :: struct {
-	frame_size:     f32,
-	board_y_offset: f32,
+	frame_size:      f32,
+	skater_y_offset: f32,
+	board_y_offset:  f32,
 }
 
 UI_Config :: struct {
@@ -116,7 +117,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 			death_plane_z = -10,
 		},
 		camera = {cell_size = 32},
-		sprite = {frame_size = 75, board_y_offset = 5},
+		sprite = {frame_size = 75, skater_y_offset = 10, board_y_offset = 5},
 		ui = {font_size = 20},
 		objects = {
 			colors = {

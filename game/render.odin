@@ -243,6 +243,7 @@ draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.
 	target_pos := project(offset, state)
 	target_pos.x -= frame_size * 0.5
 	target_pos.y -= frame_size * 0.8
+	target_pos.y += state.config.data.sprite.skater_y_offset
 
 	rl.DrawTexturePro(
 		state.skater_assets[config.asset],

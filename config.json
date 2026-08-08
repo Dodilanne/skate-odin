@@ -32,7 +32,8 @@
   },
   "sprite": {
     "frame_size": 75.0,
-    "board_y_offset": 5
+    "skater_y_offset": 10
+    "board_y_offset": 15
   },
   "ui": {
     "font_size": 20
