@@ -15,33 +15,26 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 		init_entities(state)
 	}
 
-	for &skater, skater_idx in state.skaters {
+	for &skater in state.skaters {
 		prev_pos := skater.pos
 		defer if skater.pos != prev_pos {
 			any_skater_moved = true
 		}
 
-		should_reset := check(state, inputs, skater_idx, .Reset, .Pressed)
+		should_reset := check(state, inputs, skater.idx, .Reset, .Pressed)
 
 		if !should_reset {
-			if skater_idx == state.target_skater_idx && state.play_mode == .Ghost {
-				ghost_move(state, inputs, &skater, skater_idx, dt)
-				animation_tick(state, &skater, skater_idx, animation_get_value(&skater, state))
+			if skater.idx == state.target_skater_idx && state.play_mode == .Ghost {
+				ghost_move(state, inputs, &skater, dt)
+				animation_tick(state, &skater, animation_get_value(&skater, state))
 			} else {
-				steer(state, inputs, &skater, skater_idx, dt)
-				move(state, inputs, &skater, skater_idx, dt)
-				physics(state, inputs, &skater, skater_idx, dt)
+				steer(state, inputs, &skater, dt)
+				move(state, inputs, &skater, dt)
+				physics(state, inputs, &skater, dt)
 				anim := animation_get_value(&skater, state)
-				animation_tick(state, &skater, skater_idx, anim)
-				touching_a_surface := collisions(state, &skater, skater_idx)
-				should_reset = transition(
-					state,
-					inputs,
-					&skater,
-					skater_idx,
-					dt,
-					touching_a_surface,
-				)
+				animation_tick(state, &skater, anim)
+				touching_a_surface := collisions(state, &skater)
+				should_reset = transition(state, inputs, &skater, dt, touching_a_surface)
 			}
 		}
 
@@ -49,16 +42,16 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 	}
 }
 
-ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
+ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	z_dir: f32
-	if check(state, inputs, skater_idx, .Up, .Down) {z_dir = +1}
-	if check(state, inputs, skater_idx, .Down, .Down) {z_dir = -1}
+	if check(state, inputs, skater.idx, .Up, .Down) {z_dir = +1}
+	if check(state, inputs, skater.idx, .Down, .Down) {z_dir = -1}
 	if z_dir != 0 {
 		skater.pos.z += z_dir * 5 * dt
 	}
 	steer_dir: f32
-	if check(state, inputs, skater_idx, .Left, .Down) {steer_dir = -1}
-	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
+	if check(state, inputs, skater.idx, .Left, .Down) {steer_dir = -1}
+	if check(state, inputs, skater.idx, .Right, .Down) {steer_dir = +1}
 	angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
 	skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 	if skater.angle < 0 {skater.angle += 2 * math.PI}
@@ -68,15 +61,15 @@ ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_i
 		skater.angle,
 	)
 	skater.look_dir = linalg.normalize(skater.look_dir)
-	if check(state, inputs, skater_idx, .Push, .Down) {
+	if check(state, inputs, skater.idx, .Push, .Down) {
 		skater.pos += skater.look_dir * 5 * dt
 	}
 }
 
-steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
+steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	steer_dir: f32
-	if check(state, inputs, skater_idx, .Left, .Down) {steer_dir = -1}
-	if check(state, inputs, skater_idx, .Right, .Down) {steer_dir = +1}
+	if check(state, inputs, skater.idx, .Left, .Down) {steer_dir = -1}
+	if check(state, inputs, skater.idx, .Right, .Down) {steer_dir = +1}
 
 	if skater.state == .Airborne {
 		angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
@@ -107,15 +100,15 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: i
 
 }
 
-move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
+move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	switch skater.state {
 	case .Idle:
-		if check(state, inputs, skater_idx, .Push, .Pressed) {
+		if check(state, inputs, skater.idx, .Push, .Pressed) {
 			skater.vel += skater.move_dir * state.config.data.movement.push_impulse
 			break
 		}
 		for action in Input_Action.Trick_WN ..= Input_Action.Trick_SW {
-			if check(state, inputs, skater_idx, action, .Pressed) {
+			if check(state, inputs, skater.idx, action, .Pressed) {
 				transition_state(state, skater, .Crouched)
 				skater.trick_buffer[0] = action
 				skater.trick_buffer_len = 1
@@ -124,14 +117,14 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 	case .Crouched:
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
-			if check(state, inputs, skater_idx, action, .Pressed) {
+			if check(state, inputs, skater.idx, action, .Pressed) {
 				skater.trick_buffer[skater.trick_buffer_len] = action
 				skater.trick_buffer_len += 1
 			}
 		}
 
 		if skater.trick_buffer_len >= 3 ||
-		   check(state, inputs, skater_idx, skater.trick_buffer[0], .Released) {
+		   check(state, inputs, skater.idx, skater.trick_buffer[0], .Released) {
 			height := skater.timer[.Crouched] * state.config.data.tricks.jump_height_scale
 			height = math.max(height, state.config.data.tricks.min_jump_height)
 			skater.vel.z += height
@@ -150,7 +143,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 		}
 
 		if skater.trick_committed != .None {
-			if check(state, inputs, skater_idx, .Trick_O, .Pressed) {
+			if check(state, inputs, skater.idx, .Trick_O, .Pressed) {
 				skater.trick_caught = true
 			}
 			break
@@ -158,7 +151,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
-			if check(state, inputs, skater_idx, action, .Pressed) {
+			if check(state, inputs, skater.idx, action, .Pressed) {
 				skater.trick_buffer[skater.trick_buffer_len] = action
 				skater.trick_buffer_len += 1
 			}
@@ -270,14 +263,14 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: in
 	}
 }
 
-physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx: int, dt: f32) {
+physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	gravity := state.config.data.physics.gravity_falling
 	if skater.vel.z >= 0 {gravity = state.config.data.physics.gravity_rising}
 	skater.vel -= rl.Vector3{0, 0, gravity * dt}
 
 	if math.abs(linalg.length(skater.vel.xy)) > state.config.data.physics.friction_stop_threshold {
 		friction_coeff := state.config.data.physics.friction
-		if check(state, inputs, skater_idx, .Break, .Down) {
+		if check(state, inputs, skater.idx, .Break, .Down) {
 			friction_coeff *= state.config.data.physics.braking_multiplier
 		}
 		skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
@@ -296,7 +289,7 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, skater_idx:
 	}
 }
 
-collisions :: proc(state: ^State, skater: ^Skater, skater_idx: int) -> bool {
+collisions :: proc(state: ^State, skater: ^Skater) -> bool {
 	touching_a_surface := false
 	for &surface in state.surfaces {
 		p := skater.pos - surface.o
@@ -323,7 +316,6 @@ transition :: proc(
 	state: ^State,
 	inputs: Input_State,
 	skater: ^Skater,
-	skater_idx: int,
 	dt: f32,
 	touching_a_surface: bool,
 ) -> bool {
@@ -387,7 +379,8 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	}
 }
 
-reset_skater :: proc(skater: ^Skater, angle: f32 = 0, pos: rl.Vector3 = {1, 1, 4}) {
+reset_skater :: proc(skater: ^Skater) {
+	skater.radius = SKATER_RADIUS
 	skater.vel = rl.Vector3{}
 	skater.state = .Idle
 	skater.timer = {}
@@ -396,15 +389,22 @@ reset_skater :: proc(skater: ^Skater, angle: f32 = 0, pos: rl.Vector3 = {1, 1, 4
 	skater.trick_committed = .None
 	skater.trick_caught = false
 	skater.skate_angles = {}
-	skater.angle = angle
-	skater.pos = pos + rl.Vector3(SKATER_RADIUS)
+
+	if skater.idx == 0 {
+		skater.angle = math.PI / 2
+		skater.pos = {4, 2, 4}
+	} else {
+		skater.angle = 0
+		skater.pos = {1, 1, 4}
+	}
+		skater.pos += rl.Vector3(skater.radius)
+
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
-	if angle != 0 {
-		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, angle)
+	if skater.angle != 0 {
+		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, skater.angle)
 	}
 	skater.look_dir = skater.move_dir
 	skater.norm = {0, 0, 1}
-	skater.radius = SKATER_RADIUS
 }
 
 check :: proc(

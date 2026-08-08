@@ -72,9 +72,9 @@ animation_update_state :: proc(
 }
 
 // value needs to be normalized between 0 and 1
-animation_tick :: proc(state: ^State, skater: ^Skater, skater_idx: int, value: f32) {
+animation_tick :: proc(state: ^State, skater: ^Skater, value: f32) {
 	animation := &skater.animation
-	animation_update_state(state, skater, skater_idx, animation)
+	animation_update_state(state, skater, skater.idx, animation)
 	config := animation_configs[animation.state]
 
 	animation.progress.idx.x = skater_rot_to_sprite_idx(skater)

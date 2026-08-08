@@ -14,13 +14,10 @@ BOARD_ASSET_COUNT :: 32
 COLORS_PER_PALETTE :: 6
 
 init :: proc(state: ^State) {
-	for i in 0 ..< 1 {
+	for i in 0 ..< 3 {
 		append(&state.skaters, Skater{})
-		if i == 0 {
-			reset_skater(&state.skaters[i], angle = math.PI / 4, pos = {7, 33, 2})
-		} else {
-			reset_skater(&state.skaters[i])
-		}
+		state.skaters[i].idx = i
+		reset_skater(&state.skaters[i])
 	}
 
 	state.show_normals = false
@@ -261,6 +258,7 @@ Trick :: enum u8 {
 }
 
 Skater :: struct {
+	idx:              int,
 	move_dir:         rl.Vector3,
 	look_dir:         rl.Vector3,
 	norm:             rl.Vector3,
