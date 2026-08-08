@@ -298,19 +298,13 @@ collisions :: proc(state: ^State, skater: ^Skater, skater_idx: int) -> bool {
 	touching_a_surface := false
 	for &surface in state.surfaces {
 		p := skater.pos - surface.o
-		d := linalg.dot(surface.n, p)
-		if math.abs(d) > skater.radius {
-			continue
-		}
+		d := linalg.dot(p, surface.n)
+		if math.abs(d) > skater.radius {continue}
 		pp := p - d * surface.n
 		px := linalg.dot(pp, surface.u)
-		if px < 0 || px > surface.w {
-			continue
-		}
+		if px < 0 || px > surface.w {continue}
 		py := linalg.dot(pp, surface.v)
-		if py < 0 || py > surface.h {
-			continue
-		}
+		if py < 0 || py > surface.h {continue}
 		skater.pos += (skater.radius - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
 		if linalg.length(skater.vel) != 0 {
