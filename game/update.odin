@@ -121,7 +121,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 				skater.trick_buffer_len = 1
 			}
 		}
-	case .Crouched:
+	case .Crouched, .Grinding:
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater.idx, action, .Pressed) {
@@ -132,13 +132,14 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 		if skater.trick_buffer_len >= 3 ||
 		   check(state, inputs, skater.idx, skater.trick_buffer[0], .Released) {
-			height := skater.timer[.Crouched] * state.config.data.tricks.jump_height_scale
+			height := skater.timer[skater.state] * state.config.data.tricks.jump_height_scale
 			height = math.max(height, state.config.data.tricks.min_jump_height)
 			skater.vel.z += height
 			skater.jump_height = skater.vel.z
+			transition_state(state, skater, .Airborne)
 		} else {
-			skater.timer[.Crouched] = math.min(
-				skater.timer[.Crouched] + dt * state.config.data.tricks.crouch_charge_rate,
+			skater.timer[skater.state] = math.min(
+				skater.timer[skater.state] + dt * state.config.data.tricks.crouch_charge_rate,
 				1,
 			)
 		}
@@ -267,8 +268,6 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		if skater.timer[.Landing] <= 0 {
 			transition_state(state, skater, .Idle)
 		}
-	case .Grinding:
-		skater.timer[.Grinding] += dt
 	}
 }
 
@@ -303,6 +302,7 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 	if skater.state != .Airborne || skater.jump_height == 0 {return false}
+	if skater.vel.z > 0 {return false}
 
 	for object, object_idx in state.objects {
 		if object.kind == .Ramp {continue}
@@ -338,7 +338,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 			if in_bounds.y {
 				fmt.printfln("Grinding on edge %v along y axis!", at_edge.x)
 				transition_state(state, skater, .Grinding)
-				skater.pos.z = object.pos.z + object.size.z
+				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.x = object.pos.x
 				if .hi in at_edge.x {skater.pos.x += object.size.x}
 				skater.vel.xz = 0
@@ -503,12 +503,13 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 	skater.timer[new_state] = 0
 	skater.grind_target_idx = 0
 	#partial switch new_state {
-	case .Idle:
+	case .Idle, .Grinding:
 		skater.jump_height = 0
 		skater.trick_buffer_len = 0
 		skater.trick_buffer = {.None, .None, .None}
 		skater.trick_committed = .None
 		skater.trick_caught = false
+		skater.skate_angles = {}
 	case .Landing:
 		skater.timer[.Landing] =
 			skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
