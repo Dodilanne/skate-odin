@@ -4,6 +4,7 @@ import "core:c"
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
+import "core:slice"
 import "core:strings"
 import rl "vendor:raylib"
 
@@ -23,6 +24,7 @@ init :: proc(state: ^State) {
 
 	init_surfaces(state)
 	init_objects(state)
+	init_entities(state)
 
 	for sprite_sheet in Skater_Asset {
 		path := fmt.ctprintf("assets/data/anim/anim_%v.png", sprite_sheet)
@@ -112,6 +114,23 @@ init_objects :: proc(state: ^State) {
 		{kind = .Box, mat = .Wood, pos = {1, 1, 3}, size = {11, 9, 1}},
 		{kind = .Box, mat = .Concrete, pos = {0, 0, -40}, size = {50, 50, 42}},
 	}
+}
+
+init_entities :: proc(state: ^State) {
+	clear(&state.entities)
+	for &object, idx in state.objects {
+		max := object.pos + object.size
+		if object.kind == .Ramp {max.z = object.pos.z}
+		append(&state.entities, Entity{object.pos, max, u16(idx), .Object, object.kind})
+	}
+	for &skater, idx in state.skaters {
+		append(&state.entities, Entity{skater.pos, skater.pos, u16(idx), .Skater, .Box})
+	}
+	slice.stable_sort_by(state.entities[:], sort_entity)
+}
+
+sort_entity :: proc(a, b: Entity) -> bool {
+	return a.max.x <= b.min.x || a.max.y <= b.min.y || a.max.z <= b.min.z
 }
 
 Object_Material :: enum u8 {
@@ -275,6 +294,19 @@ Play_Mode :: enum u8 {
 	Ghost,
 }
 
+Entity_Kind :: enum u8 {
+	Object,
+	Skater,
+}
+
+Entity :: struct {
+	min:         rl.Vector3,
+	max:         rl.Vector3,
+	idx:         u16,
+	entity_kind: Entity_Kind,
+	object_kind: Object_Kind,
+}
+
 State :: struct {
 	config:            Config,
 	target_skater_idx: int,
@@ -289,4 +321,5 @@ State :: struct {
 	shaders:           [Shader]rl.Shader,
 	palette:           Palette,
 	play_mode:         Play_Mode,
+	entities:          [dynamic; MAX_SKATERS + MAX_OBJECTS]Entity,
 }

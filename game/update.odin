@@ -8,7 +8,18 @@ SKATER_RADIUS: f32 : 0.5
 
 update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 	when ODIN_DEBUG {read_debug_inputs(state, inputs)}
+
+	any_skater_moved := false
+	defer if any_skater_moved {
+		init_entities(state)
+	}
+
 	for &skater, skater_idx in state.skaters {
+		prev_pos := skater.pos
+		defer if skater.pos != prev_pos {
+			any_skater_moved = true
+		}
+
 		should_reset := check(state, inputs, skater_idx, .Reset, .Pressed)
 
 		if !should_reset {
