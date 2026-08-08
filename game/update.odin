@@ -1,6 +1,5 @@
 package game
 
-import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
@@ -134,6 +133,15 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		   check(state, inputs, skater.idx, skater.trick_buffer[0], .Released) {
 			height := skater.timer[skater.state] * state.config.data.tricks.jump_height_scale
 			height = math.max(height, state.config.data.tricks.min_jump_height)
+			if skater.grind_target_idx >= 0 {
+				height *= 0.6
+				if check(state, inputs, skater.idx, .Left, .Down) {
+					skater.vel.x += 2
+				} else if check(state, inputs, skater.idx, .Right, .Down) {
+					skater.vel.x -= 2
+				}
+			}
+
 			skater.vel.z += height
 			skater.jump_height = skater.vel.z
 			transition_state(state, skater, .Airborne)
@@ -336,7 +344,6 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 
 		if at_edge.x != {} {
 			if in_bounds.y {
-				fmt.printfln("Grinding on edge %v along y axis!", at_edge.x)
 				transition_state(state, skater, .Idle)
 				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.x = object.pos.x
