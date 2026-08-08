@@ -302,7 +302,7 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 }
 
 start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
-	if skater.state != .Airborne {return false}
+	if skater.state != .Airborne || skater.jump_height == 0 {return false}
 
 	for object, object_idx in state.objects {
 		if object.kind == .Ramp {continue}
