@@ -68,6 +68,40 @@ init_objects :: proc(state: ^State) {
 	}
 }
 
+ramp_axis_info :: proc(
+	size: rl.Vector3,
+	axis_is_y: bool,
+) -> (
+	axis_vec, u: rl.Vector3,
+	width, axis_size: f32,
+) {
+	axis_vec = axis_is_y ? {0, 1, 0} : {1, 0, 0}
+	u = axis_is_y ? {1, 0, 0} : {0, 1, 0}
+	width = axis_is_y ? size.x : size.y
+	axis_size = axis_is_y ? size.y : size.x
+	return
+}
+
+build_wall_surface :: proc(pos, size: rl.Vector3, axis_is_y, high: bool) -> Surface {
+	axis_vec, u, width, axis_size := ramp_axis_info(size, axis_is_y)
+	n := axis_vec * (high ? 1 : -1)
+	offset := high ? axis_vec * axis_size : rl.Vector3{0, 0, 0}
+	return Surface{o = pos + offset, w = width, h = size.z, n = n, u = u, v = {0, 0, 1}}
+}
+
+build_incline_surface :: proc(pos, size: rl.Vector3, axis_is_y, high: bool) -> Surface {
+	axis_vec, u, width, axis_size := ramp_axis_info(size, axis_is_y)
+	angle_sign: f32 = (axis_is_y == high) ? 1 : -1
+	base_dir := axis_vec * (high ? 1 : -1)
+	angle := angle_sign * math.atan2_f32(size.z, axis_size)
+	v := linalg.normalize(rl.Vector3RotateByAxisAngle(base_dir, u, angle))
+	n := linalg.normalize(angle_sign > 0 ? linalg.cross(u, v) : linalg.cross(v, u))
+	offset := high ? rl.Vector3{0, 0, 0} : axis_vec * axis_size
+	h := math.sqrt(axis_size * axis_size + size.z * size.z)
+	return Surface{o = pos + offset, w = width, h = h, n = n, u = u, v = v}
+}
+
+
 init_surfaces :: proc(state: ^State) {
 	for object in state.objects {
 		switch object.kind {
@@ -82,159 +116,28 @@ init_surfaces :: proc(state: ^State) {
 					u = {1, 0, 0},
 					v = {0, 1, 0},
 				},
-				Surface {
-					o = object.pos,
-					w = object.size.x,
-					h = object.size.z,
-					n = {0, -1, 0},
-					u = {1, 0, 0},
-					v = {0, 0, 1},
-				},
-				Surface {
-					o = object.pos + {object.size.x, 0, 0},
-					w = object.size.y,
-					h = object.size.z,
-					n = {1, 0, 0},
-					u = {0, 1, 0},
-					v = {0, 0, 1},
-				},
-				Surface {
-					o = object.pos + {0, object.size.y, 0},
-					w = object.size.x,
-					h = object.size.z,
-					n = {0, 1, 0},
-					u = {1, 0, 0},
-					v = {0, 0, 1},
-				},
-				Surface {
-					o = object.pos,
-					w = object.size.y,
-					h = object.size.z,
-					n = {-1, 0, 0},
-					u = {0, 1, 0},
-					v = {0, 0, 1},
-				},
+				build_wall_surface(object.pos, object.size, true, false),
+				build_wall_surface(object.pos, object.size, true, true),
+				build_wall_surface(object.pos, object.size, false, true),
+				build_wall_surface(object.pos, object.size, false, false),
 			)
 		case .Ramp:
-			squared_size := object.size * object.size
+			axis_is_y, high: bool
 			switch object.orientation {
 			case .North:
-				v := linalg.normalize(
-					rl.Vector3RotateByAxisAngle(
-						{0, -1, 0},
-						{1, 0, 0},
-						-math.atan2_f32(object.size.z, object.size.y),
-					),
-				)
-				u := rl.Vector3{1, 0, 0}
-				n := linalg.normalize(linalg.cross(v, u))
-				append(
-					&state.surfaces,
-					Surface {
-						o = object.pos + {0, object.size.y, 0},
-						w = object.size.x,
-						h = math.sqrt(squared_size.y + squared_size.z),
-						n = n,
-						u = u,
-						v = v,
-					},
-					Surface {
-						o = object.pos,
-						w = object.size.x,
-						h = object.size.z,
-						n = {0, -1, 0},
-						u = {1, 0, 0},
-						v = {0, 0, 1},
-					},
-				)
-			case .East:
-				v := linalg.normalize(
-					rl.Vector3RotateByAxisAngle(
-						{1, 0, 0},
-						{0, 1, 0},
-						-math.atan2_f32(object.size.z, object.size.x),
-					),
-				)
-				u := rl.Vector3{0, 1, 0}
-				n := linalg.normalize(linalg.cross(v, u))
-				append(
-					&state.surfaces,
-					Surface {
-						o = object.pos,
-						w = object.size.y,
-						h = math.sqrt(squared_size.x + squared_size.z),
-						n = n,
-						u = u,
-						v = v,
-					},
-					Surface {
-						o = object.pos + {object.size.x, 0, 0},
-						w = object.size.y,
-						h = object.size.z,
-						n = {1, 0, 0},
-						u = {0, 1, 0},
-						v = {0, 0, 1},
-					},
-				)
+				axis_is_y, high = true, false
 			case .South:
-				v := linalg.normalize(
-					rl.Vector3RotateByAxisAngle(
-						{0, 1, 0},
-						{1, 0, 0},
-						math.atan2_f32(object.size.z, object.size.y),
-					),
-				)
-				u := rl.Vector3{1, 0, 0}
-				n := linalg.normalize(linalg.cross(u, v))
-				append(
-					&state.surfaces,
-					Surface {
-						o = object.pos,
-						w = object.size.x,
-						h = math.sqrt(squared_size.y + squared_size.z),
-						n = n,
-						u = u,
-						v = v,
-					},
-					Surface {
-						o = object.pos + {0, object.size.y, 0},
-						w = object.size.x,
-						h = object.size.z,
-						n = {0, 1, 0},
-						u = {1, 0, 0},
-						v = {0, 0, 1},
-					},
-				)
+				axis_is_y, high = true, true
+			case .East:
+				axis_is_y, high = false, true
 			case .West:
-				v := linalg.normalize(
-					rl.Vector3RotateByAxisAngle(
-						{-1, 0, 0},
-						{0, 1, 0},
-						math.atan2_f32(object.size.z, object.size.x),
-					),
-				)
-				u := rl.Vector3{0, 1, 0}
-				n := linalg.normalize(linalg.cross(u, v))
-				append(
-					&state.surfaces,
-					Surface {
-						o = object.pos + {object.size.x, 0, 0},
-						w = object.size.y,
-						h = math.sqrt(squared_size.x + squared_size.z),
-						n = n,
-						u = u,
-						v = v,
-					},
-					Surface {
-						o = object.pos,
-						w = object.size.y,
-						h = object.size.z,
-						n = {-1, 0, 0},
-						u = {0, 1, 0},
-						v = {0, 0, 1},
-					},
-				)
+				axis_is_y, high = false, false
 			}
+			append(
+				&state.surfaces,
+				build_incline_surface(object.pos, object.size, axis_is_y, high),
+				build_wall_surface(object.pos, object.size, axis_is_y, high),
+			)
 		}
 	}
 }
