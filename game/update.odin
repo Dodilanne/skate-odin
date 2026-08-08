@@ -26,7 +26,7 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 		if !should_reset {
 			if skater.idx == state.target_skater_idx && state.play_mode == .Ghost {
 				ghost_move(state, inputs, &skater, dt)
-			} else if skater.state == .Grinding {
+			} else if skater.grind_target_idx >= 0 {
 				move(state, inputs, &skater, dt)
 				apply_velocity(state, inputs, &skater, dt)
 				stop_grinding(state, &skater)
@@ -121,7 +121,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 				skater.trick_buffer_len = 1
 			}
 		}
-	case .Crouched, .Grinding:
+	case .Crouched:
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 			if skater.trick_buffer_len >= 3 {break}
 			if check(state, inputs, skater.idx, action, .Pressed) {
@@ -337,7 +337,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 		if at_edge.x != {} {
 			if in_bounds.y {
 				fmt.printfln("Grinding on edge %v along y axis!", at_edge.x)
-				transition_state(state, skater, .Grinding)
+				transition_state(state, skater, .Idle)
 				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.x = object.pos.x
 				if .hi in at_edge.x {skater.pos.x += object.size.x}
@@ -352,7 +352,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 }
 
 stop_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
-	if skater.state != .Grinding {return false}
+	if skater.grind_target_idx < 0 {return false}
 	i := skater.vel.x > 0 ? 0 : 1
 	object := state.objects[skater.grind_target_idx]
 	offset := skater.radius
@@ -457,6 +457,7 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 }
 
 reset_skater :: proc(skater: ^Skater) {
+	skater.grind_target_idx = -1
 	skater.radius = SKATER_RADIUS
 	skater.vel = rl.Vector3{}
 	skater.state = .Idle
@@ -501,9 +502,8 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 	if skater.state == new_state {return}
 	skater.state = new_state
 	skater.timer[new_state] = 0
-	skater.grind_target_idx = 0
 	#partial switch new_state {
-	case .Idle, .Grinding:
+	case .Idle:
 		skater.jump_height = 0
 		skater.trick_buffer_len = 0
 		skater.trick_buffer = {.None, .None, .None}
@@ -513,5 +513,7 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 	case .Landing:
 		skater.timer[.Landing] =
 			skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
+	case .Airborne:
+		skater.grind_target_idx = -1
 	}
 }

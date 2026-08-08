@@ -285,7 +285,6 @@ Skater_State :: enum {
 	Crouched,
 	Airborne,
 	Landing,
-	Grinding,
 }
 
 Surface :: struct {
