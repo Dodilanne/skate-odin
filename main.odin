@@ -22,6 +22,7 @@ main :: proc() {
 		}
 	}
 
+	rl.SetTargetFPS(60)
 	rl.SetTraceLogLevel(.WARNING)
 	rl.InitWindow(32 * 40, 32 * 23, "skate")
 	rl.SetWindowState({.WINDOW_RESIZABLE})

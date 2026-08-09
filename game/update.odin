@@ -109,7 +109,7 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	switch skater.state {
 	case .Idle:
-		if check(state, inputs, skater.idx, .Push, .Pressed) {
+		if skater.grind_target_idx < 0 && check(state, inputs, skater.idx, .Push, .Pressed) {
 			skater.vel += skater.move_dir * state.config.data.movement.push_impulse
 			break
 		}
@@ -135,11 +135,16 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 			height = math.max(height, state.config.data.tricks.min_jump_height)
 			if skater.grind_target_idx >= 0 {
 				height *= 0.6
+				i := skater.vel.x != 0 ? 1 : 0
+				mul: f32 = 0
 				if check(state, inputs, skater.idx, .Left, .Down) {
-					skater.vel.x += 2
+					mul = 1
 				} else if check(state, inputs, skater.idx, .Right, .Down) {
-					skater.vel.x -= 2
+					mul = -1
 				}
+				mul *= math.sign(skater.look_dir[1 - i])
+				if skater.vel.x != 0 {mul *= -1}
+				skater.vel[i] += 2 * mul
 			}
 
 			skater.vel.z += height
@@ -352,6 +357,16 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 				skater.grind_target_idx = object_idx
 				return true
 			}
+		} else if at_edge.y != {} {
+			if in_bounds.x {
+				transition_state(state, skater, .Idle)
+				skater.pos.z = object.pos.z + object.size.z + skater.radius
+				skater.pos.y = object.pos.y
+				if .hi in at_edge.y {skater.pos.y += object.size.y}
+				skater.vel.yz = 0
+				skater.grind_target_idx = object_idx
+				return true
+			}
 		}
 	}
 
@@ -360,15 +375,13 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 
 stop_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 	if skater.grind_target_idx < 0 {return false}
-	i := skater.vel.x > 0 ? 0 : 1
+	i := skater.vel.x != 0 ? 0 : 1
 	object := state.objects[skater.grind_target_idx]
 	offset := skater.radius
 	min := object.pos[i] - offset
 	max := object.pos[i] + object.size[i] + offset
 	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max
-	if in_bounds {
-		return false
-	}
+	if in_bounds {return false}
 	transition_state(state, skater, .Airborne)
 	return true
 }
