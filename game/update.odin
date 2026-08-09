@@ -149,6 +149,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 			skater.vel.z += height
 			skater.jump_height = skater.vel.z
+			skater.jump_start_pos = skater.pos
 			transition_state(state, skater, .Airborne)
 		} else {
 			skater.timer[skater.state] = math.min(
@@ -315,7 +316,7 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 	if skater.state != .Airborne || skater.jump_height == 0 {return false}
-	if skater.vel.z > 0 {return false}
+	if skater.jump_start_pos.z >= skater.pos.z {return false}
 
 	for object, object_idx in state.objects {
 		if object.kind == .Ramp {continue}
@@ -483,6 +484,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.state = .Idle
 	skater.timer = {}
 	skater.jump_height = 0
+	skater.jump_start_pos = {}
 	skater.trick_buffer_len = 0
 	skater.trick_committed = .None
 	skater.trick_caught = false
@@ -525,6 +527,7 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 	#partial switch new_state {
 	case .Idle:
 		skater.jump_height = 0
+		skater.jump_start_pos = {}
 		skater.trick_buffer_len = 0
 		skater.trick_buffer = {.None, .None, .None}
 		skater.trick_committed = .None
