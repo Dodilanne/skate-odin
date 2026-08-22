@@ -6,11 +6,12 @@ import "core:os"
 import "core:time"
 
 Movement_Config :: struct {
-	push_impulse:         f32,
-	riding_steer_rate:    f32,
-	stopped_steer_speed:  f32,
-	airborne_steer_speed: f32,
-	max_speed:            f32,
+	push_impulse:              f32,
+	riding_steer_rate:         f32,
+	stopped_steer_speed:       f32,
+	airborne_steer_speed:      f32,
+	max_speed:                 f32,
+	drop_time_before_airborne: f32,
 }
 
 Physics_Config :: struct {
@@ -31,10 +32,9 @@ Trick_Config :: struct {
 }
 
 Landing_Config :: struct {
-	facing_alignment_min_dot: f32,
-	board_angle_snap_deg:     int,
-	landing_duration_scale:   f32,
-	death_plane_z:            f32,
+	board_angle_snap_deg:   int,
+	landing_duration_scale: f32,
+	death_plane_z:          f32,
 }
 
 Camera_Config :: struct {
@@ -94,6 +94,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 			stopped_steer_speed = 2,
 			airborne_steer_speed = 6,
 			max_speed = 8,
+			drop_time_before_airborne = 0.5,
 		},
 		physics = {
 			gravity_rising = 10,
@@ -110,12 +111,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 			half_spin_divisor = 2,
 			trick_commit_delay = 0.3,
 		},
-		landing = {
-			facing_alignment_min_dot = 0.85,
-			board_angle_snap_deg = 40,
-			landing_duration_scale = 0.4,
-			death_plane_z = -10,
-		},
+		landing = {board_angle_snap_deg = 40, landing_duration_scale = 0.4, death_plane_z = -10},
 		camera = {cell_size = 32},
 		sprite = {frame_size = 75, skater_y_offset = 10, board_y_offset = 5},
 		ui = {font_size = 20},

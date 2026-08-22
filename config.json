@@ -4,7 +4,8 @@
     "riding_steer_rate": 0.2,
     "stopped_steer_speed": 2.0,
     "airborne_steer_speed": 6.0,
-    "max_speed": 8.0
+    "max_speed": 8.0,
+    "drop_time_before_airborne": 0.2,
   },
   "physics": {
     "gravity_rising": 10.0,
@@ -22,7 +23,6 @@
     "trick_commit_delay": 0.30000001
   },
   "landing": {
-    "facing_alignment_min_dot": 0.85000002,
     "board_angle_snap_deg": 40,
     "landing_duration_scale": 0.40000001,
     "death_plane_z": -10.0

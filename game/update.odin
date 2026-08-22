@@ -282,6 +282,9 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		if skater.timer[.Landing] <= 0 {
 			transition_state(state, skater, .Idle)
 		}
+
+	case .Dropping:
+		skater.timer[.Dropping] += dt
 	}
 }
 
@@ -417,10 +420,20 @@ transition :: proc(
 	dt: f32,
 	touching_a_surface: bool,
 ) -> bool {
-	if !touching_a_surface {
-		transition_state(state, skater, .Airborne)
-	} else if skater.state == .Airborne {
+	if skater.state == .Dropping {
+		if touching_a_surface {
+			transition_state(state, skater, .Idle)
+		} else if skater.timer[.Dropping] > state.config.data.movement.drop_time_before_airborne {
+			transition_state(state, skater, .Airborne)
+		}
+	}
+	if skater.state != .Airborne && !touching_a_surface {
+		transition_state(state, skater, .Dropping)
+	}
+	if skater.state == .Airborne && touching_a_surface {
 		transition_state(state, skater, .Landing)
+		prev_len := linalg.length(skater.vel)
+		skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
 	}
 
 	if skater.state != .Airborne {
@@ -429,11 +442,6 @@ transition :: proc(
 				linalg.normalize(skater.move_dir.xy),
 				linalg.normalize(skater.look_dir.xy),
 			)
-			abs := math.abs(diff)
-			if skater.state == .Landing &&
-			   abs < state.config.data.landing.facing_alignment_min_dot {
-				return true
-			}
 			skater.look_dir = skater.move_dir * math.sign(diff)
 		}
 

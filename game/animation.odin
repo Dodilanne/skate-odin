@@ -53,6 +53,8 @@ animation_update_state :: proc(
 			anim_state = .Idle
 		case .Crouched:
 			anim_state = .Crouched
+		case .Dropping:
+			anim_state = .Idle
 		case .Airborne:
 			if skater.jump_height <= 0 {
 				anim_state = .Falling
