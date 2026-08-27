@@ -67,6 +67,7 @@ ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32)
 		skater.angle,
 	)
 	skater.look_dir = linalg.normalize(skater.look_dir)
+	skater.move_dir = skater.look_dir
 	if check(state, inputs, skater.idx, .Push, .Down) {
 		skater.pos += skater.look_dir * 5 * dt
 	}
@@ -478,9 +479,9 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	if .Pressed in inputs.actions[.Cycle_Play_Mode] {
 		state.play_mode = Play_Mode((int(state.play_mode) + 1) % len(Play_Mode))
 		skater := &state.skaters[state.target_skater_idx]
-		pos := skater.pos
+		pos, look_dir, move_dir := skater.pos, skater.look_dir, skater.move_dir
 		reset_skater(skater)
-		skater.pos = pos
+		skater.pos, skater.look_dir, skater.move_dir = pos, look_dir, move_dir
 	}
 }
 
