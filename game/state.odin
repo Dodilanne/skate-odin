@@ -304,6 +304,7 @@ Skater_Asset :: enum u8 {
 	Air,
 	Land,
 	Onspot,
+	Allgrind2,
 }
 
 Shader :: enum u8 {

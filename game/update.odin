@@ -41,7 +41,7 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 					should_reset = transition(state, inputs, &skater, dt, touching_a_surface)
 				}
 			}
-			animation_tick(state, &skater, animation_get_value(&skater, state))
+			animation_tick(state, &skater)
 		}
 
 		if should_reset {reset_skater(&skater)}
