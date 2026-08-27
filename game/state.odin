@@ -143,7 +143,7 @@ init_entities :: proc(state: ^State) {
 	clear(&state.entities)
 	for &object, idx in state.objects {
 		max := object.pos + object.size
-		if object.kind == .Ramp {max.z = object.pos.z}
+		if object.kind == .Ramp do max.z = object.pos.z
 		append(&state.entities, Entity{object.pos, max, u16(idx), .Object, object.kind})
 	}
 	for &skater, idx in state.skaters {

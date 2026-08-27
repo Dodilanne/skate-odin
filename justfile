@@ -3,7 +3,7 @@ dev:
   odin run . -debug
 
 check:
-  odin check . -vet -disallow-do
+  odin check . -vet -strict-style
 
 build:
   odin build .

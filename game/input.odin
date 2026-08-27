@@ -38,9 +38,9 @@ Input_Flag :: enum u8 {
 }
 
 input_flags :: proc(key: rl.KeyboardKey) -> (flags: bit_set[Input_Flag]) {
-	if rl.IsKeyDown(key) {flags |= {.Down}}
-	if rl.IsKeyPressed(key) {flags |= {.Pressed}}
-	if rl.IsKeyReleased(key) {flags |= {.Released}}
+	if rl.IsKeyDown(key) do flags |= {.Down}
+	if rl.IsKeyPressed(key) do flags |= {.Pressed}
+	if rl.IsKeyReleased(key) do flags |= {.Released}
 	return
 }
 

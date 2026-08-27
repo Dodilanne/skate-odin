@@ -44,23 +44,23 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 			animation_tick(state, &skater)
 		}
 
-		if should_reset {reset_skater(&skater)}
+		if should_reset do reset_skater(&skater)
 	}
 }
 
 ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	z_dir: f32
-	if check(state, inputs, skater.idx, .Up, .Down) {z_dir = +1}
-	if check(state, inputs, skater.idx, .Down, .Down) {z_dir = -1}
+	if check(state, inputs, skater.idx, .Up, .Down) do z_dir = +1
+	if check(state, inputs, skater.idx, .Down, .Down) do z_dir = -1
 	if z_dir != 0 {
 		skater.pos.z += z_dir * 5 * dt
 	}
 	steer_dir: f32
-	if check(state, inputs, skater.idx, .Left, .Down) {steer_dir = -1}
-	if check(state, inputs, skater.idx, .Right, .Down) {steer_dir = +1}
+	if check(state, inputs, skater.idx, .Left, .Down) do steer_dir = -1
+	if check(state, inputs, skater.idx, .Right, .Down) do steer_dir = +1
 	angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
 	skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-	if skater.angle < 0 {skater.angle += 2 * math.PI}
+	if skater.angle < 0 do skater.angle += 2 * math.PI
 	skater.look_dir = rl.Vector3RotateByAxisAngle(
 		rl.Vector3{1, 0, 0},
 		rl.Vector3{0, 0, 1},
@@ -74,13 +74,13 @@ ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32)
 
 steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	steer_dir: f32
-	if check(state, inputs, skater.idx, .Left, .Down) {steer_dir = -1}
-	if check(state, inputs, skater.idx, .Right, .Down) {steer_dir = +1}
+	if check(state, inputs, skater.idx, .Left, .Down) do steer_dir = -1
+	if check(state, inputs, skater.idx, .Right, .Down) do steer_dir = +1
 
 	if skater.state == .Airborne {
 		angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
 		skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-		if skater.angle < 0 {skater.angle += 2 * math.PI}
+		if skater.angle < 0 do skater.angle += 2 * math.PI
 		skater.look_dir = rl.Vector3RotateByAxisAngle(
 			rl.Vector3{1, 0, 0},
 			rl.Vector3{0, 0, 1},
@@ -89,12 +89,12 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		skater.look_dir = linalg.normalize(skater.look_dir)
 	} else if steer_dir != 0 {
 		speed := linalg.length(skater.vel) * state.config.data.movement.riding_steer_rate
-		if speed == 0 {speed = state.config.data.movement.stopped_steer_speed}
+		if speed == 0 do speed = state.config.data.movement.stopped_steer_speed
 
 		angle_change := steer_dir * dt * speed
 
 		skater.angle = angle_change + linalg.atan2(skater.move_dir.y, skater.move_dir.x)
-		if skater.angle < 0 {skater.angle += 2 * math.PI}
+		if skater.angle < 0 do skater.angle += 2 * math.PI
 		skater.move_dir = rl.Vector3RotateByAxisAngle(
 			rl.Vector3{1, 0, 0},
 			rl.Vector3{0, 0, 1},
@@ -122,7 +122,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		}
 	case .Crouched:
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
-			if skater.trick_buffer_len >= 3 {break}
+			if skater.trick_buffer_len >= 3 do break
 			if check(state, inputs, skater.idx, action, .Pressed) {
 				skater.trick_buffer[skater.trick_buffer_len] = action
 				skater.trick_buffer_len += 1
@@ -143,7 +143,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 					mul = -1
 				}
 				mul *= math.sign(skater.look_dir[1 - i])
-				if skater.vel.x != 0 {mul *= -1}
+				if skater.vel.x != 0 do mul *= -1
 				skater.vel[i] += 2 * mul
 			}
 
@@ -172,7 +172,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		}
 
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
-			if skater.trick_buffer_len >= 3 {break}
+			if skater.trick_buffer_len >= 3 do break
 			if check(state, inputs, skater.idx, action, .Pressed) {
 				skater.trick_buffer[skater.trick_buffer_len] = action
 				skater.trick_buffer_len += 1
@@ -290,7 +290,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 apply_gravity :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	gravity := state.config.data.physics.gravity_falling
-	if skater.vel.z >= 0 {gravity = state.config.data.physics.gravity_rising}
+	if skater.vel.z >= 0 do gravity = state.config.data.physics.gravity_rising
 	skater.vel -= rl.Vector3{0, 0, gravity * dt}
 }
 
@@ -318,11 +318,11 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 }
 
 start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
-	if skater.state != .Airborne || skater.jump_height == 0 {return false}
-	if skater.jump_start_pos.z >= skater.pos.z {return false}
+	if skater.state != .Airborne || skater.jump_height == 0 do return false
+	if skater.jump_start_pos.z >= skater.pos.z do return false
 
 	for object, object_idx in state.objects {
-		if object.kind == .Ramp {continue}
+		if object.kind == .Ramp do continue
 
 		offset := skater.radius
 
@@ -340,23 +340,23 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 			{
 				min := object.pos[i] - offset
 				max := object.pos[i] + offset
-				if skater.pos[i] >= min && skater.pos[i] <= max {at_edge[i] |= {.lo}}
+				if skater.pos[i] >= min && skater.pos[i] <= max do at_edge[i] |= {.lo}
 			}
 			{
 				min := object.pos[i] + object.size[i] - offset
 				max := object.pos[i] + object.size[i] + offset
-				if skater.pos[i] >= min && skater.pos[i] <= max {at_edge[i] |= {.hi}}
+				if skater.pos[i] >= min && skater.pos[i] <= max do at_edge[i] |= {.hi}
 			}
 		}
 
-		if .hi not_in at_edge.z {continue}
+		if .hi not_in at_edge.z do continue
 
 		if at_edge.x != {} {
 			if in_bounds.y {
 				transition_state(state, skater, .Idle)
 				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.x = object.pos.x
-				if .hi in at_edge.x {skater.pos.x += object.size.x}
+				if .hi in at_edge.x do skater.pos.x += object.size.x
 				skater.vel.xz = 0
 				skater.grind_target_idx = object_idx
 				return true
@@ -366,7 +366,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 				transition_state(state, skater, .Idle)
 				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.y = object.pos.y
-				if .hi in at_edge.y {skater.pos.y += object.size.y}
+				if .hi in at_edge.y do skater.pos.y += object.size.y
 				skater.vel.yz = 0
 				skater.grind_target_idx = object_idx
 				return true
@@ -378,14 +378,14 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 }
 
 stop_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
-	if skater.grind_target_idx < 0 {return false}
+	if skater.grind_target_idx < 0 do return false
 	i := skater.vel.x != 0 ? 0 : 1
 	object := state.objects[skater.grind_target_idx]
 	offset := skater.radius
 	min := object.pos[i] - offset
 	max := object.pos[i] + object.size[i] + offset
 	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max
-	if in_bounds {return false}
+	if in_bounds do return false
 	transition_state(state, skater, .Airborne)
 	return true
 }
@@ -395,12 +395,12 @@ collisions :: proc(state: ^State, skater: ^Skater) -> bool {
 	for &surface in state.surfaces {
 		p := skater.pos - surface.o
 		d := linalg.dot(p, surface.n)
-		if math.abs(d) >= skater.radius {continue}
+		if math.abs(d) >= skater.radius do continue
 		pp := p - d * surface.n
 		px := linalg.dot(pp, surface.u)
-		if px < 0 || px > surface.w {continue}
+		if px < 0 || px > surface.w do continue
 		py := linalg.dot(pp, surface.v)
-		if py < 0 || py > surface.h {continue}
+		if py < 0 || py > surface.h do continue
 		skater.pos += (skater.radius - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
 		if linalg.length(skater.vel) != 0 {
@@ -528,7 +528,7 @@ check :: proc(
 }
 
 transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State) {
-	if skater.state == new_state {return}
+	if skater.state == new_state do return
 	skater.state = new_state
 	skater.timer[new_state] = 0
 	#partial switch new_state {

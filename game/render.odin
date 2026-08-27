@@ -256,16 +256,16 @@ draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.
 }
 
 draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	if skater.state != .Airborne {return}
-	if skater.skate_angles.zw == {} {return}
+	if skater.state != .Airborne do return
+	if skater.skate_angles.zw == {} do return
 
 	rad := skater.skate_angles.zw
 	rad.x += linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 	deg := rad * rl.RAD2DEG
 	sign := linalg.sign(deg)
 	orientation := linalg.mod(deg * sign, 360)
-	if sign.x < 0 {orientation.x = 360 - orientation.x}
-	if sign.y < 0 {orientation.y = 360 - orientation.y}
+	if sign.x < 0 do orientation.x = 360 - orientation.x
+	if sign.y < 0 do orientation.y = 360 - orientation.y
 	asset_idx := math.round(orientation.x * BOARD_ASSET_COUNT / 360)
 	asset_idx = math.clamp(asset_idx, 0, BOARD_ASSET_COUNT - 1)
 
