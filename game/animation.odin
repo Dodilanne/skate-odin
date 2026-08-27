@@ -91,7 +91,13 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 	}
 
 	#partial switch skater.animation.state {
-	case .Grinding, .Idle, .Ghost:
+	case .Grinding:
+		if skater.vel.y != 0 {
+			animation.progress.idx.y = skater.look_dir.y > 0 ? 0 : 1
+		} else {
+			animation.progress.idx.y = skater.look_dir.x > 0 ? 2 : 3
+		}
+	case .Idle, .Ghost:
 		animation.progress.idx.y = 0
 	case .Crouched:
 		v := skater.timer[skater.state]

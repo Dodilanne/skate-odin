@@ -432,7 +432,6 @@ transition :: proc(
 	}
 	if skater.state == .Airborne && touching_a_surface {
 		transition_state(state, skater, .Landing)
-		prev_len := linalg.length(skater.vel)
 		skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
 	}
 

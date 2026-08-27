@@ -1,5 +1,5 @@
 package game
-import "core:c"
+
 import "core:fmt"
 import "core:math"
 import "core:math/linalg"
