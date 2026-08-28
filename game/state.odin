@@ -273,6 +273,7 @@ Skater :: struct {
 	jump_height:      f32,
 	jump_start_pos:   rl.Vector3,
 	trick_buffer:     [3]Input_Action,
+	grind_buffer:     bit_set[Input_Action],
 	trick_buffer_len: u8,
 	trick_committed:  Trick,
 	trick_caught:     bool,

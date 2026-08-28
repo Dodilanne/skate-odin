@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
@@ -36,7 +37,9 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 				physics(state, inputs, &skater, dt)
 				apply_velocity(state, inputs, &skater, dt)
 				stuck := start_grinding(state, &skater)
-				if !stuck {
+				if stuck {
+					gather_grind_trick(&skater, inputs)
+				} else {
 					touching_a_surface := collisions(state, &skater)
 					should_reset = transition(state, inputs, &skater, dt, touching_a_surface)
 				}
@@ -108,7 +111,7 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 }
 
 move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
-	switch skater.state {
+	move_switch: switch skater.state {
 	case .Idle:
 		if skater.grind_target_idx < 0 && check(state, inputs, skater.idx, .Push, .Pressed) {
 			skater.vel += skater.move_dir * state.config.data.movement.push_impulse
@@ -166,10 +169,12 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		}
 
 		if skater.trick_committed != .None {
-			if check(state, inputs, skater.idx, .Trick_O, .Pressed) {
-				skater.trick_caught = true
+			for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
+				if check(state, inputs, skater.idx, action, .Pressed) {
+					skater.trick_caught = true
+					break move_switch
+				}
 			}
-			break
 		}
 
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
@@ -315,6 +320,16 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		skater.skate_angles.xy = {}
 	} else if skater.skate_angles.xy != {} {
 		skater.skate_angles.zw += dt * skater.skate_angles.xy
+	}
+}
+
+
+gather_grind_trick :: proc(skater: ^Skater, inputs: Input_State) {
+	skater.grind_buffer = {}
+	for action in Input_Action {
+		if .Down in inputs.actions[action] {
+			skater.grind_buffer |= {action}
+		}
 	}
 }
 
@@ -493,6 +508,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.timer = {}
 	skater.jump_height = 0
 	skater.jump_start_pos = {}
+	skater.grind_buffer = {}
 	skater.trick_buffer_len = 0
 	skater.trick_committed = .None
 	skater.trick_caught = false
@@ -544,7 +560,8 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 	case .Landing:
 		skater.timer[.Landing] =
 			skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
-	case .Airborne:
+	case .Airborne, .Dropping:
 		skater.grind_target_idx = -1
+		skater.grind_buffer = {}
 	}
 }
