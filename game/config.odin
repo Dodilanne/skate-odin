@@ -134,7 +134,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 				},
 			},
 			sky_color = {.Day = {107, 164, 230, 20}, .Night = {66.0, 70.0, 86.0, 100}},
-			time_of_day = .Day,
+			time_of_day = .Night,
 		},
 	}
 
