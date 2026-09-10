@@ -85,14 +85,7 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 
 	#partial switch skater.animation.state {
 	case .Grinding:
-		switch skater.grind_buffer {
-		case {.Trick_S}:
-			animation.progress.idx.x = 1
-		case {.Trick_N}:
-			animation.progress.idx.x = 4
-		case:
-			animation.progress.idx.x = 0
-		}
+		animation.progress.idx.x = f32(skater.grind_trick)
 	case:
 		animation.progress.idx.x = skater_rot_to_sprite_idx(skater)
 	}
@@ -100,9 +93,9 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 	#partial switch skater.animation.state {
 	case .Grinding:
 		if skater.vel.y != 0 {
-			animation.progress.idx.y = skater.look_dir.y > 0 ? 0 : 1
+			animation.progress.idx.y = skater.move_dir.y > 0 ? 0 : 1
 		} else {
-			animation.progress.idx.y = skater.look_dir.x > 0 ? 2 : 3
+			animation.progress.idx.y = skater.move_dir.x > 0 ? 2 : 3
 		}
 	case .Idle, .Ghost:
 		animation.progress.idx.y = 0

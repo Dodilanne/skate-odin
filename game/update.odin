@@ -145,7 +145,7 @@ move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 				} else if check(state, inputs, skater.idx, .Right, .Down) {
 					mul = -1
 				}
-				mul *= math.sign(skater.look_dir[1 - i])
+				mul *= math.sign(skater.move_dir[1 - i])
 				if skater.vel.x != 0 do mul *= -1
 				skater.vel[i] += 2 * mul
 			}
@@ -324,12 +324,33 @@ physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 
 gather_grind_trick :: proc(skater: ^Skater, inputs: Input_State) {
-	skater.grind_buffer = {}
-	for action in Input_Action {
+	buf: bit_set[Input_Action]
+	for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
 		if .Down in inputs.actions[action] {
-			skater.grind_buffer |= {action}
+			buf |= {action}
 		}
 	}
+
+	switch buf {
+	case {.Trick_N}:
+		if math.abs(skater.look_dir.y) > math.abs(skater.look_dir.x) {
+			skater.grind_trick = .Nose_Grind
+		} else if skater.look_dir.x >= 0 {
+			skater.grind_trick = .Nose_Blunt
+		} else {
+			skater.grind_trick = .Nose_Slide
+		}
+	case {.Trick_S}:
+		if math.abs(skater.look_dir.y) > math.abs(skater.look_dir.x) {
+			skater.grind_trick = .Five_O
+		} else if skater.look_dir.x >= 0 {
+			skater.grind_trick = .Tail_Slide
+		} else {
+			skater.grind_trick = .Blunt_Slide
+		}
+	}
+
+
 }
 
 start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
@@ -373,9 +394,8 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 				skater.pos.x = object.pos.x
 				if .hi in at_edge.x do skater.pos.x += object.size.x
 				skater.vel.xz = 0
-				skater.look_dir.xz = 0
-				skater.look_dir = linalg.normalize(skater.look_dir)
-				skater.move_dir = skater.look_dir
+				skater.move_dir.xz = 0
+				skater.move_dir = linalg.normalize(skater.move_dir)
 				skater.grind_target_idx = object_idx
 				return true
 			}
@@ -386,9 +406,8 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 				skater.pos.y = object.pos.y
 				if .hi in at_edge.y do skater.pos.y += object.size.y
 				skater.vel.yz = 0
-				skater.look_dir.yz = 0
-				skater.look_dir = linalg.normalize(skater.look_dir)
-				skater.move_dir = skater.look_dir
+				skater.move_dir.yz = 0
+				skater.move_dir = linalg.normalize(skater.move_dir)
 				skater.grind_target_idx = object_idx
 				return true
 			}
@@ -513,7 +532,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.timer = {}
 	skater.jump_height = 0
 	skater.jump_start_pos = {}
-	skater.grind_buffer = {}
+	skater.grind_trick = .Fifty_Fifty
 	skater.trick_buffer_len = 0
 	skater.trick_committed = .None
 	skater.trick_caught = false
@@ -567,6 +586,6 @@ transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State
 			skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
 	case .Airborne, .Dropping:
 		skater.grind_target_idx = -1
-		skater.grind_buffer = {}
+		skater.grind_trick = .Fifty_Fifty
 	}
 }
