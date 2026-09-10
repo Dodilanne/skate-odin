@@ -373,6 +373,9 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 				skater.pos.x = object.pos.x
 				if .hi in at_edge.x do skater.pos.x += object.size.x
 				skater.vel.xz = 0
+				skater.look_dir.xz = 0
+				skater.look_dir = linalg.normalize(skater.look_dir)
+				skater.move_dir = skater.look_dir
 				skater.grind_target_idx = object_idx
 				return true
 			}
@@ -383,6 +386,9 @@ start_grinding :: proc(state: ^State, skater: ^Skater) -> bool {
 				skater.pos.y = object.pos.y
 				if .hi in at_edge.y do skater.pos.y += object.size.y
 				skater.vel.yz = 0
+				skater.look_dir.yz = 0
+				skater.look_dir = linalg.normalize(skater.look_dir)
+				skater.move_dir = skater.look_dir
 				skater.grind_target_idx = object_idx
 				return true
 			}
