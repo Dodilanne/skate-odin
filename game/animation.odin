@@ -47,30 +47,27 @@ animation_update_state :: proc(
 	animation: ^Animation,
 ) {
 	anim_state: Animation_State
-	if state.target_skater_idx == skater_idx && state.play_mode == .Ghost {
+	switch skater_state in skater.state {
+	case Skater_State_Ghost:
 		anim_state = .Ghost
-	} else {
-		switch skater.state {
-		case .Idle, .Crouched:
-			if skater.grind_target_idx > -1 {
-				anim_state = .Grinding
-			} else {
-				anim_state = skater.state == .Crouched ? .Crouched : .Idle
-			}
-		case .Dropping:
-			anim_state = .Idle
-		case .Airborne:
-			if skater.jump_height <= 0 {
-				anim_state = .Falling
-			} else if skater.skate_angles.zw == {} {
-				anim_state = .Jumping
-			} else {
-				anim_state = .Tricking
-			}
-		case .Landing:
-			anim_state = .Landing
+	case Skater_State_Idle, Skater_State_Dropping:
+		anim_state = .Idle
+	case Skater_State_Crouched:
+		anim_state = .Crouched
+	case Skater_State_Grinding:
+		anim_state = .Grinding
+	case Skater_State_Airborne:
+		if skater_state.jump.height <= 0 {
+			anim_state = .Falling
+		} else if skater_state.jump.skate_angles.zw == {} {
+			anim_state = .Jumping
+		} else {
+			anim_state = .Tricking
 		}
+	case Skater_State_Landing:
+		anim_state = .Landing
 	}
+
 	if anim_state != animation.state {
 		animation.state = anim_state
 		animation.progress = {}
@@ -79,41 +76,43 @@ animation_update_state :: proc(
 
 // value needs to be normalized between 0 and 1
 animation_tick :: proc(state: ^State, skater: ^Skater) {
-	animation := &skater.animation
+	animation := &skater.anim
 	animation_update_state(state, skater, skater.idx, animation)
 	config := animation_configs[animation.state]
 
-	#partial switch skater.animation.state {
-	case .Grinding:
-		animation.progress.idx.x = f32(skater.grind_trick)
+	#partial switch skater_state in skater.state {
+	case Skater_State_Grinding:
+		animation.progress.idx.x = f32(skater_state.grind.trick)
 	case:
 		animation.progress.idx.x = skater_rot_to_sprite_idx(skater)
 	}
 
-	#partial switch skater.animation.state {
-	case .Grinding:
+	switch skater_state in skater.state {
+	case Skater_State_Grinding:
 		if skater.vel.y != 0 {
 			animation.progress.idx.y = skater.move_dir.y > 0 ? 0 : 1
 		} else {
 			animation.progress.idx.y = skater.move_dir.x > 0 ? 2 : 3
 		}
-	case .Idle, .Ghost:
+	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
 		animation.progress.idx.y = 0
-	case .Crouched:
-		v := skater.timer[skater.state]
+	case Skater_State_Crouched:
+		v := skater.timer
 		animation.progress.idx.y = value_to_frame(v, config)
 		// nollie tricks
-		if skater.trick_buffer_len >= 0 && skater.trick_buffer[0] < .Trick_ES {
+		if skater_state.trick_buf.len >= 0 && skater_state.trick_buf.buf[0] < .Trick_ES {
 			animation.progress.idx.y += config.frame_count
 		}
-	case .Falling:
-		animation.progress.idx.y = 5
-	case .Jumping, .Tricking:
-		v := 1 - ((skater.vel.z + skater.jump_height) / (2 * skater.jump_height))
-		animation.progress.idx.y = value_to_frame(v, config)
-	case .Landing:
-		x := skater.timer[.Airborne] * state.config.data.landing.landing_duration_scale
-		v := -skater.timer[.Landing] / x + 1
+	case Skater_State_Airborne:
+		if skater.anim.state == .Falling {
+			animation.progress.idx.y = 5
+		} else {
+			v := 1 - ((skater.vel.z + skater_state.jump.height) / (2 * skater_state.jump.height))
+			animation.progress.idx.y = value_to_frame(v, config)
+		}
+	case Skater_State_Landing:
+		x := skater_state.landing_factor
+		v := -skater.timer / x + 1
 		animation.progress.idx.y = value_to_frame(v, config)
 	}
 

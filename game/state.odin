@@ -279,35 +279,74 @@ Grind_Trick :: enum u8 {
 }
 
 Skater :: struct {
-	idx:              int,
-	move_dir:         rl.Vector3,
-	look_dir:         rl.Vector3,
-	norm:             rl.Vector3,
-	pos:              rl.Vector3,
-	vel:              rl.Vector3,
-	radius:           f32,
-	angle:            f32,
-	color:            rl.Color,
-	state:            Skater_State,
-	timer:            [Skater_State]f32,
-	jump_height:      f32,
-	jump_start_pos:   rl.Vector3,
-	trick_buffer:     [3]Input_Action,
-	grind_trick:      Grind_Trick,
-	trick_buffer_len: u8,
-	trick_committed:  Trick,
-	trick_caught:     bool,
-	skate_angles:     rl.Vector4,
-	animation:        Animation,
-	grind_target_idx: int,
+	idx:      int,
+	norm:     rl.Vector3,
+	move_dir: rl.Vector3,
+	look_dir: rl.Vector3,
+	pos:      rl.Vector3,
+	vel:      rl.Vector3,
+	radius:   f32,
+	angle:    f32,
+	anim:     Animation,
+	color:    rl.Color,
+	state:    Skater_State,
+	timer:    f32,
 }
 
-Skater_State :: enum {
-	Idle,
-	Crouched,
-	Airborne,
-	Landing,
-	Dropping,
+Grind_State :: struct {
+	trick:      Grind_Trick,
+	target_idx: int,
+}
+
+Trick_Buffer :: struct {
+	buf: [3]Input_Action,
+	len: u8,
+}
+
+Jump_State :: struct {
+	height:       f32,
+	start_pos:    rl.Vector3,
+	skate_angles: rl.Vector4,
+}
+
+Skater_State_Idle :: struct {}
+
+Skater_State_Grinding :: struct {
+	grind: Grind_State,
+}
+
+Skater_State_Crouched :: struct {
+	prev_state: union {
+		Skater_State_Idle,
+		Skater_State_Grinding,
+	},
+	trick_buf:  Trick_Buffer,
+}
+
+Skater_State_Airborne :: struct {
+	trick_buf: Trick_Buffer,
+	committed: Trick,
+	caught:    bool,
+	jump:      Jump_State,
+}
+
+Skater_State_Landing :: struct {
+	jump:           Jump_State,
+	landing_factor: f32,
+}
+
+Skater_State_Dropping :: struct {}
+
+Skater_State_Ghost :: struct {}
+
+Skater_State :: union {
+	Skater_State_Idle,
+	Skater_State_Grinding,
+	Skater_State_Crouched,
+	Skater_State_Airborne,
+	Skater_State_Landing,
+	Skater_State_Dropping,
+	Skater_State_Ghost,
 }
 
 Surface :: struct {
@@ -338,11 +377,6 @@ Palette :: struct {
 	tex: rl.Texture2D,
 }
 
-Play_Mode :: enum u8 {
-	Play,
-	Ghost,
-}
-
 Entity_Kind :: enum u8 {
 	Object,
 	Skater,
@@ -369,6 +403,5 @@ State :: struct {
 	board_assets:      [BOARD_ASSET_COUNT]rl.Texture2D,
 	shaders:           [Shader]rl.Shader,
 	palette:           Palette,
-	play_mode:         Play_Mode,
 	entities:          [dynamic; MAX_SKATERS + MAX_OBJECTS]Entity,
 }

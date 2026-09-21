@@ -48,8 +48,9 @@ render :: proc(state: ^State) {
 	}
 
 	font_size := state.config.data.ui.font_size
-	if target.trick_committed != .None {
-		str := fmt.ctprintf("%s", target.trick_committed)
+	if skater_state, ok := target.state.(Skater_State_Airborne);
+	   ok && skater_state.committed != .None {
+		str := fmt.ctprintf("%s", skater_state.committed)
 		measure := rl.MeasureText(str, font_size)
 		rl.DrawText(
 			str,
@@ -226,7 +227,7 @@ draw_skater_collisions :: proc(
 			end := base_points[c * points_per_circle + (p + 1) % points_per_circle] + offset
 
 			color := skater.color
-			if skater.state == .Airborne {
+			if _, ok := skater.state.(Skater_State_Airborne); ok {
 				color = rl.ColorBrightness(color, 0.5)
 			}
 
@@ -238,8 +239,8 @@ draw_skater_collisions :: proc(
 
 draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.Vector3) {
 	frame_size := state.config.data.sprite.frame_size
-	sprite_pos := skater.animation.progress.idx * frame_size
-	config := animation_configs[skater.animation.state]
+	sprite_pos := skater.anim.progress.idx * frame_size
+	config := animation_configs[skater.anim.state]
 	target_pos := project(offset, state)
 	target_pos.x -= frame_size * 0.5
 	target_pos.y -= frame_size * 0.8
@@ -256,10 +257,11 @@ draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.
 }
 
 draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
-	if skater.state != .Airborne do return
-	if skater.skate_angles.zw == {} do return
+	skater_state, ok := skater.state.(Skater_State_Airborne)
+	if !ok do return
+	if skater_state.jump.skate_angles.zw == {} do return
 
-	rad := skater.skate_angles.zw
+	rad := skater_state.jump.skate_angles.zw
 	rad.x += linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 	deg := rad * rl.RAD2DEG
 	sign := linalg.sign(deg)
