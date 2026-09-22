@@ -37,6 +37,7 @@ update_skater :: proc(
 	defer animation_tick(state, skater)
 
 	next_state: Maybe(Skater_State)
+
 	switch _ in skater.state {
 	case Skater_State_Idle:
 		next_state = update_skater_idle(state, inputs, dt, skater)
@@ -76,6 +77,10 @@ update_skater_idle :: proc(
 	skater_state := &skater.state.(Skater_State_Idle)
 
 	{ 	// user inputs
+		if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+			return Skater_State_Ghost{}
+		}
+
 		steer(state, inputs, skater, dt)
 
 		if check(state, inputs, skater.idx, .Push, .Pressed) {
@@ -116,6 +121,10 @@ update_skater_crouched :: proc(
 	skater_state := &skater.state.(Skater_State_Crouched)
 
 	{ 	// user inputs
+		if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+			return Skater_State_Ghost{}
+		}
+
 		steer(state, inputs, skater, dt)
 
 		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
@@ -175,6 +184,10 @@ update_skater_airborne :: proc(
 	skater_state := &skater.state.(Skater_State_Airborne)
 
 	user_inputs_block: { 	// user inputs
+		if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+			return Skater_State_Ghost{}
+		}
+
 		steer(state, inputs, skater, dt)
 
 		skater.timer += dt
@@ -361,6 +374,10 @@ update_skater_landing :: proc(
 	}
 
 	{ 	// simulation
+		if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+			return Skater_State_Ghost{}
+		}
+
 		apply_physics(state, inputs, skater, dt)
 		snap_to_mov_dir(skater)
 		apply_velocity(state, inputs, skater, dt)
@@ -378,6 +395,11 @@ update_skater_dropping :: proc(
 	skater: ^Skater,
 ) -> Maybe(Skater_State) {
 	skater.timer += dt
+
+	if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+		return Skater_State_Ghost{}
+	}
+
 
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
@@ -398,10 +420,14 @@ update_skater_ghost :: proc(
 	inputs: Input_State,
 	dt: f32,
 	skater: ^Skater,
-) -> Maybe(Skater_State) {return nil}
+) -> Maybe(Skater_State) {
+	if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+		pos, look_dir, move_dir := skater.pos, skater.look_dir, skater.move_dir
+		reset_skater(skater)
+		skater.pos, skater.look_dir, skater.move_dir = pos, look_dir, move_dir
+		return Skater_State_Idle{}
+	}
 
-
-ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	z_dir: f32
 	if check(state, inputs, skater.idx, .Up, .Down) do z_dir = +1
 	if check(state, inputs, skater.idx, .Down, .Down) do z_dir = -1
@@ -424,6 +450,8 @@ ghost_move :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32)
 	if check(state, inputs, skater.idx, .Push, .Down) {
 		skater.pos += skater.look_dir * 5 * dt
 	}
+
+	return nil
 }
 
 steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
@@ -635,17 +663,6 @@ read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
 	}
 	if .Pressed in inputs.actions[.Cycle_Target] {
 		state.target_skater_idx = (state.target_skater_idx + 1) % len(state.skaters)
-	}
-	if .Pressed in inputs.actions[.Cycle_Play_Mode] {
-		skater := &state.skaters[state.target_skater_idx]
-		if _, is_ghost := skater.state.(Skater_State_Ghost); is_ghost {
-			transition_state(state, skater, Skater_State_Idle{})
-		} else {
-			transition_state(state, skater, Skater_State_Ghost{})
-		}
-		pos, look_dir, move_dir := skater.pos, skater.look_dir, skater.move_dir
-		reset_skater(skater)
-		skater.pos, skater.look_dir, skater.move_dir = pos, look_dir, move_dir
 	}
 }
 
