@@ -390,9 +390,9 @@ update_skater_dropping :: proc(
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if is_touching_a_surface {
-			transition_state(state, skater, Skater_State_Idle{})
+			return Skater_State_Idle{}
 		} else if skater.timer > state.config.data.movement.drop_time_before_airborne {
-			transition_state(state, skater, Skater_State_Airborne{})
+			return Skater_State_Airborne{}
 		}
 	}
 
