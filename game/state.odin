@@ -73,7 +73,7 @@ ramp_axis_info :: proc(
 	width, axis_size: f32,
 ) {
 	axis_vec = axis_is_y ? {0, 1, 0} : {1, 0, 0}
-	u = axis_is_y ? {2, 0, 0} : {0, 1, 0}
+	u = axis_is_y ? {1, 0, 0} : {0, 1, 0}
 	width = axis_is_y ? size.x : size.y
 	axis_size = axis_is_y ? size.y : size.x
 	return
