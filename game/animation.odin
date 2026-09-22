@@ -112,7 +112,7 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 		}
 	case Skater_State_Landing:
 		x := skater_state.landing_factor
-		v := -skater.timer / x + 1
+		v := skater.timer / x
 		animation.progress.idx.y = value_to_frame(v, config)
 	}
 

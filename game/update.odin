@@ -57,17 +57,17 @@ update_skater :: proc(
 
 
 	if next_state, ok := next_state.?; ok {
-		if _, is_airborne := next_state.(Skater_State_Airborne); !is_airborne {
-			skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
-			diff := linalg.dot(
-				linalg.normalize(skater.move_dir.xy),
-				linalg.normalize(skater.look_dir.xy),
-			)
-			skater.look_dir = skater.move_dir * math.sign(diff)
-		}
-
 		skater.state = next_state
 		skater.timer = 0
+	}
+
+	if _, is_airborne := skater.state.(Skater_State_Airborne); !is_airborne {
+		skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
+		diff := linalg.dot(
+			linalg.normalize(skater.move_dir.xy),
+			linalg.normalize(skater.look_dir.xy),
+		)
+		skater.look_dir = skater.move_dir * math.sign(diff)
 	}
 
 	if skater.pos.z < state.config.data.landing.death_plane_z {
@@ -210,12 +210,13 @@ update_skater_airborne :: proc(
 			}
 		}
 
-		if skater_state.trick_buf.len < 1 {
+		if skater_state.trick_buf.len < 1 || skater_state.committed != .None {
 			break user_inputs_block
 		}
 
 		board_speed := state.config.data.tricks.board_spin_speed
 		half_spin_divisor := state.config.data.tricks.half_spin_divisor
+
 		if skater_state.trick_buf.len >= 2 {
 			switch skater_state.trick_buf.buf {
 			case {.Trick_S, .Trick_W, .None}:
@@ -305,8 +306,7 @@ update_skater_airborne :: proc(
 			}
 		}
 
-		if skater_state.committed == .None &&
-		   skater.timer > state.config.data.tricks.trick_commit_delay {
+		if skater.timer > state.config.data.tricks.trick_commit_delay {
 			#partial switch skater_state.trick_buf.buf[0] {
 			case .Trick_WN, .Trick_N, .Trick_NE:
 				skater_state.committed = .Nollie
@@ -342,9 +342,12 @@ update_skater_airborne :: proc(
 				}
 			}
 
-			return Skater_State_Landing {
+			landing_state := Skater_State_Landing {
+				jump           = skater_state.jump,
 				landing_factor = skater.timer * state.config.data.landing.landing_duration_scale,
 			}
+			fmt.println("LANDING: %v", landing_state)
+			return landing_state
 		}
 	}
 
@@ -357,8 +360,10 @@ update_skater_landing :: proc(
 	dt: f32,
 	skater: ^Skater,
 ) -> Maybe(Skater_State) {
-	skater.timer -= dt
-	if skater.timer <= 0 {
+	skater_state := &skater.state.(Skater_State_Landing)
+
+	skater.timer += dt
+	if skater.timer > skater_state.landing_factor {
 		return Skater_State_Idle{}
 	}
 
