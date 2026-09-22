@@ -7,18 +7,14 @@ import rl "vendor:raylib"
 SKATER_RADIUS: f32 : 0.5
 
 update :: proc(state: ^State, inputs: Input_State, dt: f32) {
-	when ODIN_DEBUG {read_debug_inputs(state, inputs)}
+	when ODIN_DEBUG do read_debug_inputs(state, inputs)
 
 	any_skater_moved := false
-	defer if any_skater_moved {
-		init_entities(state)
-	}
+	defer if any_skater_moved do init_entities(state)
 
 	for &skater in state.skaters {
 		prev_pos := skater.pos
-		defer if skater.pos != prev_pos {
-			any_skater_moved = true
-		}
+		defer if skater.pos != prev_pos do any_skater_moved = true
 
 		if check(state, inputs, skater.idx, .Reset, .Pressed) {
 			reset_skater(&skater)
