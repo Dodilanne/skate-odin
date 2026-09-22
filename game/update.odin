@@ -1,6 +1,5 @@
 package game
 
-import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
@@ -55,19 +54,9 @@ update_skater :: proc(
 		next_state = update_skater_ghost(state, inputs, dt, skater)
 	}
 
-
 	if next_state, ok := next_state.?; ok {
 		skater.state = next_state
 		skater.timer = 0
-	}
-
-	if _, is_airborne := skater.state.(Skater_State_Airborne); !is_airborne {
-		skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
-		diff := linalg.dot(
-			linalg.normalize(skater.move_dir.xy),
-			linalg.normalize(skater.look_dir.xy),
-		)
-		skater.look_dir = skater.move_dir * math.sign(diff)
 	}
 
 	if skater.pos.z < state.config.data.landing.death_plane_z {
@@ -102,6 +91,7 @@ update_skater_idle :: proc(
 
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
+		snap_to_mov_dir(skater)
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if !is_touching_a_surface do return Skater_State_Dropping{}
@@ -167,6 +157,7 @@ update_skater_crouched :: proc(
 
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
+		snap_to_mov_dir(skater)
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if !is_touching_a_surface do return Skater_State_Dropping{}
@@ -342,11 +333,13 @@ update_skater_airborne :: proc(
 				}
 			}
 
+			skater.move_dir = skater.look_dir
+			skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
+
 			landing_state := Skater_State_Landing {
 				jump           = skater_state.jump,
 				landing_factor = skater.timer * state.config.data.landing.landing_duration_scale,
 			}
-			fmt.println("LANDING: %v", landing_state)
 			return landing_state
 		}
 	}
@@ -369,6 +362,7 @@ update_skater_landing :: proc(
 
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
+		snap_to_mov_dir(skater)
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if !is_touching_a_surface do return Skater_State_Dropping{}
@@ -463,6 +457,11 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 		skater.move_dir = linalg.normalize(skater.move_dir)
 		skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
 	}
+}
+
+snap_to_mov_dir :: proc(skater: ^Skater) {
+	diff := linalg.dot(linalg.normalize(skater.move_dir.xy), linalg.normalize(skater.look_dir.xy))
+	skater.look_dir = skater.move_dir * math.sign(diff)
 }
 
 apply_physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
