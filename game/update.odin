@@ -508,18 +508,6 @@ transition :: proc(
 	if !is_airborne && !touching_a_surface {
 		transition_state(state, skater, Skater_State_Dropping{})
 	} else if is_airborne && touching_a_surface {
-		defer transition_state(state, skater, Skater_State_Landing{})
-
-		skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
-
-		{ 	// player position
-			diff := linalg.dot(
-				linalg.normalize(skater.move_dir.xy),
-				linalg.normalize(skater.look_dir.xy),
-			)
-			skater.look_dir = skater.move_dir * math.sign(diff)
-		}
-
 		{ 	// board position
 			deg := linalg.floor(linalg.abs(rl.RAD2DEG * skater_state.jump.skate_angles.zw))
 			delta := state.config.data.landing.board_angle_snap_deg
@@ -539,6 +527,17 @@ transition :: proc(
 			}
 		}
 
+		transition_state(state, skater, Skater_State_Landing{})
+	} else if !is_airborne {
+		skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
+
+		{ 	// player position
+			diff := linalg.dot(
+				linalg.normalize(skater.move_dir.xy),
+				linalg.normalize(skater.look_dir.xy),
+			)
+			skater.look_dir = skater.move_dir * math.sign(diff)
+		}
 	}
 
 	skater_fell = skater.pos.z < state.config.data.landing.death_plane_z
