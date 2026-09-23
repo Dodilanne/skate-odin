@@ -6,8 +6,20 @@ import rl "vendor:raylib"
 
 SKATER_RADIUS: f32 : 0.5
 
+//#region update
+
 update :: proc(state: ^State, inputs: Input_State, dt: f32) {
-	when ODIN_DEBUG do read_debug_inputs(state, inputs)
+	when ODIN_DEBUG {
+		if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
+			state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
+		}
+		if .Pressed in inputs.actions[.Toggle_Normals] {
+			state.show_normals = !state.show_normals
+		}
+		if .Pressed in inputs.actions[.Cycle_Target] {
+			state.target_skater_idx = (state.target_skater_idx + 1) % len(state.skaters)
+		}
+	}
 
 	any_skater_moved := false
 	defer if any_skater_moved do init_entities(state)
@@ -17,7 +29,6 @@ update :: proc(state: ^State, inputs: Input_State, dt: f32) {
 		if moved do any_skater_moved = true
 	}
 }
-
 
 update_skater :: proc(
 	state: ^State,
@@ -110,7 +121,9 @@ update_skater_grinding :: proc(
 	inputs: Input_State,
 	dt: f32,
 	skater: ^Skater,
-) -> Maybe(Skater_State) {return nil}
+) -> Maybe(Skater_State) {
+	return nil
+}
 
 update_skater_crouched :: proc(
 	state: ^State,
@@ -454,6 +467,10 @@ update_skater_ghost :: proc(
 	return nil
 }
 
+//#endregion update
+
+//#region simulation
+
 steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	steer_dir: f32
 	if check(state, inputs, skater.idx, .Left, .Down) do steer_dir = -1
@@ -536,6 +553,49 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 	return
 }
 
+//#endregion simulation
+
+//#region utils
+
+reset_skater :: proc(skater: ^Skater) {
+	skater.state = Skater_State_Idle{}
+	skater.radius = SKATER_RADIUS
+	skater.vel = rl.Vector3{}
+	skater.timer = 0
+	if skater.idx == 0 {
+		skater.angle = math.PI / 2
+		skater.pos = {4, 2, 4}
+	} else {
+		skater.angle = 0
+		skater.pos = {1, 1, 4}
+	}
+	skater.pos += rl.Vector3(skater.radius)
+
+	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
+	if skater.angle != 0 {
+		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, skater.angle)
+	}
+	skater.look_dir = skater.move_dir
+	skater.norm = {0, 0, 1}
+}
+
+check :: proc(
+	state: ^State,
+	inputs: Input_State,
+	skater_idx: int,
+	action: Input_Action,
+	flag: Input_Flag,
+) -> bool {
+	if state.target_skater_idx != skater_idx {
+		return false
+	}
+	return flag in inputs.actions[action]
+}
+
+//#endregion utils
+
+//#region old
+
 gather_grind_trick :: proc(
 	skater: ^Skater,
 	skater_state: ^Skater_State_Grinding,
@@ -566,8 +626,6 @@ gather_grind_trick :: proc(
 			skater_state.grind.trick = .Blunt_Slide
 		}
 	}
-
-
 }
 
 start_grinding :: proc(state: ^State, skater: ^Skater) {
@@ -612,7 +670,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) {
 			if in_bounds.y {
 				new_state := Skater_State_Grinding{}
 				new_state.grind.target_idx = object_idx
-				transition_state(state, skater, new_state)
+				// transition_state(state, skater, new_state)
 				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.x = object.pos.x
 				if .hi in at_edge.x do skater.pos.x += object.size.x
@@ -625,7 +683,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) {
 			if in_bounds.x {
 				new_state := Skater_State_Grinding{}
 				new_state.grind.target_idx = object_idx
-				transition_state(state, skater, new_state)
+				// transition_state(state, skater, new_state)
 				skater.pos.z = object.pos.z + object.size.z + skater.radius
 				skater.pos.y = object.pos.y
 				if .hi in at_edge.y do skater.pos.y += object.size.y
@@ -650,55 +708,8 @@ stop_grinding :: proc(state: ^State, skater: ^Skater) {
 	max := object.pos[i] + object.size[i] + offset
 	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max
 	if !in_bounds {
-		transition_state(state, skater, Skater_State_Airborne{})
+		// transition_state(state, skater, Skater_State_Airborne{})
 	}
 }
 
-read_debug_inputs :: proc(state: ^State, inputs: Input_State) {
-	if .Pressed in inputs.actions[.Toggle_Drawing_Mode] {
-		state.drawing_mode = Drawing_Mode((int(state.drawing_mode) + 1) % len(Drawing_Mode))
-	}
-	if .Pressed in inputs.actions[.Toggle_Normals] {
-		state.show_normals = !state.show_normals
-	}
-	if .Pressed in inputs.actions[.Cycle_Target] {
-		state.target_skater_idx = (state.target_skater_idx + 1) % len(state.skaters)
-	}
-}
-
-reset_skater :: proc(skater: ^Skater) {
-	skater.state = Skater_State_Idle{}
-	skater.radius = SKATER_RADIUS
-	skater.vel = rl.Vector3{}
-	skater.timer = 0
-	if skater.idx == 0 {
-		skater.angle = math.PI / 2
-		skater.pos = {30, 20, 2}
-	} else {
-		skater.angle = 0
-		skater.pos = {1, 1, 4}
-	}
-	skater.pos += rl.Vector3(skater.radius)
-
-	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
-	if skater.angle != 0 {
-		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, skater.angle)
-	}
-	skater.look_dir = skater.move_dir
-	skater.norm = {0, 0, 1}
-}
-
-check :: proc(
-	state: ^State,
-	inputs: Input_State,
-	skater_idx: int,
-	action: Input_Action,
-	flag: Input_Flag,
-) -> bool {
-	if state.target_skater_idx != skater_idx {
-		return false
-	}
-	return flag in inputs.actions[action]
-}
-
-transition_state :: proc(state: ^State, skater: ^Skater, new_state: Skater_State) {}
+//#endregion old
