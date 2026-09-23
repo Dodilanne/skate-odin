@@ -8,15 +8,23 @@ import "core:slice"
 import "core:strings"
 import rl "vendor:raylib"
 
-MAX_SKATERS :: 100
+MAX_SKATERS :: 1
 MAX_OBJECTS :: 100
 BOARD_ASSET_COUNT :: 32
 COLORS_PER_PALETTE :: 6
 
 init :: proc(state: ^State) {
+	state.spawn_points = {
+		{-8, -8, 0, 0},
+		{8, -8, 0, 0},
+		{8, 8, 0, 0},
+		{-8, 8, 0, 0},
+	}
+
 	for i in 0 ..< MAX_SKATERS {
 		append(&state.skaters, Skater{})
 		state.skaters[i].idx = i
+		state.skaters[i].last_respawn_point = state.spawn_points[0]
 		reset_skater(&state.skaters[i])
 	}
 
@@ -52,16 +60,21 @@ init :: proc(state: ^State) {
 }
 
 init_objects :: proc(state: ^State) {
+	// state.objects = {
+	// 	{kind = .Ramp, mat = .Concrete, pos = {16, 0, 2}, size = {2, 36, 1}, orientation = .West},
+	// 	{kind = .Ramp, mat = .Wood, pos = {1, 10, 3}, size = {11, 2, 1}},
+	// 	{kind = .Box, mat = .Brick, pos = {0, 1, 3}, size = {1, 12, 2}},
+	// 	{kind = .Box, mat = .Brick, pos = {0, 0, 3}, size = {13, 1, 2}},
+	// 	{kind = .Box, mat = .Brick, pos = {12, 1, 3}, size = {1, 12, 2}},
+	// 	{kind = .Ramp, mat = .Brick, pos = {5, 40, 2}, size = {5, 5, 2}, orientation = .East},
+	// 	{kind = .Box, mat = .Concrete, pos = {0, 0, 2}, size = {16, 26, 1}},
+	// 	{kind = .Box, mat = .Wood, pos = {1, 1, 3}, size = {11, 9, 1}},
+	// 	{kind = .Box, mat = .Concrete, pos = {0, 0, -40}, size = {50, 50, 42}},
+	// }
+
 	state.objects = {
-		{kind = .Ramp, mat = .Concrete, pos = {16, 0, 2}, size = {2, 36, 1}, orientation = .West},
-		{kind = .Ramp, mat = .Wood, pos = {1, 10, 3}, size = {11, 2, 1}},
-		{kind = .Box, mat = .Brick, pos = {0, 1, 3}, size = {1, 12, 2}},
-		{kind = .Box, mat = .Brick, pos = {0, 0, 3}, size = {13, 1, 2}},
-		{kind = .Box, mat = .Brick, pos = {12, 1, 3}, size = {1, 12, 2}},
-		{kind = .Ramp, mat = .Brick, pos = {5, 40, 2}, size = {5, 5, 2}, orientation = .East},
-		{kind = .Box, mat = .Concrete, pos = {0, 0, 2}, size = {16, 26, 1}},
-		{kind = .Box, mat = .Wood, pos = {1, 1, 3}, size = {11, 9, 1}},
-		{kind = .Box, mat = .Concrete, pos = {0, 0, -40}, size = {50, 50, 42}},
+		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
+		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}},
 	}
 }
 
@@ -279,18 +292,19 @@ Grind_Trick :: enum u8 {
 }
 
 Skater :: struct {
-	idx:      int,
-	norm:     rl.Vector3,
-	move_dir: rl.Vector3,
-	look_dir: rl.Vector3,
-	pos:      rl.Vector3,
-	vel:      rl.Vector3,
-	radius:   f32,
-	angle:    f32,
-	anim:     Animation,
-	color:    rl.Color,
-	state:    Skater_State,
-	timer:    f32,
+	idx:                int,
+	norm:               rl.Vector3,
+	move_dir:           rl.Vector3,
+	look_dir:           rl.Vector3,
+	pos:                rl.Vector3,
+	vel:                rl.Vector3,
+	radius:             f32,
+	angle:              f32,
+	anim:               Animation,
+	color:              rl.Color,
+	state:              Skater_State,
+	timer:              f32,
+	last_respawn_point: rl.Vector4,
 }
 
 Grind_State :: struct {
@@ -404,4 +418,5 @@ State :: struct {
 	shaders:           [Shader]rl.Shader,
 	palette:           Palette,
 	entities:          [dynamic; MAX_SKATERS + MAX_OBJECTS]Entity,
+	spawn_points:      [dynamic; 9]rl.Vector4,
 }

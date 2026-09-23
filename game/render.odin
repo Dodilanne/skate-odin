@@ -61,6 +61,19 @@ render :: proc(state: ^State) {
 		)
 	}
 
+	for spawn_point, idx in state.spawn_points {
+		str := fmt.ctprintf("%d", idx + 1)
+		measure := rl.MeasureText(str, font_size)
+		projected := project(spawn_point.xyz - target.pos, state)
+		rl.DrawText(
+			str,
+			i32(projected.x) - measure / 2,
+			i32(projected.y) - font_size / 2,
+			font_size,
+			rl.ORANGE,
+		)
+	}
+
 	rl.DrawFPS(0, 0)
 }
 

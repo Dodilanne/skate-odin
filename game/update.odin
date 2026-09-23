@@ -44,6 +44,15 @@ update_skater :: proc(
 		reset_skater(skater)
 		return true
 	}
+	for action, idx in Input_Action.Spawn_1 ..= Input_Action.Spawn_9 {
+		if idx > len(state.spawn_points) - 1 do break
+		if check(state, inputs, skater.idx, action, .Pressed) {
+			skater.last_respawn_point = state.spawn_points[idx]
+			reset_skater(skater)
+			skater.state = Skater_State_Ghost{}
+			return true
+		}
+	}
 
 	defer animation_tick(state, skater)
 
@@ -562,14 +571,8 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.radius = SKATER_RADIUS
 	skater.vel = rl.Vector3{}
 	skater.timer = 0
-	if skater.idx == 0 {
-		skater.angle = math.PI / 2
-		skater.pos = {4, 2, 4}
-	} else {
-		skater.angle = 0
-		skater.pos = {1, 1, 4}
-	}
-	skater.pos += rl.Vector3(skater.radius)
+	skater.pos = skater.last_respawn_point.xyz
+	skater.angle = skater.last_respawn_point.a
 
 	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
 	if skater.angle != 0 {

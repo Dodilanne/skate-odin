@@ -29,6 +29,15 @@ Input_Action :: enum u8 {
 	Trick_ES,
 	Trick_S,
 	Trick_SW,
+	Spawn_1,
+	Spawn_2,
+	Spawn_3,
+	Spawn_4,
+	Spawn_5,
+	Spawn_6,
+	Spawn_7,
+	Spawn_8,
+	Spawn_9,
 }
 
 Input_Flag :: enum u8 {
@@ -73,6 +82,15 @@ gather_input :: proc(state: ^Input_State) {
 	state.actions[.Trick_SW] = input_flags(.H)
 	state.actions[.Trick_W] = input_flags(.N)
 	state.actions[.Trick_WN] = input_flags(.L)
+	state.actions[.Spawn_1] = input_flags(.ONE)
+	state.actions[.Spawn_2] = input_flags(.TWO)
+	state.actions[.Spawn_3] = input_flags(.THREE)
+	state.actions[.Spawn_4] = input_flags(.FOUR)
+	state.actions[.Spawn_5] = input_flags(.FIVE)
+	state.actions[.Spawn_6] = input_flags(.SIX)
+	state.actions[.Spawn_7] = input_flags(.SEVEN)
+	state.actions[.Spawn_8] = input_flags(.EIGHT)
+	state.actions[.Spawn_9] = input_flags(.NINE)
 }
 
 // Adds b's input to a
