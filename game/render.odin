@@ -222,7 +222,7 @@ draw_skater_collisions :: proc(
 			}
 
 			z_angle := math.PI / f32(num_circles) * f32(c)
-			z_angle += skater.angle
+			z_angle += linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 			z_rot := matrix[3, 3]f32{
 				math.cos(z_angle), -math.sin(z_angle), 0,
 				math.sin(z_angle), math.cos(z_angle), 0,

@@ -90,9 +90,9 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 	switch skater_state in skater.state {
 	case Skater_State_Grinding:
 		if skater.vel.y != 0 {
-			animation.progress.idx.y = skater.move_dir.y > 0 ? 0 : 1
+			animation.progress.idx.y = skater.look_dir.y > 0 ? 0 : 1
 		} else {
-			animation.progress.idx.y = skater.move_dir.x > 0 ? 2 : 3
+			animation.progress.idx.y = skater.look_dir.x > 0 ? 2 : 3
 		}
 	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
 		animation.progress.idx.y = 0

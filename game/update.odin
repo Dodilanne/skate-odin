@@ -104,7 +104,7 @@ update_skater_idle :: proc(
 		steer(state, inputs, skater, dt)
 
 		if check(state, inputs, skater.idx, .Push, .Pressed) {
-			skater.vel += skater.move_dir * state.config.data.movement.push_impulse
+			skater.vel += get_mov_dir(skater) * state.config.data.movement.push_impulse
 		}
 
 		for action in Input_Action.Trick_WN ..= Input_Action.Trick_SW {
@@ -116,7 +116,7 @@ update_skater_idle :: proc(
 
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
-		snap_to_mov_dir(skater)
+		snap(skater)
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if !is_touching_a_surface do return Skater_State_Dropping{}
@@ -162,19 +162,19 @@ update_skater_crouched :: proc(
 			height := skater.timer * state.config.data.tricks.jump_height_scale
 			height = math.max(height, state.config.data.tricks.min_jump_height)
 
-			if grind_state, ok := skater_state.prev_state.(Skater_State_Grinding); ok {
-				height *= 0.6
-				i := skater.vel.x != 0 ? 1 : 0
-				mul: f32 = 0
-				if check(state, inputs, skater.idx, .Left, .Down) {
-					mul = 1
-				} else if check(state, inputs, skater.idx, .Right, .Down) {
-					mul = -1
-				}
-				mul *= math.sign(skater.move_dir[1 - i])
-				if skater.vel.x != 0 do mul *= -1
-				skater.vel[i] += 2 * mul
-			}
+			// if grind_state, ok := skater_state.prev_state.(Skater_State_Grinding); ok {
+			// 	height *= 0.6
+			// 	i := skater.vel.x != 0 ? 1 : 0
+			// 	mul: f32 = 0
+			// 	if check(state, inputs, skater.idx, .Left, .Down) {
+			// 		mul = 1
+			// 	} else if check(state, inputs, skater.idx, .Right, .Down) {
+			// 		mul = -1
+			// 	}
+			// 	mul *= math.sign(skater.move_dir[1 - i])
+			// 	if skater.vel.x != 0 do mul *= -1
+			// 	skater.vel[i] += 2 * mul
+			// }
 
 			skater.vel.z += height
 			return Skater_State_Airborne {
@@ -188,7 +188,7 @@ update_skater_crouched :: proc(
 
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
-		snap_to_mov_dir(skater)
+		snap(skater)
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if !is_touching_a_surface do return Skater_State_Dropping{}
@@ -368,7 +368,6 @@ update_skater_airborne :: proc(
 				}
 			}
 
-			skater.move_dir = skater.look_dir
 			skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
 
 			landing_state := Skater_State_Landing {
@@ -401,7 +400,7 @@ update_skater_landing :: proc(
 		}
 
 		apply_physics(state, inputs, skater, dt)
-		snap_to_mov_dir(skater)
+		snap(skater)
 		apply_velocity(state, inputs, skater, dt)
 		is_touching_a_surface := apply_collisions(state, skater)
 		if !is_touching_a_surface do return Skater_State_Dropping{}
@@ -444,9 +443,9 @@ update_skater_ghost :: proc(
 	skater: ^Skater,
 ) -> Maybe(Skater_State) {
 	if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
-		pos, look_dir, move_dir := skater.pos, skater.look_dir, skater.move_dir
+		pos, look_dir := skater.pos, skater.look_dir
 		reset_skater(skater)
-		skater.pos, skater.look_dir, skater.move_dir = pos, look_dir, move_dir
+		skater.pos, skater.look_dir = pos, look_dir
 		return Skater_State_Idle{}
 	}
 
@@ -460,17 +459,12 @@ update_skater_ghost :: proc(
 	if check(state, inputs, skater.idx, .Left, .Down) do steer_dir = -1
 	if check(state, inputs, skater.idx, .Right, .Down) do steer_dir = +1
 	angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
-	skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-	if skater.angle < 0 do skater.angle += 2 * math.PI
-	skater.look_dir = rl.Vector3RotateByAxisAngle(
-		rl.Vector3{1, 0, 0},
-		rl.Vector3{0, 0, 1},
-		skater.angle,
-	)
+	angle := angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+	if angle < 0 do angle += 2 * math.PI
+	skater.look_dir = rl.Vector3RotateByAxisAngle(rl.Vector3{1, 0, 0}, rl.Vector3{0, 0, 1}, angle)
 	skater.look_dir = linalg.normalize(skater.look_dir)
-	skater.move_dir = skater.look_dir
 	if check(state, inputs, skater.idx, .Push, .Down) {
-		skater.pos += skater.look_dir * 5 * dt
+		skater.pos += skater.look_dir * 8 * dt
 	}
 
 	return nil
@@ -487,12 +481,12 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 	if _, ok := skater.state.(Skater_State_Airborne); ok {
 		angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
-		skater.angle = angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
-		if skater.angle < 0 do skater.angle += 2 * math.PI
+		angle := angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+		if angle < 0 do angle += 2 * math.PI
 		skater.look_dir = rl.Vector3RotateByAxisAngle(
 			rl.Vector3{1, 0, 0},
 			rl.Vector3{0, 0, 1},
-			skater.angle,
+			angle,
 		)
 		skater.look_dir = linalg.normalize(skater.look_dir)
 	} else if steer_dir != 0 {
@@ -501,21 +495,31 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 
 		angle_change := steer_dir * dt * speed
 
-		skater.angle = angle_change + linalg.atan2(skater.move_dir.y, skater.move_dir.x)
-		if skater.angle < 0 do skater.angle += 2 * math.PI
-		skater.move_dir = rl.Vector3RotateByAxisAngle(
-			rl.Vector3{1, 0, 0},
-			rl.Vector3{0, 0, 1},
-			skater.angle,
-		)
-		skater.move_dir = linalg.normalize(skater.move_dir)
-		skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
+		mov_dir := get_mov_dir(skater)
+		angle := angle_change + linalg.atan2(mov_dir.y, mov_dir.x)
+		if angle < 0 do angle += 2 * math.PI
+
+		if linalg.length(skater.vel) == 0 {
+			skater.look_dir = rl.Vector3RotateByAxisAngle(
+				rl.Vector3{1, 0, 0},
+				rl.Vector3{0, 0, 1},
+				angle,
+			)
+			skater.look_dir = linalg.normalize(skater.look_dir)
+		} else {
+			skater.vel = rl.Vector3RotateByAxisAngle(skater.vel, rl.Vector3{0, 0, 1}, angle_change)
+		}
 	}
 }
 
-snap_to_mov_dir :: proc(skater: ^Skater) {
-	diff := linalg.dot(linalg.normalize(skater.move_dir.xy), linalg.normalize(skater.look_dir.xy))
-	skater.look_dir = skater.move_dir * math.sign(diff)
+get_mov_dir :: proc(skater: ^Skater) -> rl.Vector3 {
+	return linalg.length(skater.vel) == 0 ? skater.look_dir : linalg.normalize(skater.vel)
+}
+
+snap :: proc(skater: ^Skater) {
+	if linalg.length(skater.vel.xy) == 0 do return
+	diff := linalg.dot(linalg.normalize(skater.vel.xy), linalg.normalize(skater.look_dir.xy))
+	skater.look_dir = linalg.normalize(skater.vel * math.sign(diff))
 }
 
 apply_physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
@@ -528,7 +532,7 @@ apply_physics :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f
 		if check(state, inputs, skater.idx, .Break, .Down) {
 			friction_coeff *= state.config.data.physics.braking_multiplier
 		}
-		skater.vel = skater.vel - skater.move_dir * friction_coeff * dt
+		skater.vel = skater.vel - linalg.normalize(skater.vel) * friction_coeff * dt
 	} else {
 		skater.vel.xy = {0, 0}
 	}
@@ -552,9 +556,6 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 		if py < 0 || py > surface.h do continue
 		skater.pos += (SKATER_RADIUS - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
-		if linalg.length(skater.vel) != 0 {
-			skater.move_dir = linalg.normalize(skater.vel)
-		}
 		if surface.n.z != 0 {
 			is_touching_a_surface = true
 		}
@@ -568,16 +569,14 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 
 reset_skater :: proc(skater: ^Skater) {
 	skater.state = Skater_State_Idle{}
-	skater.vel = rl.Vector3{}
+	skater.vel = {}
 	skater.timer = 0
 	skater.pos = skater.last_respawn_point.xyz
-	skater.angle = skater.last_respawn_point.a
-
-	skater.move_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
-	if skater.angle != 0 {
-		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, skater.angle)
+	angle := skater.last_respawn_point.a
+	skater.look_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
+	if angle != 0 {
+		skater.look_dir = rl.Vector3RotateByAxisAngle(skater.look_dir, {0, 0, 1}, angle)
 	}
-	skater.look_dir = skater.move_dir
 }
 
 check :: proc(
@@ -629,88 +628,88 @@ gather_grind_trick :: proc(
 	}
 }
 
-start_grinding :: proc(state: ^State, skater: ^Skater) {
-	if skater_state, is_airborne := skater.state.(Skater_State_Airborne);
-	   !is_airborne ||
-	   skater_state.jump.height == 0 ||
-	   skater_state.jump.start_pos.z >= skater.pos.z {
-		return
-	}
+// start_grinding :: proc(state: ^State, skater: ^Skater) {
+// 	if skater_state, is_airborne := skater.state.(Skater_State_Airborne);
+// 	   !is_airborne ||
+// 	   skater_state.jump.height == 0 ||
+// 	   skater_state.jump.start_pos.z >= skater.pos.z {
+// 		return
+// 	}
+//
+// 	for object, object_idx in state.objects {
+// 		if object.kind == .Ramp do continue
+//
+// 		offset := SKATER_RADIUS
+//
+// 		in_bounds: [3]bool
+// 		at_edge: [3]bit_set[enum u8 {
+// 			lo,
+// 			hi,
+// 		}]
+// 		for i in 0 ..< len(in_bounds) {
+// 			{
+// 				min := object.pos[i]
+// 				max := object.pos[i] + object.size[i]
+// 				in_bounds[i] = skater.pos[i] >= min && skater.pos[i] <= max
+// 			}
+// 			{
+// 				min := object.pos[i] - offset
+// 				max := object.pos[i] + offset
+// 				if skater.pos[i] >= min && skater.pos[i] <= max do at_edge[i] |= {.lo}
+// 			}
+// 			{
+// 				min := object.pos[i] + object.size[i] - offset
+// 				max := object.pos[i] + object.size[i] + offset
+// 				if skater.pos[i] >= min && skater.pos[i] <= max do at_edge[i] |= {.hi}
+// 			}
+// 		}
+//
+// 		if .hi not_in at_edge.z do continue
+//
+// 		if at_edge.x != {} {
+// 			if in_bounds.y {
+// 				new_state := Skater_State_Grinding{}
+// 				new_state.grind.target_idx = object_idx
+// 				// transition_state(state, skater, new_state)
+// 				skater.pos.z = object.pos.z + object.size.z + SKATER_RADIUS
+// 				skater.pos.x = object.pos.x
+// 				if .hi in at_edge.x do skater.pos.x += object.size.x
+// 				skater.vel.xz = 0
+// 				skater.move_dir.xz = 0
+// 				skater.move_dir = linalg.normalize(skater.move_dir)
+// 				return
+// 			}
+// 		} else if at_edge.y != {} {
+// 			if in_bounds.x {
+// 				new_state := Skater_State_Grinding{}
+// 				new_state.grind.target_idx = object_idx
+// 				// transition_state(state, skater, new_state)
+// 				skater.pos.z = object.pos.z + object.size.z + SKATER_RADIUS
+// 				skater.pos.y = object.pos.y
+// 				if .hi in at_edge.y do skater.pos.y += object.size.y
+// 				skater.vel.yz = 0
+// 				skater.move_dir.yz = 0
+// 				skater.move_dir = linalg.normalize(skater.move_dir)
+// 				return
+// 			}
+// 		}
+// 	}
+// }
 
-	for object, object_idx in state.objects {
-		if object.kind == .Ramp do continue
-
-		offset := SKATER_RADIUS
-
-		in_bounds: [3]bool
-		at_edge: [3]bit_set[enum u8 {
-			lo,
-			hi,
-		}]
-		for i in 0 ..< len(in_bounds) {
-			{
-				min := object.pos[i]
-				max := object.pos[i] + object.size[i]
-				in_bounds[i] = skater.pos[i] >= min && skater.pos[i] <= max
-			}
-			{
-				min := object.pos[i] - offset
-				max := object.pos[i] + offset
-				if skater.pos[i] >= min && skater.pos[i] <= max do at_edge[i] |= {.lo}
-			}
-			{
-				min := object.pos[i] + object.size[i] - offset
-				max := object.pos[i] + object.size[i] + offset
-				if skater.pos[i] >= min && skater.pos[i] <= max do at_edge[i] |= {.hi}
-			}
-		}
-
-		if .hi not_in at_edge.z do continue
-
-		if at_edge.x != {} {
-			if in_bounds.y {
-				new_state := Skater_State_Grinding{}
-				new_state.grind.target_idx = object_idx
-				// transition_state(state, skater, new_state)
-				skater.pos.z = object.pos.z + object.size.z + SKATER_RADIUS
-				skater.pos.x = object.pos.x
-				if .hi in at_edge.x do skater.pos.x += object.size.x
-				skater.vel.xz = 0
-				skater.move_dir.xz = 0
-				skater.move_dir = linalg.normalize(skater.move_dir)
-				return
-			}
-		} else if at_edge.y != {} {
-			if in_bounds.x {
-				new_state := Skater_State_Grinding{}
-				new_state.grind.target_idx = object_idx
-				// transition_state(state, skater, new_state)
-				skater.pos.z = object.pos.z + object.size.z + SKATER_RADIUS
-				skater.pos.y = object.pos.y
-				if .hi in at_edge.y do skater.pos.y += object.size.y
-				skater.vel.yz = 0
-				skater.move_dir.yz = 0
-				skater.move_dir = linalg.normalize(skater.move_dir)
-				return
-			}
-		}
-	}
-}
-
-stop_grinding :: proc(state: ^State, skater: ^Skater) {
-	skater_state, is_grinding := skater.state.(Skater_State_Grinding)
-	if !is_grinding do return
-	if skater_state.grind.target_idx < 0 do return
-
-	i := skater.vel.x != 0 ? 0 : 1
-	object := state.objects[skater_state.grind.target_idx]
-	offset := SKATER_RADIUS
-	min := object.pos[i] - offset
-	max := object.pos[i] + object.size[i] + offset
-	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max
-	if !in_bounds {
-		// transition_state(state, skater, Skater_State_Airborne{})
-	}
-}
+// stop_grinding :: proc(state: ^State, skater: ^Skater) {
+// 	skater_state, is_grinding := skater.state.(Skater_State_Grinding)
+// 	if !is_grinding do return
+// 	if skater_state.grind.target_idx < 0 do return
+//
+// 	i := skater.vel.x != 0 ? 0 : 1
+// 	object := state.objects[skater_state.grind.target_idx]
+// 	offset := SKATER_RADIUS
+// 	min := object.pos[i] - offset
+// 	max := object.pos[i] + object.size[i] + offset
+// 	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max
+// 	if !in_bounds {
+// 		// transition_state(state, skater, Skater_State_Airborne{})
+// 	}
+// }
 
 //#endregion old
