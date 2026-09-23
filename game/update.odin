@@ -544,13 +544,13 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 	for &surface in state.surfaces {
 		p := skater.pos - surface.o
 		d := linalg.dot(p, surface.n)
-		if math.abs(d) >= skater.radius do continue
+		if math.abs(d) >= SKATER_RADIUS do continue
 		pp := p - d * surface.n
 		px := linalg.dot(pp, surface.u)
 		if px < 0 || px > surface.w do continue
 		py := linalg.dot(pp, surface.v)
 		if py < 0 || py > surface.h do continue
-		skater.pos += (skater.radius - d) * surface.n
+		skater.pos += (SKATER_RADIUS - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
 		if linalg.length(skater.vel) != 0 {
 			skater.move_dir = linalg.normalize(skater.vel)
@@ -568,7 +568,6 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 
 reset_skater :: proc(skater: ^Skater) {
 	skater.state = Skater_State_Idle{}
-	skater.radius = SKATER_RADIUS
 	skater.vel = rl.Vector3{}
 	skater.timer = 0
 	skater.pos = skater.last_respawn_point.xyz
@@ -579,7 +578,6 @@ reset_skater :: proc(skater: ^Skater) {
 		skater.move_dir = rl.Vector3RotateByAxisAngle(skater.move_dir, {0, 0, 1}, skater.angle)
 	}
 	skater.look_dir = skater.move_dir
-	skater.norm = {0, 0, 1}
 }
 
 check :: proc(
@@ -642,7 +640,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) {
 	for object, object_idx in state.objects {
 		if object.kind == .Ramp do continue
 
-		offset := skater.radius
+		offset := SKATER_RADIUS
 
 		in_bounds: [3]bool
 		at_edge: [3]bit_set[enum u8 {
@@ -674,7 +672,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) {
 				new_state := Skater_State_Grinding{}
 				new_state.grind.target_idx = object_idx
 				// transition_state(state, skater, new_state)
-				skater.pos.z = object.pos.z + object.size.z + skater.radius
+				skater.pos.z = object.pos.z + object.size.z + SKATER_RADIUS
 				skater.pos.x = object.pos.x
 				if .hi in at_edge.x do skater.pos.x += object.size.x
 				skater.vel.xz = 0
@@ -687,7 +685,7 @@ start_grinding :: proc(state: ^State, skater: ^Skater) {
 				new_state := Skater_State_Grinding{}
 				new_state.grind.target_idx = object_idx
 				// transition_state(state, skater, new_state)
-				skater.pos.z = object.pos.z + object.size.z + skater.radius
+				skater.pos.z = object.pos.z + object.size.z + SKATER_RADIUS
 				skater.pos.y = object.pos.y
 				if .hi in at_edge.y do skater.pos.y += object.size.y
 				skater.vel.yz = 0
@@ -706,7 +704,7 @@ stop_grinding :: proc(state: ^State, skater: ^Skater) {
 
 	i := skater.vel.x != 0 ? 0 : 1
 	object := state.objects[skater_state.grind.target_idx]
-	offset := skater.radius
+	offset := SKATER_RADIUS
 	min := object.pos[i] - offset
 	max := object.pos[i] + object.size[i] + offset
 	in_bounds := skater.pos[i] >= min && skater.pos[i] <= max

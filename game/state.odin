@@ -14,12 +14,7 @@ BOARD_ASSET_COUNT :: 32
 COLORS_PER_PALETTE :: 6
 
 init :: proc(state: ^State) {
-	state.spawn_points = {
-		{-8, -8, 0, 0},
-		{8, -8, 0, 0},
-		{8, 8, 0, 0},
-		{-8, 8, 0, 0},
-	}
+	state.spawn_points = {{-8, -8, 0, 0}, {8, -8, 0, 0}, {8, 8, 0, 0}, {-8, 8, 0, 0}}
 
 	for i in 0 ..< MAX_SKATERS {
 		append(&state.skaters, Skater{})
@@ -60,18 +55,6 @@ init :: proc(state: ^State) {
 }
 
 init_objects :: proc(state: ^State) {
-	// state.objects = {
-	// 	{kind = .Ramp, mat = .Concrete, pos = {16, 0, 2}, size = {2, 36, 1}, orientation = .West},
-	// 	{kind = .Ramp, mat = .Wood, pos = {1, 10, 3}, size = {11, 2, 1}},
-	// 	{kind = .Box, mat = .Brick, pos = {0, 1, 3}, size = {1, 12, 2}},
-	// 	{kind = .Box, mat = .Brick, pos = {0, 0, 3}, size = {13, 1, 2}},
-	// 	{kind = .Box, mat = .Brick, pos = {12, 1, 3}, size = {1, 12, 2}},
-	// 	{kind = .Ramp, mat = .Brick, pos = {5, 40, 2}, size = {5, 5, 2}, orientation = .East},
-	// 	{kind = .Box, mat = .Concrete, pos = {0, 0, 2}, size = {16, 26, 1}},
-	// 	{kind = .Box, mat = .Wood, pos = {1, 1, 3}, size = {11, 9, 1}},
-	// 	{kind = .Box, mat = .Concrete, pos = {0, 0, -40}, size = {50, 50, 42}},
-	// }
-
 	state.objects = {
 		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
 		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}},
@@ -159,7 +142,7 @@ init_entities :: proc(state: ^State) {
 		append(&state.entities, Entity{object.pos, max, u16(idx), .Object, object.kind})
 	}
 	for &skater, idx in state.skaters {
-		pos := skater.pos + skater.radius
+		pos := skater.pos + SKATER_RADIUS
 		append(&state.entities, Entity{pos, pos, u16(idx), .Skater, .Box})
 	}
 	slice.stable_sort_by(state.entities[:], sort_entity)
@@ -293,12 +276,10 @@ Grind_Trick :: enum u8 {
 
 Skater :: struct {
 	idx:                int,
-	norm:               rl.Vector3,
-	move_dir:           rl.Vector3,
-	look_dir:           rl.Vector3,
 	pos:                rl.Vector3,
 	vel:                rl.Vector3,
-	radius:             f32,
+	move_dir:           rl.Vector3,
+	look_dir:           rl.Vector3,
 	angle:              f32,
 	anim:               Animation,
 	color:              rl.Color,

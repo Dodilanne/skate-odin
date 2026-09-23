@@ -230,7 +230,7 @@ draw_skater_collisions :: proc(
 			}
 
 			base_points[c * points_per_circle + p] =
-				z_rot * y_rot * rl.Vector3{1, 0, 0} * skater.radius
+				z_rot * y_rot * rl.Vector3{1, 0, 0} * SKATER_RADIUS
 		}
 	}
 
