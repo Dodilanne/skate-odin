@@ -74,6 +74,13 @@ render :: proc(state: ^State) {
 		)
 	}
 
+	if state.show_normals {
+		for &surface in state.surfaces {
+			offset := surface.o - target.pos
+			draw_surface_normals(state, &surface, offset)
+		}
+	}
+
 	rl.DrawFPS(0, 0)
 }
 
@@ -305,22 +312,9 @@ draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	)
 }
 
-draw_surface :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
-	if state.show_normals {
-		rl.DrawCircleV(project(offset, state), 4, rl.BLUE)
-		rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
-		rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
-		rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
-	}
-
-	for col in 0 ..= surface.w {
-		start := surface.u * col + offset
-		end := start + surface.v * surface.h
-		rl.DrawLineEx(project(start, state), project(end, state), 1.1, rl.Fade(rl.LIGHTGRAY, 0.5))
-	}
-	for row in 0 ..= surface.h {
-		start := surface.v * row + offset
-		end := start + surface.u * surface.w
-		rl.DrawLineEx(project(start, state), project(end, state), 1.1, rl.Fade(rl.LIGHTGRAY, 0.5))
-	}
+draw_surface_normals :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
+	rl.DrawCircleV(project(offset, state), 4, rl.BLUE)
+	rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
+	rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
+	rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
 }
