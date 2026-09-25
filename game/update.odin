@@ -1,5 +1,6 @@
 package game
 
+import "core:fmt"
 import "core:math"
 import "core:math/linalg"
 import rl "vendor:raylib"
@@ -546,6 +547,8 @@ apply_velocity :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: 
 
 apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surface: bool) {
 	for &surface in state.surfaces {
+		find_grind_target(state, skater, &surface)
+
 		p := skater.pos - surface.o
 		d := linalg.dot(p, surface.n)
 		if math.abs(d) >= SKATER_RADIUS do continue
@@ -554,13 +557,24 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 		if px < 0 || px > surface.w do continue
 		py := linalg.dot(pp, surface.v)
 		if py < 0 || py > surface.h do continue
+
 		skater.pos += (SKATER_RADIUS - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
-		if surface.n.z != 0 {
-			is_touching_a_surface = true
-		}
+		if surface.n.z == 0 do continue
+		is_touching_a_surface = true
 	}
 	return
+}
+
+find_grind_target :: proc(state: ^State, skater: ^Skater, surface: ^Surface) {
+	for edge in surface.grind_edges {
+		s := skater.pos - edge.a
+		d := linalg.dot(s, linalg.normalize(edge.p))
+		if d < 0 || d > linalg.length(edge.p) do continue
+		d = linalg.dot(s, edge.n)
+		if d < -SKATER_RADIUS || d > SKATER_RADIUS do continue
+		fmt.println("grindin!")
+	}
 }
 
 //#endregion simulation

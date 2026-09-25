@@ -57,7 +57,7 @@ init :: proc(state: ^State) {
 init_objects :: proc(state: ^State) {
 	state.objects = {
 		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
-		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}},
+		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}, grindable = true},
 		{kind = .Box, mat = .Wood, pos = {12, -6, 0}, size = {0.1, 12, 1}},
 	}
 }
@@ -99,16 +99,28 @@ init_surfaces :: proc(state: ^State) {
 	for object in state.objects {
 		switch object.kind {
 		case .Box:
+			top_surface := Surface {
+				o = object.pos + {0, 0, object.size.z},
+				w = object.size.x,
+				h = object.size.y,
+				n = {0, 0, 1},
+				u = {1, 0, 0},
+				v = {0, 1, 0},
+			}
+
+			if object.grindable {
+				a := top_surface.o
+				b := top_surface.o + {top_surface.w, 0, 0}
+				fmt.println(linalg.length(b - a))
+				append(
+					&top_surface.grind_edges,
+					Grind_Edge{a = a, b = b, p = b - a, n = {0, 1, 0}},
+				)
+			}
+
 			append(
 				&state.surfaces,
-				Surface {
-					o = object.pos + {0, 0, object.size.z},
-					w = object.size.x,
-					h = object.size.y,
-					n = {0, 0, 1},
-					u = {1, 0, 0},
-					v = {0, 1, 0},
-				},
+				top_surface,
 				build_wall_surface(object.pos, object.size, true, false),
 				build_wall_surface(object.pos, object.size, true, true),
 				build_wall_surface(object.pos, object.size, false, true),
@@ -177,6 +189,7 @@ Object :: struct {
 	pos:         rl.Vector3,
 	size:        rl.Vector3,
 	orientation: Object_Orientation,
+	grindable:   bool,
 }
 
 vec_to_color :: proc(vec: rl.Vector3) -> rl.Color {
@@ -344,12 +357,20 @@ Skater_State :: union {
 }
 
 Surface :: struct {
-	o: rl.Vector3,
-	w: f32,
-	h: f32,
+	o:           rl.Vector3,
+	w:           f32,
+	h:           f32,
+	n:           rl.Vector3,
+	u:           rl.Vector3,
+	v:           rl.Vector3,
+	grind_edges: [dynamic; 4]Grind_Edge,
+}
+
+Grind_Edge :: struct {
+	a: rl.Vector3,
+	b: rl.Vector3,
+	p: rl.Vector3,
 	n: rl.Vector3,
-	u: rl.Vector3,
-	v: rl.Vector3,
 }
 
 Skater_Asset :: enum u8 {

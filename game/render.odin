@@ -76,8 +76,8 @@ render :: proc(state: ^State) {
 
 	if state.show_normals {
 		for &surface in state.surfaces {
-			offset := surface.o - target.pos
-			draw_surface_normals(state, &surface, offset)
+			offset := -target.pos
+			draw_surface_grind_edges(state, &surface, offset)
 		}
 	}
 
@@ -317,4 +317,23 @@ draw_surface_normals :: proc(state: ^State, surface: ^Surface, offset: rl.Vector
 	rl.DrawLineEx(project(offset, state), project(surface.n + offset, state), 2, rl.RED)
 	rl.DrawLineEx(project(offset, state), project(surface.u + offset, state), 2, rl.GREEN)
 	rl.DrawLineEx(project(offset, state), project(surface.v + offset, state), 2, rl.YELLOW)
+}
+
+draw_surface_grind_edges :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
+	for edge in surface.grind_edges {
+		rl.DrawCircleV(project(offset + edge.a, state), 4, rl.BLUE)
+		rl.DrawCircleV(project(offset + edge.b, state), 4, rl.YELLOW)
+		rl.DrawLineEx(
+			project(offset + edge.a, state),
+			project(offset + edge.p + edge.a, state),
+			2,
+			rl.GREEN,
+		)
+		rl.DrawLineEx(
+			project(offset + edge.a, state),
+			project(offset + edge.n + edge.a, state),
+			2,
+			rl.YELLOW,
+		)
+	}
 }
