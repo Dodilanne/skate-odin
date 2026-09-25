@@ -58,6 +58,7 @@ init_objects :: proc(state: ^State) {
 	state.objects = {
 		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
 		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}},
+		{kind = .Box, mat = .Wood, pos = {12, -6, 0}, size = {0.1, 12, 1}},
 	}
 }
 
