@@ -96,22 +96,14 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 			v = -v
 		}
 		switch {
-		case v.y > 0 && i.x < 0:
-			animation.progress.idx.y = 0
-		case v.y < 0 && i.x < 0:
-			animation.progress.idx.y = 1
-		case v.x > 0 && i.y > 0:
-			animation.progress.idx.y = 2
-		case v.x < 0 && i.y > 0:
-			animation.progress.idx.y = 3
-		case v.y < 0 && i.x > 0:
-			animation.progress.idx.y = 4
-		case v.y > 0 && i.x > 0:
-			animation.progress.idx.y = 5
-		case v.x < 0 && i.y < 0:
-			animation.progress.idx.y = 6
-		case v.x > 0 && i.y < 0:
-			animation.progress.idx.y = 7
+		case i.x < 0:
+			animation.progress.idx.y = 0 if v.y > 0 else 1
+		case i.y > 0:
+			animation.progress.idx.y = 2 if v.x > 0 else 3
+		case i.x > 0:
+			animation.progress.idx.y = 4 if v.y < 0 else 5
+		case i.y < 0:
+			animation.progress.idx.y = 6 if v.x < 0 else 7
 		}
 	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
 		animation.progress.idx.y = 0

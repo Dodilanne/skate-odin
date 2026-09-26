@@ -175,21 +175,6 @@ update_skater_crouched :: proc(
 		   check(state, inputs, skater.idx, skater_state.trick_buf.buf[0], .Released) {
 			height := skater.timer * state.config.data.tricks.jump_height_scale
 			height = math.max(height, state.config.data.tricks.min_jump_height)
-
-			// if grind_state, ok := skater_state.prev_state.(Skater_State_Grinding); ok {
-			// 	height *= 0.6
-			// 	i := skater.vel.x != 0 ? 1 : 0
-			// 	mul: f32 = 0
-			// 	if check(state, inputs, skater.idx, .Left, .Down) {
-			// 		mul = 1
-			// 	} else if check(state, inputs, skater.idx, .Right, .Down) {
-			// 		mul = -1
-			// 	}
-			// 	mul *= math.sign(skater.move_dir[1 - i])
-			// 	if skater.vel.x != 0 do mul *= -1
-			// 	skater.vel[i] += 2 * mul
-			// }
-
 			skater.vel.z += height
 			return Skater_State_Airborne {
 				jump = Jump_State{height = skater.vel.z, start_pos = skater.pos},
