@@ -119,8 +119,8 @@ update_skater_idle :: proc(
 		apply_physics(state, inputs, skater, dt)
 		snap(skater)
 		apply_velocity(state, inputs, skater, dt)
-		is_touching_a_surface := apply_collisions(state, skater)
-		if !is_touching_a_surface do return Skater_State_Dropping{}
+		is_touching_a_floor := apply_collisions(state, skater)
+		if !is_touching_a_floor do return Skater_State_Dropping{}
 	}
 
 	return nil
@@ -191,8 +191,8 @@ update_skater_crouched :: proc(
 		apply_physics(state, inputs, skater, dt)
 		snap(skater)
 		apply_velocity(state, inputs, skater, dt)
-		is_touching_a_surface := apply_collisions(state, skater)
-		if !is_touching_a_surface do return Skater_State_Dropping{}
+		is_touching_a_floor := apply_collisions(state, skater)
+		if !is_touching_a_floor do return Skater_State_Dropping{}
 	}
 
 	return nil
@@ -348,8 +348,8 @@ update_skater_airborne :: proc(
 
 		apply_physics(state, inputs, skater, dt)
 		apply_velocity(state, inputs, skater, dt)
-		is_touching_a_surface := apply_collisions(state, skater)
-		if is_touching_a_surface {
+		is_touching_a_floor := apply_collisions(state, skater)
+		if is_touching_a_floor {
 			{ 	// check board position
 				deg := linalg.floor(linalg.abs(rl.RAD2DEG * skater_state.jump.skate_angles.zw))
 				delta := state.config.data.landing.board_angle_snap_deg
@@ -403,8 +403,8 @@ update_skater_landing :: proc(
 		apply_physics(state, inputs, skater, dt)
 		snap(skater)
 		apply_velocity(state, inputs, skater, dt)
-		is_touching_a_surface := apply_collisions(state, skater)
-		if !is_touching_a_surface do return Skater_State_Dropping{}
+		is_touching_a_floor := apply_collisions(state, skater)
+		if !is_touching_a_floor do return Skater_State_Dropping{}
 	}
 
 	return nil
@@ -426,8 +426,8 @@ update_skater_dropping :: proc(
 	{ 	// simulation
 		apply_physics(state, inputs, skater, dt)
 		apply_velocity(state, inputs, skater, dt)
-		is_touching_a_surface := apply_collisions(state, skater)
-		if is_touching_a_surface {
+		is_touching_a_floor := apply_collisions(state, skater)
+		if is_touching_a_floor {
 			return Skater_State_Idle{}
 		} else if skater.timer > state.config.data.movement.drop_time_before_airborne {
 			return Skater_State_Airborne{}
@@ -545,10 +545,8 @@ apply_velocity :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: 
 	skater.pos += skater.vel * dt
 }
 
-apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surface: bool) {
+apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_floor: bool) {
 	for &surface in state.surfaces {
-		find_grind_target(state, skater, &surface)
-
 		p := skater.pos - surface.o
 		d := linalg.dot(p, surface.n)
 		if math.abs(d) >= SKATER_RADIUS do continue
@@ -560,8 +558,7 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_surfa
 
 		skater.pos += (SKATER_RADIUS - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
-		if surface.n.z == 0 do continue
-		is_touching_a_surface = true
+		if surface.n.z != 0 do is_touching_a_floor = true
 	}
 	return
 }
