@@ -348,6 +348,10 @@ update_skater_airborne :: proc(
 
 		apply_physics(state, inputs, skater, dt)
 		apply_velocity(state, inputs, skater, dt)
+
+
+		is_grinding := find_grind_target(state, skater)
+
 		is_touching_a_floor := apply_collisions(state, skater)
 		if is_touching_a_floor {
 			{ 	// check board position
@@ -564,15 +568,29 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_floor
 	return
 }
 
-find_grind_target :: proc(state: ^State, skater: ^Skater, surface: ^Surface) {
-	for edge in surface.grind_edges {
-		s := skater.pos - edge.a
-		d := linalg.dot(s, linalg.normalize(edge.p))
-		if d < 0 || d > linalg.length(edge.p) do continue
-		d = linalg.dot(s, edge.n)
-		if d < -SKATER_RADIUS || d > SKATER_RADIUS do continue
-		fmt.println("grindin!")
+find_grind_target :: proc(state: ^State, skater: ^Skater) -> (is_grinding: bool) {
+	for surface in state.surfaces {
+		if len(surface.grind_edges) == 0 do continue
+
+		dist := linalg.dot(skater.pos - surface.o, surface.n)
+		if skater.vel.z >= 0 {
+			if dist < SKATER_RADIUS / 2 || dist > SKATER_RADIUS do continue
+		} else {
+			if dist < 0 || dist > SKATER_RADIUS * 1.5 do continue
+		}
+
+		for edge in surface.grind_edges {
+			s := skater.pos - edge.a
+			d := linalg.dot(s, linalg.normalize(edge.p))
+			if d < 0 || d > linalg.length(edge.p) do continue
+			d = linalg.dot(s, edge.n)
+			if d < -SKATER_RADIUS || d > SKATER_RADIUS do continue
+			fmt.println("grind!")
+			return true
+		}
 	}
+
+	return false
 }
 
 //#endregion simulation
