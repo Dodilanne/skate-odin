@@ -1,6 +1,7 @@
 package game
 
 import "core:math"
+import "core:math/linalg"
 import rl "vendor:raylib"
 
 Animation_State :: enum u8 {
@@ -90,7 +91,10 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 	switch skater_state in skater.state {
 	case Skater_State_Grinding:
 		i := skater_state.grind.target.i
-		v := skater.vel
+		v := linalg.normalize(skater.vel)
+		if skater.look_dir == -v {
+			v = -v
+		}
 		switch {
 		case v.y > 0 && i.x < 0:
 			animation.progress.idx.y = 0

@@ -343,10 +343,11 @@ Skater_State_Crouched :: struct {
 }
 
 Skater_State_Airborne :: struct {
-	trick_buf: Trick_Buffer,
-	committed: Trick,
-	caught:    bool,
-	jump:      Jump_State,
+	trick_buf:      Trick_Buffer,
+	committed:      Trick,
+	caught:         bool,
+	jump:           Jump_State,
+	prevent_grinds: bool,
 }
 
 Skater_State_Landing :: struct {
