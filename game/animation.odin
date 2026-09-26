@@ -91,23 +91,22 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 	case Skater_State_Grinding:
 		i := skater_state.grind.target.i
 		v := skater.vel
-		l := skater.look_dir
 		switch {
-		case v.y > 0 && i.x < 0 && l.x > 0:
+		case v.y > 0 && i.x < 0:
 			animation.progress.idx.y = 0
-		case v.y < 0 && i.x < 0 && l.x > 0:
+		case v.y < 0 && i.x < 0:
 			animation.progress.idx.y = 1
-		case v.x > 0 && i.y > 0 && l.y < 0:
+		case v.x > 0 && i.y > 0:
 			animation.progress.idx.y = 2
-		case v.x < 0 && i.y > 0 && l.y < 0:
+		case v.x < 0 && i.y > 0:
 			animation.progress.idx.y = 3
-		case v.y < 0 && i.x > 0 && l.x < 0:
+		case v.y < 0 && i.x > 0:
 			animation.progress.idx.y = 4
-		case v.y > 0 && i.x > 0 && l.x < 0:
+		case v.y > 0 && i.x > 0:
 			animation.progress.idx.y = 5
-		case v.x < 0 && i.y < 0 && l.y > 0:
+		case v.x < 0 && i.y < 0:
 			animation.progress.idx.y = 6
-		case v.x > 0 && i.y < 0 && l.y > 0:
+		case v.x > 0 && i.y < 0:
 			animation.progress.idx.y = 7
 		}
 	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
