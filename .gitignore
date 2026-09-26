@@ -1,4 +1,4 @@
 *.dSYM
 .DS_Store
-./skate-odin
-./main
+skate-odin
+main
