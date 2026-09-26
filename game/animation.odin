@@ -89,10 +89,26 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 
 	switch skater_state in skater.state {
 	case Skater_State_Grinding:
-		if skater.vel.y != 0 {
-			animation.progress.idx.y = skater.look_dir.y > 0 ? 0 : 1
-		} else {
-			animation.progress.idx.y = skater.look_dir.x > 0 ? 2 : 3
+		i := skater_state.grind.target.i
+		v := skater.vel
+		l := skater.look_dir
+		switch {
+		case v.y > 0 && i.x < 0 && l.x > 0:
+			animation.progress.idx.y = 0
+		case v.y < 0 && i.x < 0 && l.x > 0:
+			animation.progress.idx.y = 1
+		case v.x > 0 && i.y > 0 && l.y < 0:
+			animation.progress.idx.y = 2
+		case v.x < 0 && i.y > 0 && l.y < 0:
+			animation.progress.idx.y = 3
+		case v.y < 0 && i.x > 0 && l.x < 0:
+			animation.progress.idx.y = 4
+		case v.y > 0 && i.x > 0 && l.x < 0:
+			animation.progress.idx.y = 5
+		case v.x < 0 && i.y < 0 && l.y > 0:
+			animation.progress.idx.y = 6
+		case v.x > 0 && i.y < 0 && l.y > 0:
+			animation.progress.idx.y = 7
 		}
 	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
 		animation.progress.idx.y = 0
@@ -124,8 +140,8 @@ value_to_frame :: proc(value: f32, config: Animation_Config) -> f32 {
 	return math.clamp(res, 0, config.frame_count - 1)
 }
 
-skater_rot_to_sprite_idx :: proc(skater: ^Skater) -> f32 {
+skater_rot_to_sprite_idx :: proc(skater: ^Skater, step: f32 = 32) -> f32 {
 	look_angle := rl.Vector2Angle({1, 0}, skater.look_dir.xy)
 	if skater.look_dir.y < 0 do look_angle = 2 * math.PI - look_angle
-	return math.round((look_angle * 32) / (2 * math.PI))
+	return math.round((look_angle * step) / (2 * math.PI))
 }

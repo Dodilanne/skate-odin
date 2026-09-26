@@ -358,7 +358,25 @@ update_skater_airborne :: proc(
 		apply_velocity(state, inputs, skater, dt)
 
 		if target, ok := find_grind_target(state, skater, skater_state.jump.start_pos); ok {
-			return Skater_State_Grinding{grind = Grind_State{target = target}}
+			wants_nose := check(state, inputs, skater.idx, .Trick_N, .Down)
+			wants_tail := check(state, inputs, skater.idx, .Trick_S, .Down)
+			trick: Grind_Trick
+			dot := linalg.dot(skater.look_dir, target.i)
+			switch {
+			case dot <= -0.5:
+				if wants_tail do trick = .Tail_Slide
+				else if wants_nose do trick = .Nose_Blunt
+				else do trick = .Lip_Slide
+			case dot >= 0.5:
+				if wants_tail do trick = .Blunt_Slide
+				else if wants_nose do trick = .Nose_Slide
+				else do trick = .Board_Slide
+			case:
+				if wants_tail do trick = .Five_O
+				else if wants_nose do trick = .Nose_Grind
+				else do trick = .Fifty_Fifty
+			}
+			return Skater_State_Grinding{grind = Grind_State{target = target, trick = trick}}
 		}
 
 		is_touching_a_floor := apply_collisions(state, skater)
@@ -603,6 +621,12 @@ find_grind_target :: proc(
 
 			skater.pos = edge.o + nv * d + state.config.data.grind.grind_offset * edge.n
 			skater.vel = skater.vel * linalg.abs(nv)
+
+			angle := linalg.atan2(skater.look_dir.y, skater.look_dir.x)
+			step := f32(math.PI / 4)
+			snapped := math.round(angle / step) * step
+			skater.look_dir.x = math.cos(snapped)
+			skater.look_dir.y = math.sin(snapped)
 
 			return edge, true
 		}

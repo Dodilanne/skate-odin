@@ -39,11 +39,19 @@ render :: proc(state: ^State) {
 				draw_board(state, &skater, offset)
 				draw_skater(state, &skater, skater_idx, offset)
 			}
-			if state.target_skater_idx == skater_idx &&
-			   (state.show_normals || state.drawing_mode != .Dimetric) {
-				draw_skater_collisions(state, &skater, skater_idx, offset)
-				rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
+			if state.target_skater_idx == skater_idx && state.show_normals {
+				rl.DrawLineEx(
+					project(offset, state),
+					project(offset + skater.look_dir, state),
+					4,
+					rl.ORANGE,
+				)
 			}
+		// if state.target_skater_idx == skater_idx &&
+		//    (state.show_normals || state.drawing_mode != .Dimetric) {
+		// 	draw_skater_collisions(state, &skater, skater_idx, offset)
+		// 	rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
+		// }
 		}
 	}
 
@@ -51,6 +59,16 @@ render :: proc(state: ^State) {
 	if skater_state, ok := target.state.(Skater_State_Airborne);
 	   ok && skater_state.committed != .None {
 		str := fmt.ctprintf("%s", skater_state.committed)
+		measure := rl.MeasureText(str, font_size)
+		rl.DrawText(
+			str,
+			(rl.GetScreenWidth() - measure) / 2,
+			(rl.GetScreenHeight() - font_size) / 2 - i32(state.config.data.sprite.frame_size),
+			font_size,
+			rl.ORANGE,
+		)
+	} else if skater_state, ok := target.state.(Skater_State_Grinding); ok {
+		str := fmt.ctprintf("%s", skater_state.grind.trick)
 		measure := rl.MeasureText(str, font_size)
 		rl.DrawText(
 			str,
