@@ -608,7 +608,7 @@ find_grind_target :: proc(
 
 		dist := linalg.dot(skater.pos - surface.o, surface.n)
 		if skater.vel.z >= 0 {
-			if dist < SKATER_RADIUS / 2 || dist > SKATER_RADIUS do continue
+			if dist < SKATER_RADIUS || dist > SKATER_RADIUS do continue
 		} else {
 			if dist < 0 || dist > SKATER_RADIUS * 1.5 do continue
 		}
