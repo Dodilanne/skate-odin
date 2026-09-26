@@ -600,8 +600,9 @@ find_grind_target :: proc(
 
 			nv, d, ok := is_on_edge(skater, edge)
 			if !ok do continue
+
 			skater.pos = edge.o + nv * d + state.config.data.grind.grind_offset * edge.n
-			skater.vel = skater.vel * nv
+			skater.vel = skater.vel * linalg.abs(nv)
 
 			return edge, true
 		}
