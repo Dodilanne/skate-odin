@@ -155,8 +155,7 @@ init_entities :: proc(state: ^State) {
 		append(&state.entities, Entity{object.pos, max, u16(idx), .Object, object.kind})
 	}
 	for &skater, idx in state.skaters {
-		pos := skater.pos + SKATER_RADIUS
-		append(&state.entities, Entity{pos, pos, u16(idx), .Skater, .Box})
+		append(&state.entities, Entity{skater.pos, skater.pos, u16(idx), .Skater, .Box})
 	}
 	slice.stable_sort_by(state.entities[:], sort_entity)
 }

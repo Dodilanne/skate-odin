@@ -552,9 +552,10 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_floor
 		if math.abs(d) >= SKATER_RADIUS do continue
 		pp := p - d * surface.n
 		px := linalg.dot(pp, surface.u)
-		if px < 0 || px > surface.w do continue
+		delta := f32(0)
+		if px < -delta || px > surface.w + delta do continue
 		py := linalg.dot(pp, surface.v)
-		if py < 0 || py > surface.h do continue
+		if py < -delta || py > surface.h + delta do continue
 
 		skater.pos += (SKATER_RADIUS - d) * surface.n
 		skater.vel -= linalg.dot(skater.vel, surface.n) * surface.n
