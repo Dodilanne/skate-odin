@@ -31,6 +31,10 @@ Trick_Config :: struct {
 	trick_commit_delay: f32,
 }
 
+Grind_Config :: struct {
+	grind_offset: f32,
+}
+
 Landing_Config :: struct {
 	board_angle_snap_deg:   int,
 	landing_duration_scale: f32,
@@ -73,6 +77,7 @@ Config_Data :: struct {
 	movement:      Movement_Config,
 	physics:       Physics_Config,
 	tricks:        Trick_Config,
+	grind:         Grind_Config,
 	landing:       Landing_Config,
 	camera:        Camera_Config,
 	sprite:        Sprite_Config,
@@ -111,6 +116,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 			half_spin_divisor = 2,
 			trick_commit_delay = 0.3,
 		},
+		grind = {grind_offset = SKATER_RADIUS},
 		landing = {board_angle_snap_deg = 40, landing_duration_scale = 0.4, death_plane_z = -10},
 		camera = {cell_size = 32},
 		sprite = {frame_size = 75, skater_y_offset = 10, board_y_offset = 5},

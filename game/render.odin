@@ -321,19 +321,10 @@ draw_surface_normals :: proc(state: ^State, surface: ^Surface, offset: rl.Vector
 
 draw_surface_grind_edges :: proc(state: ^State, surface: ^Surface, offset: rl.Vector3) {
 	for edge in surface.grind_edges {
-		rl.DrawCircleV(project(offset + edge.a, state), 4, rl.BLUE)
-		rl.DrawCircleV(project(offset + edge.b, state), 4, rl.YELLOW)
-		rl.DrawLineEx(
-			project(offset + edge.a, state),
-			project(offset + edge.p + edge.a, state),
-			2,
-			rl.GREEN,
-		)
-		rl.DrawLineEx(
-			project(offset + edge.a, state),
-			project(offset + edge.n + edge.a, state),
-			2,
-			rl.YELLOW,
-		)
+		o := offset + edge.o
+		rl.DrawCircleV(project(o, state), 4, rl.BLUE)
+		rl.DrawLineEx(project(o, state), project(o + edge.v, state), 2, rl.GREEN)
+		rl.DrawLineEx(project(o, state), project(o + edge.n, state), 2, rl.YELLOW)
+		rl.DrawLineEx(project(o, state), project(o + edge.i, state), 2, rl.PINK)
 	}
 }

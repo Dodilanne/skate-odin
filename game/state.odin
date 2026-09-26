@@ -58,7 +58,7 @@ init_objects :: proc(state: ^State) {
 	state.objects = {
 		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
 		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}, grindable = true},
-		{kind = .Box, mat = .Wood, pos = {12, -6, 0}, size = {0.1, 12, 1}},
+		{kind = .Box, mat = .Wood, pos = {12, -6, 0}, size = {0.1, 12, 1}, grindable = true},
 	}
 }
 
@@ -83,6 +83,14 @@ build_wall_surface :: proc(pos, size: rl.Vector3, axis_is_y, high: bool) -> Surf
 	return Surface{o = pos + offset, w = width, h = size.z, n = n, u = u, v = {0, 0, 1}}
 }
 
+build_grind_edge :: proc(surface: ^Surface, a, b: rl.Vector3) -> (edge: Grind_Edge) {
+	edge.o = surface.o + a
+	edge.v = b - a
+	edge.n = surface.n
+	edge.i = linalg.normalize(linalg.cross(edge.n, edge.v))
+	return
+}
+
 build_incline_surface :: proc(pos, size: rl.Vector3, axis_is_y, high: bool) -> Surface {
 	axis_vec, u, width, axis_size := ramp_axis_info(size, axis_is_y)
 	angle_sign: f32 = (axis_is_y == high) ? 1 : -1
@@ -99,7 +107,7 @@ init_surfaces :: proc(state: ^State) {
 	for object in state.objects {
 		switch object.kind {
 		case .Box:
-			top_surface := Surface {
+			top := Surface {
 				o = object.pos + {0, 0, object.size.z},
 				w = object.size.x,
 				h = object.size.y,
@@ -109,18 +117,18 @@ init_surfaces :: proc(state: ^State) {
 			}
 
 			if object.grindable {
-				a := top_surface.o
-				b := top_surface.o + {top_surface.w, 0, 0}
-				fmt.println(linalg.length(b - a))
 				append(
-					&top_surface.grind_edges,
-					Grind_Edge{a = a, b = b, p = b - a, n = {0, 1, 0}},
+					&top.grind_edges,
+					build_grind_edge(&top, {}, {top.w, 0, 0}),
+					build_grind_edge(&top, {top.w, 0, 0}, {top.w, top.h, 0}),
+					build_grind_edge(&top, {top.w, top.h, 0}, {0, top.h, 0}),
+					build_grind_edge(&top, {0, top.h, 0}, {}),
 				)
 			}
 
 			append(
 				&state.surfaces,
-				top_surface,
+				top,
 				build_wall_surface(object.pos, object.size, true, false),
 				build_wall_surface(object.pos, object.size, true, true),
 				build_wall_surface(object.pos, object.size, false, true),
@@ -155,7 +163,12 @@ init_entities :: proc(state: ^State) {
 		append(&state.entities, Entity{object.pos, max, u16(idx), .Object, object.kind})
 	}
 	for &skater, idx in state.skaters {
-		append(&state.entities, Entity{skater.pos, skater.pos, u16(idx), .Skater, .Box})
+		// TODO: Remove this cheat
+		if skater_state, ok := skater.state.(Skater_State_Grinding); ok {
+			append(&state.entities, Entity{10000, 10000, u16(idx), .Skater, .Box})
+		} else {
+			append(&state.entities, Entity{skater.pos, skater.pos, u16(idx), .Skater, .Box})
+		}
 	}
 	slice.stable_sort_by(state.entities[:], sort_entity)
 }
@@ -300,8 +313,8 @@ Skater :: struct {
 }
 
 Grind_State :: struct {
-	trick:      Grind_Trick,
-	target_idx: int,
+	trick:  Grind_Trick,
+	target: Grind_Edge,
 }
 
 Trick_Buffer :: struct {
@@ -366,10 +379,10 @@ Surface :: struct {
 }
 
 Grind_Edge :: struct {
-	a: rl.Vector3,
-	b: rl.Vector3,
-	p: rl.Vector3,
-	n: rl.Vector3,
+	o: rl.Vector3, // origin
+	v: rl.Vector3, // the edge's vector
+	n: rl.Vector3, // normal
+	i: rl.Vector3, // inner normal
 }
 
 Skater_Asset :: enum u8 {

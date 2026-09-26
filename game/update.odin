@@ -132,6 +132,14 @@ update_skater_grinding :: proc(
 	dt: f32,
 	skater: ^Skater,
 ) -> Maybe(Skater_State) {
+	skater_state := &skater.state.(Skater_State_Grinding)
+
+	apply_velocity(state, inputs, skater, dt)
+
+	if _, _, ok := is_on_edge(skater, skater_state.grind.target); !ok {
+		return Skater_State_Airborne{}
+	}
+
 	return nil
 }
 
@@ -349,8 +357,9 @@ update_skater_airborne :: proc(
 		apply_physics(state, inputs, skater, dt)
 		apply_velocity(state, inputs, skater, dt)
 
-
-		is_grinding := find_grind_target(state, skater)
+		if target, ok := find_grind_target(state, skater, skater_state.jump.start_pos); ok {
+			return Skater_State_Grinding{grind = Grind_State{target = target}}
+		}
 
 		is_touching_a_floor := apply_collisions(state, skater)
 		if is_touching_a_floor {
@@ -568,7 +577,14 @@ apply_collisions :: proc(state: ^State, skater: ^Skater) -> (is_touching_a_floor
 	return
 }
 
-find_grind_target :: proc(state: ^State, skater: ^Skater) -> (is_grinding: bool) {
+find_grind_target :: proc(
+	state: ^State,
+	skater: ^Skater,
+	jump_start_pos: rl.Vector3,
+) -> (
+	target: Grind_Edge,
+	ok: bool,
+) {
 	for surface in state.surfaces {
 		if len(surface.grind_edges) == 0 do continue
 
@@ -580,17 +596,29 @@ find_grind_target :: proc(state: ^State, skater: ^Skater) -> (is_grinding: bool)
 		}
 
 		for edge in surface.grind_edges {
-			s := skater.pos - edge.a
-			d := linalg.dot(s, linalg.normalize(edge.p))
-			if d < 0 || d > linalg.length(edge.p) do continue
-			d = linalg.dot(s, edge.n)
-			if d < -SKATER_RADIUS || d > SKATER_RADIUS do continue
-			fmt.println("grind!")
-			return true
+			if linalg.dot(jump_start_pos - edge.o, edge.i) > 0 do continue
+
+			nv, d, ok := is_on_edge(skater, edge)
+			if !ok do continue
+			skater.pos = edge.o + nv * d + state.config.data.grind.grind_offset * edge.n
+			skater.vel = skater.vel * nv
+
+			return edge, true
 		}
 	}
 
-	return false
+	return Grind_Edge{}, false
+}
+
+is_on_edge :: proc(skater: ^Skater, edge: Grind_Edge) -> (nv: rl.Vector3, d: f32, ok: bool) {
+	s := skater.pos - edge.o
+	d = linalg.dot(s, edge.i)
+	if d < -SKATER_RADIUS || d > SKATER_RADIUS do return
+	nv = linalg.normalize(edge.v)
+	d = linalg.dot(s, nv)
+	if d < 0 || d > linalg.length(edge.v) do return
+	ok = true
+	return
 }
 
 //#endregion simulation

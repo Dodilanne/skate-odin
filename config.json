@@ -22,6 +22,9 @@
     "half_spin_divisor": 2.0,
     "trick_commit_delay": 0.30000001
   },
+  "grind": {
+    "grind_offset": 0.5
+  },
   "landing": {
     "board_angle_snap_deg": 40,
     "landing_duration_scale": 0.40000001,
