@@ -468,6 +468,8 @@ update_skater_ghost :: proc(
 		pos, look_dir := skater.pos, skater.look_dir
 		reset_skater(skater)
 		skater.pos, skater.look_dir = pos, look_dir
+		skater.last_respawn_point.xyz = skater.pos
+		skater.last_respawn_point.a = linalg.atan2(skater.look_dir.y, skater.look_dir.x)
 		return Skater_State_Idle{}
 	}
 
@@ -651,10 +653,9 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.timer = 0
 	skater.pos = skater.last_respawn_point.xyz
 	angle := skater.last_respawn_point.a
-	skater.look_dir = linalg.normalize(rl.Vector3({1, 1, 0}))
-	if angle != 0 {
-		skater.look_dir = rl.Vector3RotateByAxisAngle(skater.look_dir, {0, 0, 1}, angle)
-	}
+	if angle < 0 do angle += 2 * math.PI
+	skater.look_dir = rl.Vector3RotateByAxisAngle(rl.Vector3{1, 0, 0}, rl.Vector3{0, 0, 1}, angle)
+	skater.look_dir = linalg.normalize(skater.look_dir)
 }
 
 check :: proc(
