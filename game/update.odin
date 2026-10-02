@@ -142,7 +142,11 @@ update_skater_grinding :: proc(
 	update_trick_buf(state, inputs, skater, &skater_state.trick_buf)
 	if should_commit_trick(state, inputs, skater, skater_state.trick_buf) {
 		skater.vel.z += state.config.data.grind.jump_height
-		skater.vel += -skater_state.grind.target.i * state.config.data.grind.target_repulsion
+		impulse_dir: f32 = -1
+		if check(state, inputs, skater.idx, .Up, .Down) do impulse_dir = 0
+		if check(state, inputs, skater.idx, .Down, .Down) do impulse_dir = 1
+		skater.vel +=
+			impulse_dir * skater_state.grind.target.i * state.config.data.grind.target_repulsion
 		return Skater_State_Airborne {
 			jump = Jump_State{height = skater.vel.z, start_pos = skater.pos},
 			trick_buf = skater_state.trick_buf,
