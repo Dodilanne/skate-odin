@@ -139,6 +139,17 @@ update_skater_grinding :: proc(
 		return Skater_State_Airborne{prevent_grinds = true}
 	}
 
+	update_trick_buf(state, inputs, skater, &skater_state.trick_buf)
+	if should_commit_trick(state, inputs, skater, skater_state.trick_buf) {
+		skater.vel.z += state.config.data.grind.jump_height
+		skater.vel += -skater_state.grind.target.i * state.config.data.grind.target_repulsion
+		return Skater_State_Airborne {
+			jump = Jump_State{height = skater.vel.z, start_pos = skater.pos},
+			trick_buf = skater_state.trick_buf,
+		}
+	}
+
+
 	apply_velocity(state, inputs, skater, dt)
 
 	if _, _, ok := is_on_edge(skater, skater_state.grind.target); !ok {
@@ -163,16 +174,8 @@ update_skater_crouched :: proc(
 
 		steer(state, inputs, skater, dt)
 
-		for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
-			if skater_state.trick_buf.len >= 3 do break
-			if check(state, inputs, skater.idx, action, .Pressed) {
-				skater_state.trick_buf.buf[skater_state.trick_buf.len] = action
-				skater_state.trick_buf.len += 1
-			}
-		}
-
-		if skater_state.trick_buf.len >= 3 ||
-		   check(state, inputs, skater.idx, skater_state.trick_buf.buf[0], .Released) {
+		update_trick_buf(state, inputs, skater, &skater_state.trick_buf)
+		if should_commit_trick(state, inputs, skater, skater_state.trick_buf) {
 			height := skater.timer * state.config.data.tricks.jump_height_scale
 			height = math.max(height, state.config.data.tricks.min_jump_height)
 			skater.vel.z += height
@@ -194,6 +197,30 @@ update_skater_crouched :: proc(
 	}
 
 	return nil
+}
+
+should_commit_trick :: proc(
+	state: ^State,
+	inputs: Input_State,
+	skater: ^Skater,
+	trick_buf: Trick_Buffer,
+) -> bool {
+	return trick_buf.len >= 3 || check(state, inputs, skater.idx, trick_buf.buf[0], .Released)
+}
+
+update_trick_buf :: proc(
+	state: ^State,
+	inputs: Input_State,
+	skater: ^Skater,
+	trick_buf: ^Trick_Buffer,
+) {
+	for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
+		if trick_buf.len >= 3 do break
+		if check(state, inputs, skater.idx, action, .Pressed) {
+			trick_buf.buf[trick_buf.len] = action
+			trick_buf.len += 1
+		}
+	}
 }
 
 update_skater_airborne :: proc(
@@ -617,7 +644,7 @@ find_grind_target :: proc(
 			nv, d, ok := is_on_edge(skater, edge)
 			if !ok do continue
 
-			skater.pos = edge.o + nv * d + state.config.data.grind.grind_offset * edge.n
+			skater.pos = edge.o + nv * d + state.config.data.grind.offset * edge.n
 			skater.vel = skater.vel * linalg.abs(nv)
 
 			angle := linalg.atan2(skater.look_dir.y, skater.look_dir.x)

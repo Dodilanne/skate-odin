@@ -331,15 +331,12 @@ Jump_State :: struct {
 Skater_State_Idle :: struct {}
 
 Skater_State_Grinding :: struct {
-	grind: Grind_State,
+	grind:     Grind_State,
+	trick_buf: Trick_Buffer,
 }
 
 Skater_State_Crouched :: struct {
-	prev_state: union {
-		Skater_State_Idle,
-		Skater_State_Grinding,
-	},
-	trick_buf:  Trick_Buffer,
+	trick_buf: Trick_Buffer,
 }
 
 Skater_State_Airborne :: struct {

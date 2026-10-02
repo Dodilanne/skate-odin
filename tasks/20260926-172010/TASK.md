@@ -1,6 +1,6 @@
 # Trick out of grinds
 
-- STATUS: OPEN
+- STATUS: CLOSE
 - PRIORITY: 100
 - TAGS: grinds
 

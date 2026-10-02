@@ -23,7 +23,9 @@
     "trick_commit_delay": 0.30000001
   },
   "grind": {
-    "grind_offset": 0.5
+    "offset": 0.5,
+    "jump_height": 4,
+    "target_repulsion": 1.5
   },
   "landing": {
     "board_angle_snap_deg": 40,
@@ -72,6 +74,6 @@
       "Day": [107.0, 164.0, 230.0, 20.0],
       "Night": [66.0, 70.0, 86.0, 1e2]
     },
-    "time_of_day": 0
+    "time_of_day": 1
   }
 }

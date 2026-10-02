@@ -1,4 +1,4 @@
-# Pop out direction
+# Choose impulse direction 
 
 - STATUS: OPEN
 - PRIORITY: 100
