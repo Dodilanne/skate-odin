@@ -92,7 +92,7 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 	case Skater_State_Grinding:
 		i := skater_state.grind.target.i
 		v := linalg.normalize(skater.vel)
-		if skater.look_dir == -v {
+		if linalg.dot(skater.look_dir, v) < 0 {
 			v = -v
 		}
 		switch {

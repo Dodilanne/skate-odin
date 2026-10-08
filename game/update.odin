@@ -387,18 +387,26 @@ update_skater_airborne :: proc(
 			trick: Grind_Trick
 			dot := linalg.dot(skater.look_dir, target.i)
 			switch {
-			case dot <= -0.5:
+			case dot == -1:
 				if wants_tail do trick = .Tail_Slide
 				else if wants_nose do trick = .Nose_Blunt
 				else do trick = .Lip_Slide
-			case dot >= 0.5:
-				if wants_tail do trick = .Blunt_Slide
-				else if wants_nose do trick = .Nose_Slide
-				else do trick = .Board_Slide
-			case:
+			case dot < 0:
+				if wants_tail do trick = .Salad_Grind
+				else if wants_nose do trick = .Over_Crook
+				else do trick = .Smith_Grind
+			case dot == 0:
 				if wants_tail do trick = .Five_O
 				else if wants_nose do trick = .Nose_Grind
 				else do trick = .Fifty_Fifty
+			case dot == 1:
+				if wants_tail do trick = .Blunt_Slide
+				else if wants_nose do trick = .Nose_Slide
+				else do trick = .Board_Slide
+			case dot > 0:
+				if wants_tail do trick = .Over_Salad
+				else if wants_nose do trick = .Crooked_Grind
+				else do trick = .Feeble_Grind
 			}
 			return Skater_State_Grinding{grind = Grind_State{target = target, trick = trick}}
 		}
@@ -705,42 +713,6 @@ check :: proc(
 	return flag in inputs.actions[action]
 }
 
-//#endregion utils
-
-//#region old
-
-gather_grind_trick :: proc(
-	skater: ^Skater,
-	skater_state: ^Skater_State_Grinding,
-	inputs: Input_State,
-) {
-	buf: bit_set[Input_Action]
-	for action in Input_Action.Trick_W ..= Input_Action.Trick_SW {
-		if .Down in inputs.actions[action] {
-			buf |= {action}
-		}
-	}
-
-	switch buf {
-	case {.Trick_N}:
-		if math.abs(skater.look_dir.y) > math.abs(skater.look_dir.x) {
-			skater_state.grind.trick = .Nose_Grind
-		} else if skater.look_dir.x >= 0 {
-			skater_state.grind.trick = .Nose_Blunt
-		} else {
-			skater_state.grind.trick = .Nose_Slide
-		}
-	case {.Trick_S}:
-		if math.abs(skater.look_dir.y) > math.abs(skater.look_dir.x) {
-			skater_state.grind.trick = .Five_O
-		} else if skater.look_dir.x >= 0 {
-			skater_state.grind.trick = .Tail_Slide
-		} else {
-			skater_state.grind.trick = .Blunt_Slide
-		}
-	}
-}
-
 OCTANT_DIRS := [8][2]f32 {
 	{1, 0},
 	{0.7071068, 0.7071068},
@@ -751,3 +723,5 @@ OCTANT_DIRS := [8][2]f32 {
 	{0, -1},
 	{0.7071068, -0.7071068},
 }
+
+//#endregion utils
