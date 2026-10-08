@@ -329,6 +329,9 @@ update_skater_airborne :: proc(
 			case {.Trick_WN, .Trick_NE, .None}:
 				skater_state.committed = .Nollie_Front_Shuv
 				skater_state.jump.skate_angles.xy = {board_speed / half_spin_divisor, 0}
+			case {.Trick_WN, .Trick_N, .Trick_NE}:
+				skater_state.committed = .Nollie_Front_Tre_Shuv
+				skater_state.jump.skate_angles.xy = {board_speed, 0}
 			case {.Trick_ES, .Trick_S, .Trick_W}:
 				skater_state.committed = .Tre_Flip
 				skater_state.jump.skate_angles.xy = {board_speed, board_speed}

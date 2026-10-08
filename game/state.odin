@@ -267,6 +267,7 @@ Trick :: enum u8 {
 	Nollie_Shuv_It,
 	Front_Shuv,
 	Nollie_Front_Shuv,
+	Nollie_Front_Tre_Shuv,
 	Tre_Flip,
 	Nollie_Tre_Flip,
 	Tre_Shuv,
