@@ -134,7 +134,8 @@ update_skater_grinding :: proc(
 	skater_state := &skater.state.(Skater_State_Grinding)
 
 	if check(state, inputs, skater.idx, .Trick_O, .Pressed) {
-		skater.vel += skater_state.grind.target.i * -2
+		mul: f32 = 1 if check(state, inputs, skater.idx, .Down, .Down) else -1
+		skater.vel += skater_state.grind.target.i * 2 * mul
 		skater.vel += skater_state.grind.target.n
 		return Skater_State_Airborne{prevent_grinds = true}
 	}
