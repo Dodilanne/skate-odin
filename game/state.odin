@@ -19,7 +19,7 @@ COLORS_PER_PALETTE :: 6
 init :: proc(state: ^State) {
 	state.spawn_points = {{-8, -8, 0, 0}, {8, -8, 0, 0}, {8, 8, 0, 0}, {-8, 8, 0, 0}}
 
-	if load_err := load_skaters_state(state); load_err != nil {
+	if load_err := load_state(state); load_err != nil {
 		if load_err == os.Error(os.General_Error.Not_Exist) {
 			log.info("Skater state file not found. Initializing.")
 		} else {
@@ -64,17 +64,17 @@ init :: proc(state: ^State) {
 	update_state_after_config_update(state)
 }
 
-SKATERS_STATE_PATH := "skaters_state.json"
+STATE_PATH := "state.json"
 
-load_skaters_state :: proc(state: ^State) -> Load_Config_Error {
-	if !os.exists(SKATERS_STATE_PATH) do return os.Error(os.General_Error.Not_Exist)
-	data := os.read_entire_file(SKATERS_STATE_PATH, context.temp_allocator) or_return
+load_state :: proc(state: ^State) -> Load_Config_Error {
+	if !os.exists(STATE_PATH) do return os.Error(os.General_Error.Not_Exist)
+	data := os.read_entire_file(STATE_PATH, context.temp_allocator) or_return
 	return json.unmarshal(data, &state.skaters)
 }
 
-save_skaters_state :: proc(state: ^State) -> Load_Config_Error {
+save_state :: proc(state: ^State) -> Load_Config_Error {
 	data := json.marshal(state.skaters, {}, context.temp_allocator) or_return
-	return os.write_entire_file(SKATERS_STATE_PATH, data)
+	return os.write_entire_file(STATE_PATH, data)
 }
 
 init_objects :: proc(state: ^State) {

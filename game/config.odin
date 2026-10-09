@@ -121,7 +121,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 		grind = {offset = SKATER_RADIUS, jump_height = 4, target_repulsion = 1.5},
 		landing = {board_angle_snap_deg = 40, landing_duration_scale = 0.4, death_plane_z = -10},
 		camera = {cell_size = 32},
-		sprite = {frame_size = 75, skater_y_offset = 10, board_y_offset = 5},
+		sprite = {frame_size = 75, skater_y_offset = 10, board_y_offset = 14.5},
 		ui = {font_size = 20},
 		objects = {
 			colors = {
@@ -142,7 +142,7 @@ init_config_with_defaults :: proc(config: ^Config) {
 				},
 			},
 			sky_color = {.Day = {107, 164, 230, 20}, .Night = {66.0, 70.0, 86.0, 100}},
-			time_of_day = .Night,
+			time_of_day = .Day,
 		},
 	}
 

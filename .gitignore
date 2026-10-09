@@ -2,3 +2,5 @@
 .DS_Store
 skate-odin
 main
+config.json
+state.json
