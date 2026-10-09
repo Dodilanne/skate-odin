@@ -33,13 +33,12 @@ render :: proc(state: ^State) {
 			draw_object(state, &object, offset)
 		case .Skater:
 			skater := state.skaters[entity.idx]
-			skater_idx := int(entity.idx)
 			offset := skater.pos - target.pos
 			if state.drawing_mode == .Dimetric {
 				draw_board(state, &skater, offset)
-				draw_skater(state, &skater, skater_idx, offset)
+				draw_skater(state, &skater, offset)
 			}
-			if state.target_skater_idx == skater_idx && state.show_normals {
+			if state.target_skater_idx == skater.idx && state.show_normals {
 				rl.DrawLineEx(
 					project(offset, state),
 					project(offset + skater.look_dir, state),
@@ -47,9 +46,9 @@ render :: proc(state: ^State) {
 					rl.ORANGE,
 				)
 			}
-		// if state.target_skater_idx == skater_idx &&
+		// if state.target_skater_idx == skater.idx &&
 		//    (state.show_normals || state.drawing_mode != .Dimetric) {
-		// 	draw_skater_collisions(state, &skater, skater_idx, offset)
+		// 	draw_skater_collisions(state, &skater, offset)
 		// 	rl.DrawCircleV(project(offset, state), 4, rl.ORANGE)
 		// }
 		}
@@ -275,7 +274,7 @@ draw_skater_collisions :: proc(
 
 }
 
-draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.Vector3) {
+draw_skater :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 	frame_size := state.config.data.sprite.frame_size
 	sprite_pos := skater.anim.progress.idx * frame_size
 	config := animation_configs[skater.anim.state]
@@ -290,7 +289,7 @@ draw_skater :: proc(state: ^State, skater: ^Skater, skater_idx: int, offset: rl.
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},
 		0,
-		rl.Color{u8(skater_idx + 1), 0, 0, 0},
+		rl.Color{u8(skater.idx + 1), 0, 0, 0},
 	)
 }
 
@@ -326,7 +325,7 @@ draw_board :: proc(state: ^State, skater: ^Skater, offset: rl.Vector3) {
 		{target_pos.x, target_pos.y, frame_size, frame_size},
 		{0, 0},
 		0,
-		rl.WHITE,
+		rl.Color{u8(skater.idx + 1), 0, 0, 0},
 	)
 }
 

@@ -23,7 +23,7 @@ vec4 getColor() {
         return texel;
     }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
         vec3 orig = texelFetch(palettes, ivec2(i, 0), 0).rgb;
         if (texel.rgb == orig) {
             vec3 color = texelFetch(palettes, ivec2((skaterId * 6) + i, 0), 0).rgb;

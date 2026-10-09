@@ -57,7 +57,7 @@ init :: proc(state: ^State) {
 	}
 
 	state.palette.loc = rl.GetShaderLocation(state.shaders[.Customize], "palettes")
-	state.palette.img = rl.GenImageColor(MAX_SKATERS * COLORS_PER_PALETTE, 1, rl.BLANK)
+	state.palette.img = rl.GenImageColor((1 + MAX_SKATERS) * COLORS_PER_PALETTE, 1, rl.BLANK)
 	state.palette.tex = rl.LoadTextureFromImage(state.palette.img)
 
 	load_config_from_file(&state.config)
