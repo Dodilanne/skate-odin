@@ -80,4 +80,10 @@ main :: proc() {
 			}
 		}
 	}
+
+	if save_err := game.save_skaters_state(&game_state); save_err != nil {
+		log.errorf("Failed to save skater state to file: %v", save_err)
+	} else {
+		log.info("Saved skater state to file")
+	}
 }

@@ -1,9 +1,12 @@
 package game
 
 import "core:c"
+import "core:encoding/json"
 import "core:fmt"
+import "core:log"
 import "core:math"
 import "core:math/linalg"
+import "core:os"
 import "core:slice"
 import "core:strings"
 import rl "vendor:raylib"
@@ -16,11 +19,18 @@ COLORS_PER_PALETTE :: 6
 init :: proc(state: ^State) {
 	state.spawn_points = {{-8, -8, 0, 0}, {8, -8, 0, 0}, {8, 8, 0, 0}, {-8, 8, 0, 0}}
 
-	for i in 0 ..< MAX_SKATERS {
-		append(&state.skaters, Skater{})
-		state.skaters[i].idx = i
-		state.skaters[i].last_respawn_point = state.spawn_points[0]
-		reset_skater(&state.skaters[i])
+	if load_err := load_skaters_state(state); load_err != nil {
+		if load_err == os.Error(os.General_Error.Not_Exist) {
+			log.info("Skater state file not found. Initializing.")
+		} else {
+			log.errorf("Failed to load skater state config: %v. Initializing.", load_err)
+		}
+		for i in 0 ..< MAX_SKATERS {
+			append(&state.skaters, Skater{})
+			state.skaters[i].idx = i
+			state.skaters[i].last_respawn_point = state.spawn_points[0]
+			reset_skater(&state.skaters[i])
+		}
 	}
 
 	state.show_normals = false
@@ -52,6 +62,19 @@ init :: proc(state: ^State) {
 
 	load_config_from_file(&state.config)
 	update_state_after_config_update(state)
+}
+
+SKATERS_STATE_PATH := "skaters_state.json"
+
+load_skaters_state :: proc(state: ^State) -> Load_Config_Error {
+	if !os.exists(SKATERS_STATE_PATH) do return os.Error(os.General_Error.Not_Exist)
+	data := os.read_entire_file(SKATERS_STATE_PATH, context.temp_allocator) or_return
+	return json.unmarshal(data, &state.skaters)
+}
+
+save_skaters_state :: proc(state: ^State) -> Load_Config_Error {
+	data := json.marshal(state.skaters, {}, context.temp_allocator) or_return
+	return os.write_entire_file(SKATERS_STATE_PATH, data)
 }
 
 init_objects :: proc(state: ^State) {
