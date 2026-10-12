@@ -13,6 +13,7 @@ Animation_State :: enum u8 {
 	Landing,
 	Ghost,
 	Grinding,
+	Manualing,
 }
 
 animation_configs := [Animation_State]Animation_Config {
@@ -24,6 +25,7 @@ animation_configs := [Animation_State]Animation_Config {
 	.Landing = {asset = .Land, frame_count = 6},
 	.Ghost = {asset = .Onspot, frame_count = 1, initial_idx = {0, 9}},
 	.Grinding = {asset = .Allgrind2, frame_count = 1},
+	.Manualing = {asset = .Manual, frame_count = 1},
 }
 
 Animation_Config :: struct {
@@ -57,6 +59,8 @@ animation_update_state :: proc(
 		anim_state = .Crouched
 	case Skater_State_Grinding:
 		anim_state = .Grinding
+	case Skater_State_Manualing:
+		anim_state = .Manualing
 	case Skater_State_Airborne:
 		if skater_state.jump.height <= 0 {
 			anim_state = .Falling
@@ -107,6 +111,8 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 		}
 	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
 		animation.progress.idx.y = 0
+	case Skater_State_Manualing:
+		animation.progress.idx.y = skater_state.nose ? 5 : 0
 	case Skater_State_Crouched:
 		v := skater.timer
 		animation.progress.idx.y = value_to_frame(v, config)

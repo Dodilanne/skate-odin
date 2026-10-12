@@ -63,6 +63,8 @@ update_skater :: proc(
 		next_state = update_skater_idle(state, inputs, dt, skater)
 	case Skater_State_Grinding:
 		next_state = update_skater_grinding(state, inputs, dt, skater)
+	case Skater_State_Manualing:
+		next_state = update_skater_manualing(state, inputs, dt, skater)
 	case Skater_State_Crouched:
 		next_state = update_skater_crouched(state, inputs, dt, skater)
 	case Skater_State_Airborne:
@@ -154,11 +156,44 @@ update_skater_grinding :: proc(
 		}
 	}
 
-
 	apply_velocity(state, inputs, skater, dt)
 
 	if _, _, ok := is_on_edge(skater, skater_state.grind.target); !ok {
 		return Skater_State_Airborne{}
+	}
+
+	return nil
+}
+
+update_skater_manualing :: proc(
+	state: ^State,
+	inputs: Input_State,
+	dt: f32,
+	skater: ^Skater,
+) -> Maybe(Skater_State) {
+	skater_state := &skater.state.(Skater_State_Manualing)
+
+	if check(state, inputs, skater.idx, .Cycle_Play_Mode, .Pressed) {
+		return Skater_State_Ghost{}
+	}
+
+	steer(state, inputs, skater, dt)
+
+	update_trick_buf(state, inputs, skater, &skater_state.trick_buf)
+	if should_commit_trick(state, inputs, skater, skater_state.trick_buf) {
+		skater.vel.z += state.config.data.grind.jump_height
+		return Skater_State_Airborne {
+			jump = Jump_State{height = skater.vel.z, start_pos = skater.pos},
+			trick_buf = skater_state.trick_buf,
+		}
+	}
+
+	{ 	// simulation
+		apply_physics(state, inputs, skater, dt)
+		snap(skater)
+		apply_velocity(state, inputs, skater, dt)
+		is_touching_a_floor := apply_collisions(state, skater)
+		if !is_touching_a_floor do return Skater_State_Dropping{}
 	}
 
 	return nil
@@ -435,11 +470,17 @@ update_skater_airborne :: proc(
 
 			skater.vel = linalg.dot(skater.vel, skater.look_dir) * skater.look_dir
 
-			landing_state := Skater_State_Landing {
-				jump           = skater_state.jump,
+			if check(state, inputs, skater.idx, .Trick_S, .Down) {
+				return Skater_State_Manualing{}
+			}
+			if check(state, inputs, skater.idx, .Trick_N, .Down) {
+				return Skater_State_Manualing{nose = true}
+			}
+
+			return Skater_State_Landing {
+				jump = skater_state.jump,
 				landing_factor = skater.timer * state.config.data.landing.landing_duration_scale,
 			}
-			return landing_state
 		}
 	}
 

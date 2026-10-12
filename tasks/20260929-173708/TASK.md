@@ -1,6 +1,6 @@
 # Manuals
 
-- STATUS: OPEN
+- STATUS: CLOSE
 - PRIORITY: 100
 - TAGS:
 

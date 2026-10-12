@@ -359,6 +359,11 @@ Skater_State_Grinding :: struct {
 	trick_buf: Trick_Buffer,
 }
 
+Skater_State_Manualing :: struct {
+	nose:      bool,
+	trick_buf: Trick_Buffer,
+}
+
 Skater_State_Crouched :: struct {
 	trick_buf: Trick_Buffer,
 }
@@ -383,6 +388,7 @@ Skater_State_Ghost :: struct {}
 Skater_State :: union {
 	Skater_State_Idle,
 	Skater_State_Grinding,
+	Skater_State_Manualing,
 	Skater_State_Crouched,
 	Skater_State_Airborne,
 	Skater_State_Landing,
@@ -414,6 +420,7 @@ Skater_Asset :: enum u8 {
 	Land,
 	Onspot,
 	Allgrind2,
+	Manual,
 }
 
 Shader :: enum u8 {
