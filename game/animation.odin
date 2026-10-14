@@ -115,30 +115,48 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 		animation.progress.idx.y = skater_state.nose ? 5 : 0
 	case Skater_State_Crouched:
 		v := skater.timer
-		animation.progress.idx.y = value_to_frame(v, config)
-		// nollie tricks
-		if skater_state.trick_buf.len >= 0 && skater_state.trick_buf.buf[0] < .Trick_ES {
+		anim_done: bool
+		animation.progress.idx.y, anim_done = value_to_frame(v, config)
+		if skater_state.trick_buf.len <= 0 do break
+
+		first_trick_input := skater_state.trick_buf.buf[0]
+		if first_trick_input < .Trick_ES {
 			animation.progress.idx.y += config.frame_count
+		}
+
+		if anim_done {
+			#partial switch first_trick_input {
+			case .Trick_ES:
+				animation.progress.idx.y = 6
+			case .Trick_SW:
+				animation.progress.idx.y = 7
+			case .Trick_NE:
+				animation.progress.idx.y = 8
+			case .Trick_WN:
+				animation.progress.idx.y = 9
+			}
 		}
 	case Skater_State_Airborne:
 		if skater.anim.state == .Falling {
 			animation.progress.idx.y = 5
 		} else {
 			v := 1 - ((skater.vel.z + skater_state.jump.height) / (2 * skater_state.jump.height))
-			animation.progress.idx.y = value_to_frame(v, config)
+			animation.progress.idx.y, _ = value_to_frame(v, config)
 		}
 	case Skater_State_Landing:
 		x := skater_state.landing_factor
 		v := skater.timer / x
-		animation.progress.idx.y = value_to_frame(v, config)
+		animation.progress.idx.y, _ = value_to_frame(v, config)
 	}
 
 	animation.progress.idx += config.initial_idx
 }
 
-value_to_frame :: proc(value: f32, config: Animation_Config) -> f32 {
+value_to_frame :: proc(value: f32, config: Animation_Config) -> (frame: f32, done: bool) {
 	res := math.round(value * config.frame_count)
-	return math.clamp(res, 0, config.frame_count - 1)
+	max := config.frame_count - 1
+	frame = math.clamp(res, 0, max)
+	return frame, frame == max
 }
 
 skater_rot_to_sprite_idx :: proc(skater: ^Skater, step: f32 = 32) -> f32 {
