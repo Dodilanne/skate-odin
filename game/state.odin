@@ -333,6 +333,7 @@ Skater :: struct {
 	color:              rl.Color,
 	state:              Skater_State,
 	timer:              f32,
+	steer_timer:        f32,
 	last_respawn_point: rl.Vector4,
 }
 

@@ -587,6 +587,28 @@ steer :: proc(state: ^State, inputs: Input_State, skater: ^Skater, dt: f32) {
 	if check(state, inputs, skater.idx, .Left, .Down) do steer_dir = -1
 	if check(state, inputs, skater.idx, .Right, .Down) do steer_dir = +1
 
+	if steer_dir != 0 {
+		skater.steer_timer = math.clamp(
+			skater.steer_timer + dt * state.config.data.tricks.crouch_charge_rate * steer_dir,
+			-1,
+			1,
+		)
+	} else {
+		switch {
+		case skater.steer_timer == 0:
+		case skater.steer_timer < 0:
+			skater.steer_timer = math.min(
+				0,
+				skater.steer_timer + dt * state.config.data.tricks.crouch_charge_rate * 2,
+			)
+		case:
+			skater.steer_timer = math.max(
+				0,
+				skater.steer_timer - dt * state.config.data.tricks.crouch_charge_rate * 2,
+			)
+		}
+	}
+
 	if _, ok := skater.state.(Skater_State_Airborne); ok {
 		angle_change := steer_dir * dt * state.config.data.movement.airborne_steer_speed
 		angle := angle_change + linalg.atan2(skater.look_dir.y, skater.look_dir.x)
@@ -735,6 +757,7 @@ reset_skater :: proc(skater: ^Skater) {
 	skater.state = Skater_State_Idle{}
 	skater.vel = {}
 	skater.timer = 0
+	skater.steer_timer = 0
 	skater.pos = skater.last_respawn_point.xyz
 	angle := skater.last_respawn_point.a
 	if angle < 0 do angle += 2 * math.PI

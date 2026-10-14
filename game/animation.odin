@@ -17,7 +17,7 @@ Animation_State :: enum u8 {
 }
 
 animation_configs := [Animation_State]Animation_Config {
-	.Idle = {asset = .Ride, frame_count = 1},
+	.Idle = {asset = .Ride, frame_count = 3},
 	.Crouched = {asset = .Duck, frame_count = 3},
 	.Falling = {asset = .Air, frame_count = 1},
 	.Jumping = {asset = .Air, frame_count = 7},
@@ -109,7 +109,20 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 		case i.y < 0:
 			animation.progress.idx.y = 6 if v.x < 0 else 7
 		}
-	case Skater_State_Idle, Skater_State_Ghost, Skater_State_Dropping:
+	case Skater_State_Idle:
+		if skater.steer_timer == 0 {
+			animation.progress.idx.y = 3
+			break
+		}
+		animation.progress.idx.y, _ = value_to_frame(math.abs(skater.steer_timer), config)
+		sign := math.sign(skater.steer_timer)
+		if linalg.dot(skater.look_dir, linalg.normalize(skater.vel)) < 0 {
+			sign = -sign
+		}
+		if sign > 0 {
+			animation.progress.idx.y += 4
+		}
+	case Skater_State_Ghost, Skater_State_Dropping:
 		animation.progress.idx.y = 0
 	case Skater_State_Manualing:
 		animation.progress.idx.y = skater_state.nose ? 5 : 0
