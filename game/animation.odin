@@ -155,6 +155,9 @@ animation_tick :: proc(state: ^State, skater: ^Skater) {
 		} else {
 			v := 1 - ((skater.vel.z + skater_state.jump.height) / (2 * skater_state.jump.height))
 			animation.progress.idx.y, _ = value_to_frame(v, config)
+			if skater_state.trick_buf.buf[0] < .Trick_ES {
+				animation.progress.idx.y += config.frame_count
+			}
 		}
 	case Skater_State_Landing:
 		x := skater_state.landing_factor
