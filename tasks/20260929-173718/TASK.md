@@ -1,6 +1,6 @@
 # Respawn point
 
-- STATUS: CLOSE
+- STATUS: CLOSED
 - PRIORITY: 100
 - TAGS:
 

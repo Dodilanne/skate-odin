@@ -1,6 +1,6 @@
 # Choose impulse direction 
 
-- STATUS: CLOSE
+- STATUS: CLOSED
 - PRIORITY: 100
 - TAGS: grinds
 
