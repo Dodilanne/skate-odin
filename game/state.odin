@@ -81,7 +81,14 @@ init_objects :: proc(state: ^State) {
 	state.objects = {
 		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
 		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}, grindable = true},
-		{kind = .Box, mat = .Wood, pos = {12, -6, 0}, size = {0.1, 12, 1}, grindable = true},
+
+		{kind = .Box, mat = .Wood, pos = {-16, -6, 0}, size = {0.1, 12, 1}, grindable = true},
+		{kind = .Box, mat = .Wood, pos = {16, -6, 0}, size = {0.1, 12, 1}, grindable = true},
+
+		{kind = .Ramp, mat = .Concrete, pos = {12, -19, 0}, size = {8, 4, 2}, grindable = false},
+		{kind = .Box, mat = .Brick, pos = {-12, -17, 0}, size = {24, 2, 1}, grindable = true},
+		{kind = .Ramp, mat = .Concrete, pos = {-20, -19, 0}, size = {40, 4, 2}, grindable = false},
+		{kind = .Box, mat = .Concrete, pos = {-20, -20, 0}, size = {40, 1, 3}, grindable = true},
 	}
 }
 
