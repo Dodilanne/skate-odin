@@ -79,6 +79,9 @@ save_state :: proc(state: ^State) -> Load_Config_Error {
 
 init_objects :: proc(state: ^State) {
 	state.objects = {
+		{kind = .Ramp, mat = .Wood, pos = {-3.5, 14, 0}, size = {4, 4, 1}, grindable = false, orientation = .East},
+		{kind = .Ramp, mat = .Wood, pos = {3.5, 14, 0}, size = {4, 4, 1}, grindable = false, orientation = .West},
+
 		{kind = .Box, mat = .Concrete, pos = {-20, -20, -40}, size = {40, 40, 40}},
 		{kind = .Box, mat = .Brick, pos = {-6, -6, 0}, size = {12, 12, 1}, grindable = true},
 
